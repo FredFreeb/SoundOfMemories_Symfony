@@ -1,0 +1,43 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_SECRET: ${APP_SECRET:-change-me-in-prod}
+      DATABASE_URL: ${DATABASE_URL:-mysql://expeditions:expeditions@database:3306/expeditions?serverVersion=10.11.2-MariaDB&charset=utf8mb4}
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      database:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${HTTP_PORT:-8081}:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+
+  database:
+    image: mariadb:10.11
+    environment:
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-expeditions}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-expeditions}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
+      MARIADB_USER: ${MARIADB_USER:-expeditions}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/mysql:rw
+      # - ./docker/db/data:/var/lib/mysql:rw
+
+volumes:
+  database_data:

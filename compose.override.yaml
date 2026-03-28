@@ -1,0 +1,15 @@
+services:
+  database:
+    ports:
+      - "${DATABASE_FORWARD_PORT:-3307}:3306"
+
+###> symfony/mailer ###
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "${MAILER_SMTP_PORT:-1026}:1025"
+      - "${MAILER_HTTP_PORT:-8026}:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+###< symfony/mailer ###

@@ -1,0 +1,13 @@
+<h1>Réinitialisation de votre mot de passe</h1>
+
+<p>Bonjour{% if user.fullName %} {{ user.fullName }}{% endif %},</p>
+
+<p>Une demande de réinitialisation a été enregistrée pour votre compte Expédition Mystère.</p>
+
+<p>
+    <a href="{{ url('app_reset_password', {token: resetToken.token}) }}">Définir un nouveau mot de passe</a>
+</p>
+
+<p>Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+
+<p>Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer ce message.</p>

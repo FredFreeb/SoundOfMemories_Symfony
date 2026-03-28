@@ -1,0 +1,57 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Panier | Sound Of Memories Fan Base{% endblock %}
+
+{% block page %}
+    <section class="section">
+        <div class="container narrow-copy">
+            <p class="eyebrow">Panier</p>
+            <h1>Votre sélection merch.</h1>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container cart-layout">
+            <div class="cart-items">
+                {% for item in items %}
+                    <article class="cart-item">
+                        <div class="cart-item-copy">
+                            <h2>{{ item.product.name }}</h2>
+                            <p>{{ item.product.shortDescription }}</p>
+                            <strong>{{ item.product.formattedPrice }}</strong>
+                        </div>
+
+                        <div class="cart-actions">
+                            <form method="post" action="{{ path('store_cart_update', {id: item.product.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cart_update_' ~ item.product.id) }}">
+                                <label class="field-label" for="qty-{{ item.product.id }}">Qté</label>
+                                <input id="qty-{{ item.product.id }}" type="number" name="quantity" min="0" max="{{ item.product.stock }}" value="{{ item.quantity }}">
+                                <button class="button-secondary" type="submit">Mettre à jour</button>
+                            </form>
+
+                            <form method="post" action="{{ path('store_cart_remove', {id: item.product.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cart_remove_' ~ item.product.id) }}">
+                                <button class="button-ghost" type="submit">Retirer</button>
+                            </form>
+                        </div>
+                    </article>
+                {% else %}
+                    <article class="empty-card">
+                        <h2>Le panier est vide</h2>
+                        <p>Ajoutez quelques pièces de merch pour tester tout le tunnel de navigation.</p>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <aside class="cart-summary">
+                <p class="eyebrow">Résumé</p>
+                <h2>Total</h2>
+                <strong class="cart-total">{{ (totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                <div class="button-column">
+                    <a class="button-primary" href="{{ path('store_checkout') }}">Continuer la commande</a>
+                    <a class="button-secondary" href="{{ path('store_shop_index') }}">Retour à la boutique</a>
+                </div>
+            </aside>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,18 @@
+knpu_oauth2_client:
+    clients:
+        google_main:
+            type: google
+            client_id: '%env(string:OAUTH_GOOGLE_CLIENT_ID)%'
+            client_secret: '%env(string:OAUTH_GOOGLE_CLIENT_SECRET)%'
+            redirect_route: app_connect_google_check
+            redirect_params: {}
+            use_oidc_mode: true
+
+        apple_main:
+            type: apple
+            client_id: '%env(string:OAUTH_APPLE_CLIENT_ID)%'
+            redirect_route: app_connect_apple_check
+            redirect_params: {}
+            team_id: '%env(string:OAUTH_APPLE_TEAM_ID)%'
+            key_file_id: '%env(string:OAUTH_APPLE_KEY_FILE_ID)%'
+            key_file_path: '%env(string:OAUTH_APPLE_KEY_FILE_PATH)%'

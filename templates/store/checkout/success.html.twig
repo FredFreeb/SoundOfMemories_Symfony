@@ -1,0 +1,24 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Commande confirmee{% endblock %}
+{% block meta_description %}Confirmation de commande Expédition Mystère et recapitulatif du paiement effectue.{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+
+{% block page %}
+    <section class="section">
+        <div class="container centered-panel">
+            <p class="eyebrow">Paiement confirme</p>
+            <h1>Merci pour ta commande</h1>
+            <p>Commande {{ order }}. Le statut de paiement est actuellement <strong>{{ order.paymentStatusLabel }}</strong>.</p>
+            <p>Sous-total : <strong>{{ order.formattedSubtotal }}</strong></p>
+            {% if order.discountCents > 0 %}
+                <p>{{ order.discountLabel }} : <strong>-{{ order.formattedDiscount }}</strong></p>
+            {% endif %}
+            <p>Total facture: <strong>{{ order.formattedTotal }}</strong></p>
+            <div class="hero-actions">
+                <a class="button-primary" href="{{ path('store_shop_index') }}">Continuer les achats</a>
+                <a class="button-secondary" href="{{ path('store_home') }}">Retour a l’accueil</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

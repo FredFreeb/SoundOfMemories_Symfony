@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Sound Of Memories favicon</title>
+  <desc id="desc">Monogramme sombre avec un anneau central et les initiales S et M.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#17090a"/>
+      <stop offset="55%" stop-color="#0e1114"/>
+      <stop offset="100%" stop-color="#050607"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.28" cy="0.18" r="0.9">
+      <stop offset="0%" stop-color="#ff6b35" stop-opacity=".6"/>
+      <stop offset="35%" stop-color="#ff6b35" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#ff6b35" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff8ef"/>
+      <stop offset="100%" stop-color="#d7cdc2"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect width="64" height="64" rx="14" fill="url(#glow)"/>
+  <rect x="3" y="3" width="58" height="58" rx="11" fill="none" stroke="rgba(255,255,255,.1)"/>
+
+  <circle cx="33" cy="31" r="14" fill="none" stroke="#ffb36b" stroke-width="2.7" opacity=".85"/>
+  <circle cx="33" cy="31" r="10.5" fill="none" stroke="#79f2df" stroke-width="1" opacity=".28"/>
+
+  <text x="13.5" y="40" fill="url(#bone)" font-size="29" font-weight="700" font-style="italic" font-family="Georgia, 'Times New Roman', serif">S</text>
+  <text x="28.5" y="41.5" fill="url(#bone)" font-size="23" font-weight="700" font-family="Georgia, 'Times New Roman', serif">M</text>
+  
+  <path d="M14 50.5c8.4-3.1 25-3.1 36 0" fill="none" stroke="#ff6b35" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+</svg>

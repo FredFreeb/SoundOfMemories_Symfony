@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer mon compte{% endblock %}
+{% block meta_description %}Création d'un compte client Sound Of Memories pour suivre ses commandes et son historique d'achats.{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+{% block body_class %}theme-admin{% endblock %}
+
+{% block body %}
+    <section class="login-shell">
+        <div class="login-card login-card-wide register-card">
+            <p class="eyebrow">Espace client</p>
+            <h1>Créer mon compte</h1>
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash flash-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {{ form_start(form, {attr: {
+                'data-address-autocomplete-form': 'true',
+                'data-address-autocomplete-endpoint': address_autocomplete_endpoint
+            }}) }}
+                <div class="form-grid">
+                    {{ form_row(form.firstName) }}
+                    {{ form_row(form.lastName) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.phone) }}
+                    {{ form_row(form.city) }}
+                    {{ form_row(form.postalCode) }}
+                    {{ form_row(form.defaultAddress) }}
+                    <div class="form-grid-full">
+                        {{ form_row(form.marketingOptIn) }}
+                    </div>
+                    {{ form_row(form.website) }}
+                    {{ form_row(form.plainPassword.first) }}
+                    {{ form_row(form.plainPassword.second) }}
+                </div>
+
+                <div class="login-actions">
+                    <button class="button-primary" type="submit">Créer mon compte</button>
+                    <a class="text-link" href="{{ path('app_login') }}">J'ai déjà un compte</a>
+                </div>
+                {% include 'security/_social_auth.html.twig' %}
+            {{ form_end(form) }}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('scripts/form-enhancements.js') }}" defer></script>
+{% endblock %}

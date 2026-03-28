@@ -1,0 +1,45 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Merch | Sound Of Memories Fan Base{% endblock %}
+{% block meta_description %}Découvrez le merchandising Sound Of Memories: textile, collectors et accessoires administrables depuis le back-office.{% endblock %}
+
+{% block page %}
+    {% set shopBackground = siteSettings.shopHeroBackground ? site_asset(siteSettings.shopHeroBackground, 'site') : asset('uploads/legacy/Sof.jpg') %}
+
+    <section class="page-banner" style="background-image: linear-gradient(180deg, rgba(12, 12, 12, 0.5), rgba(12, 12, 12, 0.9)), url('{{ shopBackground }}');">
+        <div class="container narrow-copy">
+            <p class="eyebrow">Merchandising</p>
+            <h1>Une boutique fan base plus lisible, plus simple à gérer.</h1>
+            <p>Le catalogue s’appuie sur Doctrine et EasyAdmin, avec un front pensé mobile-first et des visuels hérités du site historique.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container card-grid">
+            {% for product in products %}
+                <article class="product-card">
+                    <a href="{{ path('store_shop_show', {slug: product.slug}) }}">
+                        {% include 'store/components/_product_media.html.twig' with {
+                            product: product,
+                            media_classes: 'product-media'
+                        } only %}
+                    </a>
+                    <div class="product-card-copy">
+                        <p class="card-kicker">{{ product.category ? product.category.name : 'Merch' }}</p>
+                        <h2><a href="{{ path('store_shop_show', {slug: product.slug}) }}">{{ product.name }}</a></h2>
+                        <p>{{ product.catalogExcerpt ?: product.shortDescription }}</p>
+                        <div class="product-card-footer">
+                            <strong>{{ product.formattedPrice }}</strong>
+                            <span>{{ product.stock }} stock</span>
+                        </div>
+                    </div>
+                </article>
+            {% else %}
+                <article class="empty-card">
+                    <h3>Boutique vide</h3>
+                    <p>Ajoutez vos premiers produits depuis le backstage pour remplir cette page.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

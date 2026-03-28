@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email de réinitialisation{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+{% block body_class %}theme-admin{% endblock %}
+
+{% block body %}
+    <section class="login-shell">
+        <div class="login-card">
+            <p class="eyebrow">Email envoyé</p>
+            <h1>Vérifie ta boîte mail</h1>
+            <p class="login-intro">Si un compte correspond à cette adresse, un lien de réinitialisation vient d’être préparé. Il expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash flash-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            <p class="social-auth-note">Pense à vérifier les courriers indésirables si tu ne vois rien arriver tout de suite.</p>
+            <a class="button-primary" href="{{ path('app_login') }}">Retour à la connexion</a>
+            <a class="text-link" href="{{ path('app_forgot_password_request') }}">Réessayer avec une autre adresse</a>
+        </div>
+    </section>
+{% endblock %}

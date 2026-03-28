@@ -1,0 +1,70 @@
+:root {
+    --sidebar-bg: #111111;
+    --sidebar-menu-color: #d9d0c5;
+    --sidebar-menu-icon-color: #ff6b35;
+    --sidebar-menu-active-item-bg: #f3ede6;
+    --sidebar-menu-active-item-color: #111111;
+    --content-top-border-color: rgba(17, 17, 17, 0.08);
+}
+
+.som-admin-dashboard {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.som-admin-hero {
+    padding: 1.75rem;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(255, 107, 53, 0.18), transparent 34%),
+        linear-gradient(135deg, #161616, #0f0f0f);
+    color: #f5efe8;
+}
+
+.som-admin-kicker {
+    margin: 0 0 .65rem;
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    font-size: .75rem;
+    color: #ffb48f;
+}
+
+.som-admin-hero h2 {
+    margin: 0 0 .75rem;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+
+.som-admin-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.som-admin-card {
+    display: grid;
+    gap: .45rem;
+    padding: 1.25rem;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    color: #1a1a1a;
+    text-decoration: none;
+    box-shadow: 0 16px 36px rgba(17, 17, 17, 0.08);
+}
+
+.som-admin-card span {
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    font-size: .72rem;
+    color: #7b6b5d;
+}
+
+.som-admin-card strong {
+    font-size: 2.1rem;
+    line-height: 1;
+}
+
+.som-admin-card p {
+    margin: 0;
+    color: #584e45;
+}

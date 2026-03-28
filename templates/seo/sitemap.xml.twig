@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>{{ absolute_url(path('store_home')) }}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <lastmod>{{ siteSettings.updatedAt|date('c') }}</lastmod>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('store_shop_index')) }}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <lastmod>{{ siteSettings.updatedAt|date('c') }}</lastmod>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('store_about')) }}</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <lastmod>{{ siteSettings.updatedAt|date('c') }}</lastmod>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('store_faq')) }}</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <lastmod>{{ siteSettings.updatedAt|date('c') }}</lastmod>
+    </url>
+    <url>
+        <loc>{{ absolute_url(path('store_legal')) }}</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+        <lastmod>{{ "now"|date('c') }}</lastmod>
+    </url>
+    {% for product in products %}
+        <url>
+            <loc>{{ absolute_url(path('store_shop_show', {slug: product.slug})) }}</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+            <lastmod>{{ product.updatedAt|date('c') }}</lastmod>
+        </url>
+    {% endfor %}
+</urlset>

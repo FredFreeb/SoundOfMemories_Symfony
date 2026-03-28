@@ -1,0 +1,69 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}{{ product.name }} | Sound Of Memories Fan Base{% endblock %}
+{% block meta_description %}{{ product.shortDescription ?: product.description ?: 'Produit merchandising Sound Of Memories.' }}{% endblock %}
+
+{% block page %}
+    <section class="section">
+        <div class="container product-detail-grid">
+            <div>
+                {% include 'store/components/_product_media.html.twig' with {
+                    product: product,
+                    media_classes: 'product-media product-media-detail'
+                } only %}
+            </div>
+
+            <div class="product-detail-copy">
+                <p class="eyebrow">{{ product.category ? product.category.name : 'Merchandising' }}</p>
+                <h1>{{ product.name }}</h1>
+                <p class="product-lead">{{ product.shortDescription }}</p>
+
+                <div class="meta-row">
+                    <span class="chip">{{ product.formattedPrice }}</span>
+                    <span class="chip">{{ product.stock }} en stock</span>
+                </div>
+
+                <form method="post" action="{{ path('store_cart_add', {id: product.id}) }}" class="buy-box">
+                    <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
+                    <label class="field-label" for="quantity">Quantité</label>
+                    <div class="buy-box-row">
+                        <input id="quantity" type="number" name="quantity" min="1" max="{{ product.stock }}" value="1">
+                        <button class="button-primary" type="submit">Ajouter au panier</button>
+                    </div>
+                </form>
+
+                {% if product.description %}
+                    <div class="prose-block">
+                        <h2>Détails</h2>
+                        <p>{{ product.description|nl2br }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="detail-aside">
+                    <div>
+                        <strong>Animation</strong>
+                        <p>{{ product.animationKey ?: 'Aucune animation sélectionnée' }}</p>
+                    </div>
+                    <div>
+                        <strong>Back-office</strong>
+                        <p>Ce produit est entièrement modifiable dans EasyAdmin: nom, prix, stock, visuel et publication.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-contrast">
+        <div class="container cta-panel">
+            <div>
+                <p class="eyebrow">Prochaine étape</p>
+                <h2>Compléter le merchandising avec les dates live.</h2>
+                <p>Le même back-office permet maintenant de gérer les concerts et d’orienter les fans du produit vers la scène.</p>
+            </div>
+            <div class="button-column">
+                <a class="button-secondary" href="{{ path('store_concerts') }}">Voir les concerts</a>
+                <a class="button-secondary" href="{{ path('store_shop_index') }}">Retour boutique</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

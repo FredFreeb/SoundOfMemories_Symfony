@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisir un nouveau mot de passe{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+{% block body_class %}theme-admin{% endblock %}
+
+{% block body %}
+    <section class="login-shell">
+        <div class="login-card">
+            <p class="eyebrow">Sécurité</p>
+            <h1>Choisir un nouveau mot de passe</h1>
+            <p class="login-intro">Définis un nouveau mot de passe solide pour retrouver l’accès au compte local.</p>
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash flash-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {{ form_start(resetForm) }}
+                {{ form_row(resetForm.plainPassword) }}
+                <button class="button-primary" type="submit">Mettre à jour le mot de passe</button>
+            {{ form_end(resetForm) }}
+        </div>
+    </section>
+{% endblock %}

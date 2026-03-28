@@ -1,0 +1,51 @@
+<div class="social-auth-block" aria-label="Connexions rapides">
+    <div class="social-auth-separator">
+        <span>Ou continuer avec</span>
+    </div>
+
+    <div class="social-auth-grid">
+        {% if social_auth_google_enabled %}
+            <a class="social-auth-button" href="{{ path('app_connect_google') }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="#EA4335" d="M12.24 10.29v3.95h5.49c-.22 1.28-.97 2.36-2.07 3.09l3.35 2.6c1.95-1.8 3.08-4.44 3.08-7.58 0-.73-.07-1.43-.19-2.11h-9.66Z"/>
+                    <path fill="#4285F4" d="M12 22c2.79 0 5.13-.93 6.84-2.52l-3.35-2.6c-.93.62-2.12.99-3.49.99-2.68 0-4.95-1.81-5.76-4.24H2.78v2.66A10 10 0 0 0 12 22Z"/>
+                    <path fill="#FBBC05" d="M6.24 13.63a5.97 5.97 0 0 1 0-3.26V7.71H2.78a10 10 0 0 0 0 8.58l3.46-2.66Z"/>
+                    <path fill="#34A853" d="M12 6.13c1.52 0 2.89.52 3.96 1.55l2.97-2.97C17.12 3.03 14.79 2 12 2A10 10 0 0 0 2.78 7.71l3.46 2.66c.81-2.43 3.08-4.24 5.76-4.24Z"/>
+                </svg>
+                <span>Continuer avec Google</span>
+            </a>
+        {% else %}
+            <button class="social-auth-button is-disabled" type="button" aria-disabled="true" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="#EA4335" d="M12.24 10.29v3.95h5.49c-.22 1.28-.97 2.36-2.07 3.09l3.35 2.6c1.95-1.8 3.08-4.44 3.08-7.58 0-.73-.07-1.43-.19-2.11h-9.66Z"/>
+                    <path fill="#4285F4" d="M12 22c2.79 0 5.13-.93 6.84-2.52l-3.35-2.6c-.93.62-2.12.99-3.49.99-2.68 0-4.95-1.81-5.76-4.24H2.78v2.66A10 10 0 0 0 12 22Z"/>
+                    <path fill="#FBBC05" d="M6.24 13.63a5.97 5.97 0 0 1 0-3.26V7.71H2.78a10 10 0 0 0 0 8.58l3.46-2.66Z"/>
+                    <path fill="#34A853" d="M12 6.13c1.52 0 2.89.52 3.96 1.55l2.97-2.97C17.12 3.03 14.79 2 12 2A10 10 0 0 0 2.78 7.71l3.46 2.66c.81-2.43 3.08-4.24 5.76-4.24Z"/>
+                </svg>
+                <span>Google bientôt disponible</span>
+            </button>
+        {% endif %}
+
+        {% if social_auth_apple_enabled %}
+            <a class="social-auth-button" href="{{ path('app_connect_apple') }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="M16.7 12.5c0-2 1.64-2.95 1.72-3-.95-1.39-2.41-1.58-2.93-1.6-1.25-.13-2.44.73-3.08.73-.64 0-1.63-.71-2.69-.69-1.38.02-2.65.8-3.36 2.04-1.44 2.49-.37 6.18 1.03 8.2.69.98 1.51 2.08 2.58 2.04 1.03-.04 1.42-.66 2.66-.66 1.25 0 1.6.66 2.68.64 1.11-.02 1.82-1 2.5-1.99.79-1.15 1.12-2.26 1.14-2.32-.02-.01-2.18-.84-2.18-3.39Zm-2.02-5.93c.57-.69.96-1.65.86-2.61-.82.03-1.82.55-2.41 1.24-.53.61-.99 1.59-.87 2.53.92.07 1.85-.47 2.42-1.16Z"/>
+                </svg>
+                <span>Continuer avec Apple</span>
+            </a>
+        {% else %}
+            <button class="social-auth-button is-disabled" type="button" aria-disabled="true" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="M16.7 12.5c0-2 1.64-2.95 1.72-3-.95-1.39-2.41-1.58-2.93-1.6-1.25-.13-2.44.73-3.08.73-.64 0-1.63-.71-2.69-.69-1.38.02-2.65.8-3.36 2.04-1.44 2.49-.37 6.18 1.03 8.2.69.98 1.51 2.08 2.58 2.04 1.03-.04 1.42-.66 2.66-.66 1.25 0 1.6.66 2.68.64 1.11-.02 1.82-1 2.5-1.99.79-1.15 1.12-2.26 1.14-2.32-.02-.01-2.18-.84-2.18-3.39Zm-2.02-5.93c.57-.69.96-1.65.86-2.61-.82.03-1.82.55-2.41 1.24-.53.61-.99 1.59-.87 2.53.92.07 1.85-.47 2.42-1.16Z"/>
+                </svg>
+                <span>Apple bientôt disponible</span>
+            </button>
+        {% endif %}
+    </div>
+
+    {% if social_auth_google_enabled or social_auth_apple_enabled %}
+        <p class="social-auth-note">Le compte local reste ton socle, et Google ou Apple servent ici de connexion rapide sécurisée.</p>
+    {% else %}
+        <p class="social-auth-note">Ces accès rapides s’activent dès que les clés OAuth Google ou Apple sont renseignées et activées dans l’environnement.</p>
+    {% endif %}
+</div>

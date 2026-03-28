@@ -1,0 +1,38 @@
+{% set mediaClasses = (media_classes|default('')) %}
+{% set imageUrl = null %}
+{% set animationKey = product.animationKey ?: 'none' %}
+{% set animationClassName = product.animationClassName %}
+
+{% if product.coverImage %}
+    {% set imageUrl = product.coverImage starts with 'http' or product.coverImage starts with '/' ? product.coverImage : asset('uploads/products/' ~ product.coverImage) %}
+{% endif %}
+
+<div
+    class="{{ mediaClasses }} product-animated-frame {{ animationClassName }}{% if product.coverImage %} has-cover{% endif %}"
+    {% if imageUrl %}
+        style="background-image: linear-gradient(180deg, rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.58)), url('{{ imageUrl }}');"
+    {% endif %}
+>
+    {% if animationKey == 'vinyl' %}
+        <div class="animation-scene scene-vinyl" aria-hidden="true">
+            <span class="vinyl-ring"></span>
+            <span class="vinyl-ring is-inner"></span>
+        </div>
+    {% elseif animationKey == 'embers' %}
+        <div class="animation-scene scene-embers" aria-hidden="true">
+            {% for ember in 1..10 %}
+                <span class="ember ember-{{ ember }}"></span>
+            {% endfor %}
+        </div>
+    {% elseif animationKey == 'pulse' %}
+        <div class="animation-scene scene-pulse" aria-hidden="true">
+            <span class="pulse-wave"></span>
+            <span class="pulse-wave is-delayed"></span>
+        </div>
+    {% elseif animationKey == 'glitch' %}
+        <div class="animation-scene scene-glitch" aria-hidden="true">
+            <span class="glitch-bar glitch-bar-top"></span>
+            <span class="glitch-bar glitch-bar-bottom"></span>
+        </div>
+    {% endif %}
+</div>

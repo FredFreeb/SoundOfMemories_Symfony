@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    product_images_dir: '%kernel.project_dir%/public/uploads/products'
+    site_images_dir: '%kernel.project_dir%/public/uploads/site'
+    user_avatars_dir: '%kernel.project_dir%/public/uploads/avatars'
+    address_autocomplete_endpoint: 'https://photon.komoot.io/api'
+    site_owner_default_name: 'Sound Of Memories Fan Base'
+    site_owner_default_email: 'contact@soundofmemories.local'
+    site_owner_default_address: 'Paris, France'
+    payment_mollie_webhook_path: '/commande/webhook/mollie'
+    payment_stripe_webhook_path: '/commande/webhook/stripe'
+    social_auth_google_enabled: '%env(bool:OAUTH_GOOGLE_ENABLED)%'
+    social_auth_apple_enabled: '%env(bool:OAUTH_APPLE_ENABLED)%'
+    mailer_from_address: 'no-reply@soundofmemories.local'
+    mailer_from_name: 'Sound Of Memories'
+    boxtal_enabled: '%env(bool:BOXTAL_ENABLED)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            # Fred note: Je centralise ici les variables de paiement pour eviter d'avoir des cles eparpillees dans plusieurs classes.
+            $projectDir: '%kernel.project_dir%'
+            $mailerDsn: '%env(string:MAILER_DSN)%'
+            $mailerFromAddress: '%mailer_from_address%'
+            $userAvatarsDir: '%user_avatars_dir%'
+            $siteOwnerDefaultName: '%site_owner_default_name%'
+            $siteOwnerDefaultEmail: '%site_owner_default_email%'
+            $siteOwnerDefaultAddress: '%site_owner_default_address%'
+            $socialAuthGoogleEnabled: '%social_auth_google_enabled%'
+            $socialAuthAppleEnabled: '%social_auth_apple_enabled%'
+            $oauthGoogleClientId: '%env(string:OAUTH_GOOGLE_CLIENT_ID)%'
+            $oauthGoogleClientSecret: '%env(string:OAUTH_GOOGLE_CLIENT_SECRET)%'
+            $oauthAppleClientId: '%env(string:OAUTH_APPLE_CLIENT_ID)%'
+            $oauthAppleTeamId: '%env(string:OAUTH_APPLE_TEAM_ID)%'
+            $oauthAppleKeyFileId: '%env(string:OAUTH_APPLE_KEY_FILE_ID)%'
+            $oauthAppleKeyFilePath: '%env(string:OAUTH_APPLE_KEY_FILE_PATH)%'
+            $mollieApiKey: '%env(string:MOLLIE_API_KEY)%'
+            $stripeSecretKey: '%env(string:STRIPE_SECRET_KEY)%'
+            $stripeWebhookSecret: '%env(string:STRIPE_WEBHOOK_SECRET)%'
+            $boxtalEnabled: '%boxtal_enabled%'
+            $boxtalTestMode: '%env(bool:BOXTAL_TEST_MODE)%'
+            $boxtalUser: '%env(string:BOXTAL_USER)%'
+            $boxtalPassword: '%env(string:BOXTAL_PASSWORD)%'
+            $boxtalContentCode: '%env(string:BOXTAL_CONTENT_CODE)%'
+            $boxtalFromCountry: '%env(string:BOXTAL_FROM_COUNTRY)%'
+            $boxtalFromPostalCode: '%env(string:BOXTAL_FROM_POSTAL_CODE)%'
+            $boxtalDefaultParcelWeightGrams: '%env(int:BOXTAL_DEFAULT_PARCEL_WEIGHT_GRAMS)%'
+            $boxtalExtraItemWeightGrams: '%env(int:BOXTAL_EXTRA_ITEM_WEIGHT_GRAMS)%'
+            $boxtalParcelLengthCm: '%env(int:BOXTAL_PARCEL_LENGTH_CM)%'
+            $boxtalParcelWidthCm: '%env(int:BOXTAL_PARCEL_WIDTH_CM)%'
+            $boxtalParcelHeightCm: '%env(int:BOXTAL_PARCEL_HEIGHT_CM)%'
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones

@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}theme-store{% endblock %}
+
+{% block body %}
+    {% set settings = site_settings() %}
+    {% set headerLogo = settings.headerLogo ? site_asset(settings.headerLogo, 'site') : asset('uploads/legacy/Logo.png') %}
+    <div class="site-shell" style="--som-logo-url: url('{{ headerLogo }}');">
+        <header class="site-header">
+            <div class="container header-row">
+                <a class="brand brand-mobile" href="{{ path('store_home') }}">
+                    <img src="{{ headerLogo }}" alt="{{ settings.siteName }}">
+                </a>
+
+                <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-navigation" aria-label="Ouvrir le menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <nav class="main-nav" id="site-navigation" data-main-nav>
+                    <div class="menu-shell">
+                        <div class="menu-edge-spacer" aria-hidden="true"></div>
+
+                        <div class="menu-side menu-side-left">
+                            <a class="menu-link" href="{{ path('store_concerts') }}">Concert</a>
+                            <a class="menu-link" href="{{ path('store_gallery') }}">Gallery</a>
+                        </div>
+
+                        <a class="brand brand-desktop" href="{{ path('store_home') }}">
+                            <img src="{{ headerLogo }}" alt="{{ settings.siteName }}">
+                        </a>
+
+                        <div class="menu-side menu-side-right">
+                            <a class="menu-link" href="{{ path('store_about') }}">The Band</a>
+                            <a class="menu-link" href="{{ path('store_shop_index') }}">Merch</a>
+                        </div>
+
+                        <div class="menu-edge-actions">
+                            {% if is_granted('ROLE_USER') %}
+                                <a class="nav-ghost nav-account" href="{{ path('app_account') }}">Mon compte</a>
+                            {% else %}
+                                <a class="nav-ghost nav-account" href="{{ path('app_login') }}">Mon compte</a>
+                            {% endif %}
+                            <a class="nav-ghost nav-cart" href="{{ path('store_cart') }}">Panier <span class="pill">{{ cart_count() }}</span></a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            {% for label, messages in app.flashes %}
+                <div class="container flash-stack">
+                    {% for message in messages %}
+                        <div class="flash flash-{{ label }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% block page %}{% endblock %}
+        </main>
+
+        <footer class="site-footer">
+            <div class="container footer-bar">
+                <div class="footer-socials">
+                    <a class="footer-brand-mini" href="{{ path('store_home') }}" aria-label="Sound Of Memories">
+                        <img src="{{ headerLogo }}" alt="{{ settings.siteName }}">
+                    </a>
+                    <a class="footer-icon-link" href="{{ path('store_gallery') }}" aria-label="Gallery">GL</a>
+                    <a class="footer-icon-link" href="{{ path('store_concerts') }}" aria-label="Concerts">LV</a>
+                    <a class="footer-icon-link" href="{{ path('store_shop_index') }}" aria-label="Merch">MR</a>
+                </div>
+                <div class="footer-meta-links">
+                    <a href="{{ path('store_legal') }}">Mentions légales</a>
+                    <a href="{{ path('store_cgv') }}">CGV</a>
+                    <a href="{{ path('store_privacy') }}">Confidentialité</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock %}

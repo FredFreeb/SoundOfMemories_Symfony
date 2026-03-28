@@ -1,0 +1,11 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        address_autocomplete_endpoint: '%address_autocomplete_endpoint%'
+        social_auth_google_enabled: '%social_auth_google_enabled%'
+        social_auth_apple_enabled: '%social_auth_apple_enabled%'
+        site_owner: '@App\Service\SiteOwnerManager'
+
+when@test:
+    twig:
+        strict_variables: true

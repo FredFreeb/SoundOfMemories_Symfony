@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ mail.subject ?: 'Email local' }}{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="container" style="max-width: 1080px;">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Email local</p>
+                    <h1>{{ mail.subject ?: 'Sans objet' }}</h1>
+                    <p class="section-intro">Ce message a été capturé dans l’environnement local. Tu peux ouvrir directement les liens utiles ou relire le contenu complet.</p>
+                </div>
+                <a class="button-secondary" href="{{ path('app_dev_mailbox') }}">Retour à la boîte</a>
+            </div>
+
+            <div class="detail-grid">
+                <article class="detail-panel">
+                    <p><strong>Envoyé le :</strong> {{ mail.created_at|date('d/m/Y H:i:s') }}</p>
+                    <p><strong>De :</strong> {{ mail.from ?: 'Adresse non détectée' }}</p>
+                    <p><strong>Pour :</strong> {{ mail.to ?: 'Adresse non détectée' }}</p>
+                    {% if mail.reply_to %}
+                        <p><strong>Répondre à :</strong> {{ mail.reply_to }}</p>
+                    {% endif %}
+                    {% if mail.primary_url %}
+                        <div class="hero-actions" style="margin-top: 1.5rem;">
+                            <a class="button-primary" href="{{ mail.primary_url }}">Ouvrir le lien principal</a>
+                        </div>
+                    {% endif %}
+                    {% if mail.urls is not empty %}
+                        <div style="margin-top: 1.5rem;">
+                            <p class="eyebrow">Liens détectés</p>
+                            <ul style="margin: 0; padding-left: 1.2rem;">
+                                {% for url in mail.urls %}
+                                    <li><a href="{{ url }}">{{ url }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="detail-panel">
+                    <p class="eyebrow">Prévisualisation</p>
+                    <h2>Contenu décodé</h2>
+                    <div style="border: 1px solid rgba(123, 84, 40, 0.18); border-radius: 18px; overflow: hidden; background: #fffdf8;">
+                        <iframe
+                            title="Prévisualisation de l’email"
+                            sandbox
+                            style="display: block; width: 100%; min-height: 520px; border: 0; background: #fffdf8;"
+                            srcdoc="{{ mail.decoded_body|default('')|e('html_attr') }}"
+                        ></iframe>
+                    </div>
+                </article>
+            </div>
+
+            <article class="detail-panel" style="margin-top: 2rem;">
+                <p class="eyebrow">Source brute</p>
+                <h2>Contenu EML</h2>
+                <pre style="white-space: pre-wrap; word-break: break-word; font-size: 0.88rem; line-height: 1.6;">{{ rawSource }}</pre>
+            </article>
+        </div>
+    </section>
+{% endblock %}

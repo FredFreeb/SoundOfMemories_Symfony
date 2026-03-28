@@ -1,0 +1,113 @@
+.hero-section--melodic-frame {
+    --hero-divider-white: rgba(255, 255, 255, 0.985);
+    --hero-divider-line: rgba(255, 255, 255, 0.96);
+    --hero-divider-shadow: rgba(10, 10, 14, 0.22);
+
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    min-height: 72svh;
+    display: flex;
+    align-items: center;
+
+    .hero-section__backdrop,
+    .hero-section__veil {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    .hero-section__backdrop {
+        background:
+            linear-gradient(180deg, rgba(8, 8, 8, 0.26), rgba(8, 8, 8, 0.7)),
+            var(--hero-image) center/cover no-repeat;
+        transform: scale(1.05);
+        filter: blur(10px) saturate(1.04) contrast(1.03);
+        z-index: -3;
+    }
+
+    .hero-section__veil {
+        background:
+            radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.07), transparent 24%),
+            linear-gradient(180deg, rgba(8, 8, 10, 0.2), rgba(8, 8, 10, 0.68));
+        z-index: -2;
+    }
+
+    .hero-grid {
+        position: relative;
+        z-index: 2;
+        padding-block: clamp(8rem, 18vw, 12rem);
+    }
+}
+
+.hero-divider {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1;
+
+    &--top {
+        top: 0;
+        height: clamp(5.5rem, 10vw, 8rem);
+    }
+
+    &--bottom {
+        bottom: 0;
+        height: clamp(7rem, 14vw, 11rem);
+    }
+
+    &__fill {
+        fill: var(--hero-divider-white);
+        filter:
+            drop-shadow(0 10px 14px var(--hero-divider-shadow))
+            drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.78));
+    }
+
+    &__line {
+        fill: none;
+        stroke: var(--hero-divider-line);
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter:
+            drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5))
+            drop-shadow(0 3px 6px rgba(0, 0, 0, 0.06));
+    }
+
+    &__line--strong {
+        stroke-width: 3.2;
+    }
+
+    &__line--medium {
+        stroke-width: 2.6;
+    }
+}
+
+@media (max-width: 760px) {
+    .hero-section--melodic-frame {
+        min-height: auto;
+
+        .hero-grid {
+            padding-block: 7rem 8rem;
+        }
+    }
+
+    .hero-divider {
+        &--top {
+            height: clamp(4.5rem, 14vw, 6rem);
+        }
+
+        &--bottom {
+            height: clamp(6rem, 18vw, 8rem);
+        }
+
+        &__line--strong {
+            stroke-width: 2.8;
+        }
+
+        &__line--medium {
+            stroke-width: 2.2;
+        }
+    }
+}

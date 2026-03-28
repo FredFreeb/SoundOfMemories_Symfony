@@ -1,0 +1,196 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Accueil | Sound Of Memories Fan Base{% endblock %}
+{% block meta_description %}Merchandising, dates de concert et univers visuel Sound Of Memories dans une vitrine mobile-first inspirée du site historique du groupe.{% endblock %}
+
+{% block page %}
+    {% set heroBackground = siteSettings.homeHeroBackground ? site_asset(siteSettings.homeHeroBackground, 'site') : asset('uploads/legacy/htmlwallpaper.jpg') %}
+    {% set heroVisual = siteSettings.homeHeroVisual ? site_asset(siteSettings.homeHeroVisual, 'site') : asset('uploads/legacy/SofM-cover.png') %}
+    {% set spotlight = monthlyOfferProduct ?: products|first %}
+    {% set liveBackgrounds = [
+        asset('uploads/legacy/gal13.jpg'),
+        asset('uploads/legacy/gal14.JPG'),
+        asset('uploads/legacy/gal15.jpg'),
+        asset('uploads/legacy/gal16.JPG'),
+        asset('uploads/legacy/gal18.JPG')
+    ] %}
+
+    <section class="hero-section" style="background-image: linear-gradient(180deg, rgba(8, 8, 8, 0.42), rgba(8, 8, 8, 0.88)), url('{{ heroBackground }}');">
+        <div class="container hero-grid">
+            <div class="hero-copy">
+                <p class="eyebrow">Fan base relancée</p>
+                <h1>{{ siteSettings.homeHeroTitle ?: 'Sound Of Memories revient avec un site plus solide.' }}</h1>
+                <p class="hero-text">{{ siteSettings.homeHeroText ?: 'Une base Symfony propre, administrable et prête pour le merchandising, les concerts et un futur déploiement VPS.' }}</p>
+                <div class="button-row">
+                    <a class="button-primary" href="{{ path('store_shop_index') }}">Voir le merch</a>
+                    <a class="button-secondary" href="{{ path('store_concerts') }}">Voir les concerts</a>
+                </div>
+            </div>
+            <div class="hero-visual-shell">
+                <div class="hero-glow"></div>
+                <img class="hero-visual" src="{{ heroVisual }}" alt="Visuel Sound Of Memories">
+            </div>
+        </div>
+    </section>
+
+    {% if spotlight %}
+        <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+            <div class="som-hero__bg" aria-hidden="true"></div>
+            {% include 'components/_divider_top.html.twig' %}
+            <div class="som-hero__content">
+                <div class="container split-panel">
+                    <div>
+                        <p class="eyebrow">{{ spotlight.offerBannerEyebrow ?: 'À la une' }}</p>
+                        <h2>{{ spotlight.offerBannerTitle ?: spotlight.name }}</h2>
+                        <p>{{ spotlight.offerBannerText ?: spotlight.shortDescription }}</p>
+                        <div class="meta-row">
+                            <span class="chip">{{ spotlight.formattedPrice }}</span>
+                            <span class="chip">{{ spotlight.stock }} en stock</span>
+                        </div>
+                        <a class="button-primary" href="{{ path('store_shop_show', {slug: spotlight.slug}) }}">Découvrir le produit</a>
+                    </div>
+                    <div class="vinyl-panel">
+                        <div class="vinyl-disc"></div>
+                        <div class="vinyl-cover">
+                            {% include 'store/components/_product_media.html.twig' with {
+                                product: spotlight,
+                                media_classes: 'product-media product-media-spotlight'
+                            } only %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% include 'components/_divider_bottom.html.twig' %}
+        </section>
+    {% endif %}
+
+    <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+        <div class="som-hero__bg" aria-hidden="true"></div>
+        {% include 'components/_divider_top.html.twig' %}
+        <div class="som-hero__content">
+            <div class="container section-head">
+                <div>
+                    <p class="eyebrow">Merchandising</p>
+                    <h2>Pièces fan base à remettre en circulation.</h2>
+                </div>
+                <a class="text-link" href="{{ path('store_shop_index') }}">Tout le catalogue</a>
+            </div>
+            <div class="container card-grid">
+                {% for product in products %}
+                    <article class="product-card">
+                        <a href="{{ path('store_shop_show', {slug: product.slug}) }}">
+                            {% include 'store/components/_product_media.html.twig' with {
+                                product: product,
+                                media_classes: 'product-media'
+                            } only %}
+                        </a>
+                        <div class="product-card-copy">
+                            <p class="card-kicker">{{ product.category ? product.category.name : 'Merch' }}</p>
+                            <h3><a href="{{ path('store_shop_show', {slug: product.slug}) }}">{{ product.name }}</a></h3>
+                            <p>{{ product.catalogExcerpt ?: product.shortDescription }}</p>
+                            <div class="product-card-footer">
+                                <strong>{{ product.formattedPrice }}</strong>
+                                <a class="text-link" href="{{ path('store_shop_show', {slug: product.slug}) }}">Voir</a>
+                            </div>
+                        </div>
+                    </article>
+                {% else %}
+                    <article class="empty-card">
+                        <h3>Aucun produit publié</h3>
+                        <p>Les pièces de merchandising apparaîtront ici dès qu’elles seront ajoutées dans l’admin.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+        {% include 'components/_divider_bottom.html.twig' %}
+    </section>
+
+    <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+        <div class="som-hero__bg" aria-hidden="true"></div>
+        {% include 'components/_divider_top.html.twig' %}
+        <div class="som-hero__content">
+            <div class="container section-head">
+                <div>
+                    <p class="eyebrow">Dates live</p>
+                    <h2>Les prochains rendez-vous à ne pas manquer.</h2>
+                </div>
+                <a class="text-link" href="{{ path('store_concerts') }}">Toutes les dates</a>
+            </div>
+            <div class="concert-list">
+                {% for concert in upcomingConcerts %}
+                    <article class="concert-card{% if concert.isHighlighted %} is-highlighted{% endif %}">
+                        <div class="concert-date">
+                            <strong>{{ concert.concertAt|date('d') }}</strong>
+                            <span>{{ concert.concertAt|date('M Y')|upper }}</span>
+                        </div>
+                        <div class="concert-copy">
+                            <p class="card-kicker">{{ concert.venue }}</p>
+                            <h3>{{ concert.title }}</h3>
+                            <p>{{ concert.locationLabel }} · {{ concert.concertAt|date('H:i') }}</p>
+                            {% if concert.details %}
+                                <p>{{ concert.details }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="concert-side">
+                            <span class="status-badge status-{{ concert.status }}">{{ concert.statusLabel }}</span>
+                            {% if concert.ticketUrl %}
+                                <a class="button-secondary" href="{{ concert.ticketUrl }}" target="_blank" rel="noopener">Billetterie</a>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% else %}
+                    <article class="empty-card">
+                        <h3>Aucune date publiée</h3>
+                        <p>Ajoutez les prochains concerts dans le back-office pour alimenter cette section.</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+        {% include 'components/_divider_bottom.html.twig' %}
+    </section>
+
+    <section class="section section-gallery som-hero som-hero--section" id="legacy-gallery" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+        <div class="som-hero__bg" aria-hidden="true"></div>
+        {% include 'components/_divider_top.html.twig' %}
+        <div class="som-hero__content">
+            <div class="container section-head">
+                <div>
+                    <p class="eyebrow">Mémoire visuelle</p>
+                    <h2>On garde les textures, les bannières et l’ADN du site d’origine.</h2>
+                </div>
+            </div>
+            <div class="container gallery-strip" data-scroll-target>
+                <img src="{{ asset('uploads/legacy/bannerSand.png') }}" alt="The Sand Within">
+                <img src="{{ asset('uploads/legacy/bannerLiving.png') }}" alt="Living Circle">
+                <img src="{{ asset('uploads/legacy/bannerToDel.png') }}" alt="To Deliverance">
+                <img src="{{ asset('uploads/legacy/gal13.jpg') }}" alt="Photo de groupe">
+                <img src="{{ asset('uploads/legacy/gal15.jpg') }}" alt="Photo de scène">
+                <img src="{{ asset('uploads/legacy/gal18.JPG') }}" alt="Univers du groupe">
+            </div>
+        </div>
+        {% include 'components/_divider_bottom.html.twig' %}
+    </section>
+
+    <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+        <div class="som-hero__bg" aria-hidden="true"></div>
+        {% include 'components/_divider_top.html.twig' %}
+        <div class="som-hero__content">
+            <div class="container cta-panel">
+                <div>
+                    <p class="eyebrow">Base prête pour la suite</p>
+                    <h2>Une refonte pensée pour être administrée facilement puis transférée sur VPS.</h2>
+                    <p>Le front garde une vraie identité visuelle, pendant que le back-office gère produits, visuels et dates de concert sans dépendre du vieux HTML statique.</p>
+                </div>
+                <div class="button-column">
+                    <a class="button-primary" href="{{ path('admin_dashboard') }}">Ouvrir le backstage</a>
+                    <a class="button-secondary" href="{{ path('store_shop_index') }}">Parcourir le merch</a>
+                </div>
+            </div>
+        </div>
+        {% include 'components/_divider_bottom.html.twig' %}
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('scripts/home.js') }}"></script>
+{% endblock %}

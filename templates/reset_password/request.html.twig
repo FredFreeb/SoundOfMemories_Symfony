@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublié{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+{% block body_class %}theme-admin{% endblock %}
+
+{% block body %}
+    <section class="login-shell">
+        <div class="login-card">
+            <p class="eyebrow">Mot de passe oublié</p>
+            <h1>Réinitialiser l’accès à mon compte</h1>
+            <p class="login-intro">Saisis ton adresse email. Si un compte existe, nous préparons immédiatement un lien sécurisé pour définir un nouveau mot de passe.</p>
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash flash-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            {% for flash_error in app.flashes('reset_password_error') %}
+                <div class="flash flash-error" role="alert">{{ flash_error }}</div>
+            {% endfor %}
+
+            {{ form_start(requestForm) }}
+                {{ form_row(requestForm.email) }}
+                <button class="button-primary" type="submit">Recevoir le lien</button>
+            {{ form_end(requestForm) }}
+
+            <a class="text-link" href="{{ path('app_login') }}">Retour à la connexion</a>
+        </div>
+    </section>
+{% endblock %}

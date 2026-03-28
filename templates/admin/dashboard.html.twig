@@ -1,0 +1,41 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Backstage Sound Of Memories{% endblock %}
+
+{% block main %}
+    <div class="som-admin-dashboard">
+        <section class="som-admin-hero">
+            <p class="som-admin-kicker">Vue d’ensemble</p>
+            <h2>Une base admin plus claire pour piloter merch, concerts et visuels du site.</h2>
+            <p>Cette interface remplace l’ancien site statique par une structure administrable, sécurisée et plus simple à transférer sur VPS.</p>
+        </section>
+
+        <section class="som-admin-grid">
+            <a class="som-admin-card" href="{{ productsUrl }}">
+                <span>Produits</span>
+                <strong>{{ productCount }}</strong>
+                <p>{{ publishedProductCount }} publiés sur la boutique.</p>
+            </a>
+            <a class="som-admin-card" href="{{ categoriesUrl }}">
+                <span>Catégories</span>
+                <strong>{{ categoryCount }}</strong>
+                <p>Familles de merchandising.</p>
+            </a>
+            <a class="som-admin-card" href="{{ concertsUrl }}">
+                <span>Concerts</span>
+                <strong>{{ concertCount }}</strong>
+                <p>{{ publishedConcertCount }} dates visibles côté public.</p>
+            </a>
+            <a class="som-admin-card" href="{{ siteSettingsUrl }}">
+                <span>Identité</span>
+                <strong>{{ visualPresetCount }}</strong>
+                <p>Présélections visuelles actives.</p>
+            </a>
+            <a class="som-admin-card" href="{{ usersUrl }}">
+                <span>Admins</span>
+                <strong>{{ adminCount }}</strong>
+                <p>Comptes autorisés à gérer le site.</p>
+            </a>
+        </section>
+    </div>
+{% endblock %}

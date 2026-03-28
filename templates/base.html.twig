@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        {% set settings = site_settings() %}
+        {% set request = app.request %}
+        {% set canonical = request ? request.uri : '' %}
+        {% set meta_description_block %}{% block meta_description %}{% endblock %}{% endset %}
+        {% set description = meta_description_block|trim ?: (settings.tagline ?: 'Fan base Sound Of Memories, merchandising et dates de concert.') %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#111111">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
+        <title>{% block title %}{{ settings.siteName ?: 'Sound Of Memories Fan Base' }}{% endblock %}</title>
+        <meta name="description" content="{{ description }}">
+        {% if canonical %}
+            <link rel="canonical" href="{{ canonical }}">
+        {% endif %}
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="{{ block('title')|striptags|trim }}">
+        <meta property="og:description" content="{{ description }}">
+        {% if canonical %}
+            <meta property="og:url" content="{{ canonical }}">
+        {% endif %}
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+            {% include 'layouts/animations/_product_effects.html.twig' %}
+        {% endblock %}
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        {% block body %}{% endblock %}
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const navToggle = document.querySelector('[data-nav-toggle]');
+                const mainNav = document.querySelector('[data-main-nav]');
+
+                if (navToggle && mainNav) {
+                    navToggle.addEventListener('click', () => {
+                        const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
+                        navToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+                        mainNav.classList.toggle('is-open', !isOpen);
+                        document.body.classList.toggle('nav-open', !isOpen);
+                    });
+                }
+            });
+        </script>
+
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

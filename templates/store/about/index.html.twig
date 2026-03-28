@@ -1,0 +1,62 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Le groupe | Sound Of Memories Fan Base{% endblock %}
+{% block meta_description %}Présentation du groupe Sound Of Memories, de son héritage mélodique death metal et de la nouvelle base fan merch/concerts.{% endblock %}
+
+{% block page %}
+    <section class="page-banner" style="background-image: linear-gradient(180deg, rgba(9, 9, 9, 0.48), rgba(9, 9, 9, 0.88)), url('{{ asset('uploads/legacy/Sof.jpg') }}');">
+        <div class="container narrow-copy">
+            <p class="eyebrow">Le groupe</p>
+            <h1>Une identité mélodique, sombre et directe.</h1>
+            <p>Sound Of Memories s’est construit autour d’un death metal mélodique énergique, avec une vraie place donnée aux textures, aux refrains et à l’impact live.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container split-panel">
+            <div>
+                <p class="eyebrow">Notre histoire</p>
+                <h2>Reprendre la matière existante, sans perdre l’âme du projet.</h2>
+                <p>Cette refonte reprend l’univers visuel du site historique, ses bannières, ses couleurs et certaines idées d’animation, mais les replace dans une architecture Symfony plus durable.</p>
+                <p>Le but n’est pas seulement d’avoir une belle vitrine. Le site doit aussi devenir simple à maintenir, administrer et déployer, avec une vraie gestion du merchandising et des dates de concert.</p>
+            </div>
+            <div class="image-stack">
+                <img src="{{ asset('uploads/legacy/bannerSand.png') }}" alt="The Sand Within">
+                <img src="{{ asset('uploads/legacy/bannerLiving.png') }}" alt="Living Circle">
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-contrast">
+        <div class="container section-head">
+            <div>
+                <p class="eyebrow">Line-up</p>
+                <h2>Des cartes simples, prêtes à être enrichies plus tard dans l’admin.</h2>
+            </div>
+        </div>
+        <div class="member-grid">
+            {% for member in [
+                { name: 'Alain', role: 'Guitare' },
+                { name: 'Lucho', role: 'Guitare' },
+                { name: 'Fabien', role: 'Basse' },
+                { name: 'Nacim', role: 'Batterie' },
+                { name: 'Flo', role: 'Chant' }
+            ] %}
+                <article class="member-card">
+                    <div class="member-avatar">{{ member.name|slice(0, 1) }}</div>
+                    <h3>{{ member.name }}</h3>
+                    <p>{{ member.role }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container gallery-wall">
+            <img src="{{ asset('uploads/legacy/gal1.JPG') }}" alt="Live">
+            <img src="{{ asset('uploads/legacy/gal4.JPG') }}" alt="Live">
+            <img src="{{ asset('uploads/legacy/gal7.JPG') }}" alt="Live">
+            <img src="{{ asset('uploads/legacy/gal16.JPG') }}" alt="Live">
+        </div>
+    </section>
+{% endblock %}

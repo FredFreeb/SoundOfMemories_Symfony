@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boîte mail locale{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="container" style="max-width: 1080px;">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Développement local</p>
+                    <h1>Boîte mail locale</h1>
+                    <p class="section-intro">Tous les emails de vérification, de réinitialisation et de support envoyés en local apparaissent ici. Cela permet de tester les parcours sans service SMTP externe.</p>
+                </div>
+                <form method="post" action="{{ path('app_dev_mailbox_clear') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('clear_dev_mailbox') }}">
+                    <button class="button-secondary" type="submit">Vider la boîte</button>
+                </form>
+            </div>
+
+            {% if mails is empty %}
+                <article class="detail-panel">
+                    <p class="eyebrow">Aucun email</p>
+                    <h2>La boîte est vide pour le moment</h2>
+                    <p>Crée un compte, demande une réinitialisation de mot de passe ou envoie un lien depuis l’admin pour voir les messages apparaître ici.</p>
+                </article>
+            {% else %}
+                <div class="detail-grid">
+                    {% for mail in mails %}
+                        <article class="detail-panel">
+                            <p class="eyebrow">{{ mail.created_at|date('d/m/Y H:i') }}</p>
+                            <h2>{{ mail.subject ?: 'Sans objet' }}</h2>
+                            <p><strong>Pour :</strong> {{ mail.to ?: 'Adresse non détectée' }}</p>
+                            <p><strong>Aperçu :</strong> {{ mail.preview_text ?: 'Aperçu non disponible.' }}</p>
+                            <div class="hero-actions" style="margin-top: 1.5rem;">
+                                <a class="button-primary" href="{{ path('app_dev_mailbox_show', {id: mail.id}) }}">Ouvrir le message</a>
+                                {% if mail.primary_url %}
+                                    <a class="button-secondary" href="{{ mail.primary_url }}">Ouvrir le lien principal</a>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

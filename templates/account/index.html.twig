@@ -1,0 +1,327 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Mon compte{% endblock %}
+{% block meta_description %}Espace client Expéditions Mystérieuses avec profil, historique des commandes et conversations avec le service client.{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+
+{% block page %}
+    <section class="section account-page-section">
+        {% set latestConversation = conversations|first %}
+        <div class="container account-page-container account-dashboard">
+            <div class="account-main-column">
+                <article class="detail-panel account-identity-card">
+                    <div class="account-hero-copy">
+                        <div class="account-identity-shell">
+                            <div class="account-avatar-stack{{ profileForm.avatarFile.vars.errors|length ? ' is-active' : '' }}">
+                                <label class="account-avatar-trigger" for="{{ profileForm.avatarFile.vars.id }}" data-avatar-picker="true">
+                                    <span class="account-avatar account-avatar-editable" data-avatar-preview="">
+                                        {% if account.avatarPath %}
+                                            <img src="{{ asset('uploads/avatars/' ~ account.avatarPath) }}" alt="Avatar de {{ account.fullName }}">
+                                        {% elseif account.googleAvatarUrl %}
+                                            <img src="{{ account.googleAvatarUrl }}" alt="Avatar Google de {{ account.fullName }}" loading="lazy" referrerpolicy="no-referrer">
+                                        {% else %}
+                                            <span>{{ account.fullName|slice(0, 1)|upper }}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="account-avatar-overlay">Modifier</span>
+                                </label>
+                                <div class="account-avatar-assist" data-avatar-assist="">
+                                    <p data-avatar-filename="">JPEG, PNG ou WebP, 2 Mo maximum.</p>
+                                    <a href="https://squoosh.app/" target="_blank" rel="noopener noreferrer">Compresser mon image facilement</a>
+                                    {{ form_errors(profileForm.avatarFile) }}
+                                </div>
+                            </div>
+
+                            <div class="account-identity-copy">
+                                {% set accountAddress = '' %}
+                                {% if account.defaultAddress %}
+                                    {% set accountAddress = account.defaultAddress %}
+                                {% endif %}
+                                {% if account.postalCode %}
+                                    {% set accountAddress = accountAddress ~ (accountAddress ? ', ' : '') ~ account.postalCode %}
+                                {% endif %}
+                                {% if account.city %}
+                                    {% set accountAddress = accountAddress ~ (accountAddress ? ' ' : '') ~ account.city %}
+                                {% endif %}
+                                <p class="eyebrow">Mon compte</p>
+                                <h1>{{ account.fullName }}</h1>
+                                <div class="account-contact-line" aria-label="Coordonnées principales">
+                                    <span>{{ accountDisplayPhone ?: 'Téléphone à renseigner' }}</span>
+                                    <span>{{ accountAddress ?: 'Adresse postale à renseigner' }}</span>
+                                    <span>{{ account.email }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <details class="account-editor-drawer"{% if profileEditorOpen %} open{% endif %}>
+                            <summary class="account-editor-toggle">
+                                <span class="account-editor-toggle-label">Modifier vos coordonnées</span>
+                            </summary>
+
+                            <div class="account-editor-drawer-body">
+                                {{ form_start(profileForm, {attr: {
+                                    id: 'account-profile-form',
+                                    class: 'account-profile-form',
+                                    'data-address-autocomplete-form': 'true',
+                                    'data-address-autocomplete-endpoint': address_autocomplete_endpoint
+                                }}) }}
+                                    {% if profileForm.vars.errors|length %}
+                                        <div class="account-form-alert" aria-live="polite">
+                                            {{ form_errors(profileForm) }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="account-form-section">
+                                        <div class="account-form-section-header">
+                                            <p class="eyebrow">Identité</p>
+                                            <h3>Informations principales</h3>
+                                        </div>
+                                        <div class="form-grid form-grid-double">
+                                            {{ form_row(profileForm.fullName) }}
+                                            <div class="account-phone-grid" data-phone-grid="true" data-phone-guess-endpoint="{{ path('app_account_phone_guess') }}">
+                                                {{ form_row(profileForm.phoneCountryCode) }}
+                                                {{ form_row(profileForm.phone) }}
+                                            </div>
+                                            {% if profileForm.phoneCountryCode.vars.errors|length or profileForm.phone.vars.errors|length %}
+                                                <div class="form-grid-full account-phone-errors" aria-live="polite">
+                                                    {% for error in profileForm.phoneCountryCode.vars.errors %}
+                                                        <p class="form-error-message">{{ error.message }}</p>
+                                                    {% endfor %}
+                                                    {% for error in profileForm.phone.vars.errors %}
+                                                        <p class="form-error-message">{{ error.message }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="account-form-section">
+                                        <div class="account-form-section-header">
+                                            <p class="eyebrow">Livraison</p>
+                                            <h3>Coordonnées pratiques</h3>
+                                        </div>
+                                        <div class="form-grid form-grid-double">
+                                            {{ form_row(profileForm.city) }}
+                                            {{ form_row(profileForm.postalCode) }}
+                                            {{ form_row(profileForm.defaultAddress) }}
+                                            {{ form_row(profileForm.addressBuilding) }}
+                                            {{ form_row(profileForm.addressExtra) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="account-avatar-native-field">
+                                        {{ form_widget(profileForm.avatarFile) }}
+                                    </div>
+
+                                    {{ form_widget(profileForm._token) }}
+
+                                    <div class="account-profile-submit">
+                                        <button class="button-primary" type="submit">Enregistrer mes informations</button>
+                                    </div>
+                                {{ form_end(profileForm, {render_rest: false}) }}
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <div class="account-bottom-grid">
+                    <article class="detail-panel account-conversation-card managed-container-surface managed-container-surface-type-2">
+                        <div class="section-heading section-heading-compact">
+                            <div>
+                                <p class="eyebrow">Support</p>
+                                <h2>Mes conversations</h2>
+                                <p class="account-section-subtitle">Vos demandes restent regroupées ici, avant achat comme après commande.</p>
+                            </div>
+                        </div>
+
+                        <div class="account-conversation-list ">
+                            {% for conversation in conversations %}
+                                <article class="dossier-card account-conversation-item managed-container-surface managed-container-surface-type-2">
+                                    <div class="summary-line">
+                                        <strong>{{ conversation.subject }}</strong>
+                                        <span class="stock-pill">{{ conversation.type == 'order_support' ? 'Commande' : 'Avant achat' }}</span>
+                                    </div>
+                                    <p>{{ conversation.inboxLabel }} • {{ conversation.lastMessageAt|date('d/m/Y H:i') }}</p>
+                                    <a class="text-link" href="{{ path('app_account_conversation_show', {id: conversation.id}) }}">Ouvrir la conversation</a>
+                                </article>
+                            {% else %}
+                                <article class="empty-state">
+                                    <h3>Aucune conversation pour l’instant</h3>
+                                    <p>Vous pouvez ouvrir un échange avant achat ou à propos d’une commande en quelques secondes.</p>
+                                    <a class="button-secondary account-conversation-cta" href="{{ path('app_account_conversation_new') }}">Nouvelle conversation</a>
+                                </article>
+                            {% endfor %}
+                        </div>
+
+                        {% if latestConversation %}
+                            <div class="account-conversation-actions">
+                                <a class="button-secondary account-conversation-cta" href="{{ path('app_account_conversation_show', {id: latestConversation.id}) }}">Reprendre la conversation</a>
+                            </div>
+                        {% endif %}
+                    </article>
+
+                    <article class="detail-panel account-orders-panel">
+                        <div class="section-heading section-heading-compact">
+                            <div>
+                                <p class="eyebrow">Commandes</p>
+                                <h2>Historique et suivi</h2>
+                                <p class="account-section-subtitle">Retrouvez ici le total, le paiement, la livraison et l’accès rapide au support.</p>
+                            </div>
+                        </div>
+
+                        <div class="account-order-list">
+                            {% for order in orders %}
+                                <article class="dossier-card account-order-card">
+                                    <div class="summary-line">
+                                        <strong>Commande #{{ order.id }}</strong>
+                                        <span class="stock-pill">{{ order.formattedTotal }}</span>
+                                    </div>
+                                    {% if order.discountCents > 0 %}
+                                        <p>{{ order.discountLabel }} : -{{ order.formattedDiscount }}</p>
+                                    {% endif %}
+                                    <p>Statut commande : {{ order.statusLabel }}. Paiement : {{ order.paymentStatusLabel }}. Livraison : {{ order.deliveryStatusLabel }}.</p>
+                                    <p>Création : {{ order.createdAt|date('d/m/Y H:i') }}</p>
+                                    <div class="account-order-actions">
+                                        <a class="text-link" href="{{ path('app_account_order_show', {id: order.id}) }}">Voir le détail</a>
+                                        <a class="text-link" href="{{ path('app_account_order_support', {id: order.id}) }}">Chat service client</a>
+                                    </div>
+                                </article>
+                            {% else %}
+                                <article class="empty-state">
+                                    <h3>Aucune commande rattachée pour l’instant</h3>
+                                    <p>Dès qu’une commande utilise le même email ou votre compte client, elle apparaîtra ici.</p>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <aside class="account-side-column">
+                <div class="detail-panel account-security-panel">
+                    <p class="eyebrow">Accès et sécurité</p>
+                    <h2>Vos accès</h2>
+                    <div class="account-security-list">
+                        <div class="account-security-item">
+                            <strong>Compte local</strong>
+                            <span class="account-status-pill">Actif</span>
+                        </div>
+                        <div class="account-security-item">
+                            <strong>Mailing</strong>
+                            <span class="account-status-pill">{{ account.marketingStatusLabel }}</span>
+                        </div>
+                        <div class="account-security-item">
+                            <strong>Google</strong>
+                            {% if account.googleId %}
+                                <span class="account-status-pill">Compte lié</span>
+                            {% elseif social_auth_google_enabled %}
+                                <a class="account-inline-link" href="{{ path('app_connect_google') }}">Lier Google</a>
+                            {% else %}
+                                <span class="account-status-pill account-status-pill-muted">À configurer</span>
+                            {% endif %}
+                        </div>
+                        <div class="account-security-item">
+                            <strong>Apple</strong>
+                            {% if account.appleId %}
+                                <span class="account-status-pill">Compte lié</span>
+                            {% elseif social_auth_apple_enabled %}
+                                <a class="account-inline-link" href="{{ path('app_connect_apple') }}">Lier Apple</a>
+                            {% else %}
+                                <span class="account-status-pill account-status-pill-muted">À configurer</span>
+                            {% endif %}
+                        </div>
+                        {% if account.isAdmin %}
+                            <div class="account-security-item">
+                                <strong>EasyAdmin</strong>
+                                <a class="account-inline-link" href="{{ path('admin_dashboard') }}">Ouvrir le back-office</a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="account-quick-actions">
+                        <a class="button-primary" href="{{ latestConversation ? path('app_account_conversation_show', {id: latestConversation.id}) : path('app_account_conversation_new') }}">
+                            {{ latestConversation ? 'Reprendre la conversation' : 'Contacter le service client' }}
+                        </a>
+                        {% if account.isAdmin %}
+                            <a class="button-secondary" href="{{ path('admin_dashboard') }}">Retour au back-office</a>
+                        {% endif %}
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button class="button-secondary" type="submit">Se déconnecter</button>
+                        </form>
+                    </div>
+
+                    {% if not account.isAdmin %}
+                        <div class="account-compliance-box">
+                            <p class="eyebrow">Données et consentement</p>
+                            <h3>Gérer mes données</h3>
+
+                            <div class="account-compliance-stack">
+                                <section class="account-compliance-section">
+                                    <div class="account-compliance-section-copy">
+                                        <strong>Consentement mailing</strong>
+                                    </div>
+                                    <div class="account-consent-field">
+                                        <div class="account-consent-state" aria-live="polite">
+                                            <span class="account-status-pill{{ account.marketingOptIn ? '' : ' account-status-pill-muted' }}" data-consent-state-pill>
+                                                {{ account.marketingOptIn ? 'Consentement actif' : 'Consentement inactif' }}
+                                            </span>
+                                        </div>
+                                        <label class="account-consent-toggle" for="{{ profileForm.marketingOptIn.vars.id }}">
+                                            {{ form_widget(profileForm.marketingOptIn, {attr: {form: 'account-profile-form', 'data-consent-toggle': 'true'}}) }}
+                                            <div class="account-consent-copy">
+                                                <span class="account-consent-label">{{ profileForm.marketingOptIn.vars.label }}</span>
+                                                {% if welcomeOfferEligible %}
+                                                    <p class="help-text">Votre réduction de bienvenue de 10 % est toujours disponible pour une première commande payée.</p>
+                                                {% elseif account.welcomeDiscountUsedAt %}
+                                                    <p class="help-text">Votre réduction de bienvenue a déjà été utilisée.</p>
+                                                {% elseif welcomeOfferHasCommercialOrder %}
+                                                    <p class="help-text">L’avantage bienvenue n’est plus disponible, car une première commande est déjà rattachée à votre compte.</p>
+                                                {% else %}
+                                                    {{ form_help(profileForm.marketingOptIn) }}
+                                                {% endif %}
+                                                {{ form_errors(profileForm.marketingOptIn) }}
+                                            </div>
+                                        </label>
+                                        <button class="button-secondary account-consent-save" type="submit" form="account-profile-form">Enregistrer ce choix</button>
+                                    </div>
+                                </section>
+
+                                <section class="account-compliance-section">
+                                    <div class="account-compliance-section-copy">
+                                        <strong>Mailing et gestion du compte</strong>
+                                        <p>
+                                            {% if canHardDelete %}
+                                                Aucune commande n’est rattachée à ce compte. Vous pouvez supprimer le compte si vous ne souhaitez plus que le site conserve vos données.
+                                            {% else %}
+                                                Une ou plusieurs commandes existent déjà. Vous pouvez retirer le mailing immédiatement, mais les données strictement nécessaires aux commandes restent conservées pendant les durées légales applicables.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="account-compliance-actions">
+                                        {% if account.marketingOptIn %}
+                                            <form method="post" action="{{ path('app_account_marketing_unsubscribe') }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('account_marketing_unsubscribe') }}">
+                                                <button class="button-secondary" type="submit">Me désinscrire du mailing</button>
+                                            </form>
+                                        {% endif %}
+                                        <form method="post" action="{{ path('app_account_delete') }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('account_delete') }}">
+                                            <button class="button-ghost" type="submit">
+                                                {{ canHardDelete ? 'Supprimer définitivement mon compte' : 'Clôturer mon compte et retirer mes données marketing' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </aside>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('scripts/form-enhancements.js') }}" defer></script>
+{% endblock %}

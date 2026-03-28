@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+{% block meta_description %}Connexion à l'espace client ou à l'administration Sound Of Memories.{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+{% block body_class %}theme-admin{% endblock %}
+
+{% block body %}
+    <section class="login-shell">
+        <div class="login-stage">
+            <aside class="login-showcase">
+                <p class="eyebrow">Sound Of Memories</p>
+                <h1>Connexion plus claire, plus rapide, plus actuelle.</h1>
+                <p class="login-intro">Accédez au backstage, à votre compte et à vos futures commandes dans une interface plus propre, pensée desktop et mobile.</p>
+                <div class="login-feature-list">
+                    <span class="login-feature-pill">Connexion locale sécurisée</span>
+                    <span class="login-feature-pill">
+                        {% if social_auth_google_enabled %}
+                            Google active
+                        {% else %}
+                            Google a configurer
+                        {% endif %}
+                    </span>
+                    <span class="login-feature-pill">Accès admin séparé</span>
+                </div>
+            </aside>
+
+            <form class="login-card login-card-modern" method="post">
+                <p class="eyebrow">Connexion</p>
+                <h2>Entrer dans mon espace</h2>
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="flash flash-{{ label }}">{{ message }}</div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% if error %}
+                    <div class="flash flash-warning">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+
+                <div class="login-field-stack">
+                    <label for="username">Email</label>
+                    <input id="username" type="email" name="_username" value="{{ last_username }}" autocomplete="email" required>
+                </div>
+
+                <div class="login-field-stack">
+                    <div class="login-inline-head">
+                        <label for="password">Mot de passe</label>
+                        <a class="text-link" href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
+                    </div>
+                    <input id="password" type="password" name="_password" autocomplete="current-password" required>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="button-primary login-submit" type="submit">Se connecter</button>
+
+                {% include 'security/_social_auth.html.twig' %}
+
+                <div class="login-footer-links">
+                    <a class="button-secondary" href="{{ path('app_register') }}">Créer un compte client</a>
+                    <a class="text-link" href="{{ path('store_home') }}">Retour au site</a>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}

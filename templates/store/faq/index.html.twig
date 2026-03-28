@@ -1,0 +1,52 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}FAQ | Expéditions Mystérieuses{% endblock %}
+{% block meta_description %}Questions fréquentes sur Expédition Mystère : fonctionnement des enquêtes, commandes, livraison, cadeaux et expérience immersive à domicile.{% endblock %}
+{% block meta_robots %}index,follow{% endblock %}
+{% block structured_data %}
+    {% set entities = [] %}
+    {% for item in faqEntries %}
+        {% set entities = entities|merge([{
+            '@type': 'Question',
+            'name': item.question,
+            'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': item.answer
+            }
+        }]) %}
+    {% endfor %}
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            'mainEntity': entities
+        }|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES'))|raw }}
+    </script>
+{% endblock %}
+
+{% block page %}
+    {# Fred note: Cette page affiche les questions publiees dans l'ordre choisi en back-office. #}
+    <section class="page-banner">
+        <div class="container">
+            <p class="eyebrow">Questions fréquentes</p>
+            <h1>FAQ éditable dans le back-office</h1>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container faq-list">
+            {# Fred note: Le template reste volontairement minimal pour laisser le contenu faire le travail. #}
+            {% for item in faqEntries %}
+                <article class="faq-item">
+                    <h2>{{ item.question }}</h2>
+                    <p>{{ item.answer }}</p>
+                </article>
+            {% else %}
+                <article class="empty-state">
+                    <h3>Aucune question publiée</h3>
+                    <p>La table FAQ est prête. Tu pourras l’alimenter dès que les migrations seront lancées.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

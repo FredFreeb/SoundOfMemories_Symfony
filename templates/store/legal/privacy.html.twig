@@ -1,0 +1,120 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Politique de confidentialité | Expéditions Mystérieuses{% endblock %}
+{% block meta_description %}Politique de confidentialité Expéditions Mystérieuses : données collectées, finalités, base légale, cookies et droits RGPD.{% endblock %}
+{% block meta_robots %}index,follow{% endblock %}
+
+{% block page %}
+    <section class="page-banner">
+        <div class="container">
+            <p class="eyebrow">Protection des données</p>
+            <h1>Politique de confidentialité</h1>
+            <p>Cette politique explique comment les données personnelles sont collectées, utilisées et protégées conformément au RGPD.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container faq-list legal-longform">
+            <article class="faq-item">
+                <h2>1. Responsable du traitement</h2>
+                <p>Les données personnelles sont collectées par :</p>
+                <p><strong>Nom et prénom :</strong> {{ site_owner.ownerName }}</p>
+                <p><strong>Statut :</strong> Entrepreneur individuel (OSVČ - activité indépendante secondaire)</p>
+                <p><strong>Adresse :</strong> {{ site_owner.ownerAddress }}</p>
+                <p><strong>Email de contact :</strong> {{ site_owner.ownerEmail }}</p>
+                <p>Le responsable du traitement est joignable à cette adresse pour toute question relative aux données personnelles.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>2. Données collectées</h2>
+                <p>Les données susceptibles d'être collectées sur le site sont les suivantes :</p>
+                <p>Nom et prénom</p>
+                <p>Adresse postale pour la livraison</p>
+                <p>Adresse email</p>
+                <p>Numéro de téléphone si fourni</p>
+                <p>Données de paiement traitées exclusivement par des prestataires de paiement sécurisés, non stockées par Expédition Mystère</p>
+                <p>Données de navigation, cookies, adresse IP anonymisée et statistiques</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>3. Finalités de la collecte</h2>
+                <p>Les données personnelles sont collectées pour les finalités suivantes :</p>
+                <p>Traitement et expédition des commandes</p>
+                <p>Gestion de la relation client et du service après-vente</p>
+                <p>Envoi d'informations liées à une commande, confirmation, suivi et SAV</p>
+                <p>Amélioration du site et de l'expérience utilisateur</p>
+                <p>Respect des obligations légales et comptables</p>
+                <p>Aucune donnée n'est utilisée à des fins commerciales sans consentement explicite.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>4. Base légale du traitement</h2>
+                <p>Les traitements de données reposent sur :</p>
+                <p>L'exécution d'un contrat pour la commande et la livraison</p>
+                <p>Le respect d'obligations légales</p>
+                <p>Le consentement explicite de l'utilisateur pour les formulaires, cookies et newsletter le cas échéant</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>5. Destinataires des données</h2>
+                <p>Les données personnelles peuvent être transmises uniquement aux prestataires nécessaires au fonctionnement du service, notamment :</p>
+                <p>Prestataires de paiement comme Stripe, Mollie, PayPal ou équivalent</p>
+                <p>Prestataires de livraison comme La Poste ou équivalent</p>
+                <p>Hébergeur du site</p>
+                <p>Outils de mesure d'audience et de communication le cas échéant</p>
+                <p>Ces prestataires sont soumis à des obligations strictes de confidentialité et de conformité au RGPD.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>6. Conservation des données</h2>
+                <p>Les données personnelles sont conservées uniquement pour la durée nécessaire aux finalités pour lesquelles elles ont été collectées :</p>
+                <p>Données de commande, factures et pièces comptables : jusqu'à 10 ans lorsqu'elles constituent des documents comptables.</p>
+                <p>Contrats, échanges commerciaux et éléments utiles au suivi d'une commande ou d'un service après-vente : jusqu'à 5 ans.</p>
+                <p>Comptes clients sans commande, demandes avant achat et données de prospection : jusqu'à 3 ans à compter du dernier contact ou de la dernière activité.</p>
+                <p>Données marketing et newsletter : jusqu'au retrait du consentement ou, au plus tard, 3 ans après le dernier contact actif.</p>
+                <p>La désinscription au mailing peut être réalisée à tout moment depuis l'espace client. Lorsqu'aucune commande n'est rattachée au compte, le compte peut être supprimé. Lorsqu'une commande existe déjà, les données de prospection sont retirées et seules les données nécessaires à l'exécution du contrat, au service après-vente et aux obligations légales sont conservées.</p>
+                <p>L'utilisateur peut demander la suppression de ses données à tout moment, sous réserve des obligations légales.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>7. Droits des utilisateurs</h2>
+                <p>Conformément au RGPD, chaque utilisateur dispose des droits suivants :</p>
+                <p>Droit d'accès à ses données</p>
+                <p>Droit de rectification</p>
+                <p>Droit à l'effacement</p>
+                <p>Droit à la limitation du traitement</p>
+                <p>Droit d'opposition</p>
+                <p>Droit à la portabilité des données</p>
+                <p>Toute demande peut être adressée par email à {{ site_owner.ownerEmail }}. Une réponse sera apportée dans un délai maximum d'un mois.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>8. Cookies</h2>
+                <p>Le site utilise actuellement uniquement des cookies strictement nécessaires à son fonctionnement, notamment pour la session, la connexion, le panier et la protection CSRF des formulaires.</p>
+                <p>Aucun cookie optionnel de mesure d'audience ou de marketing n'est déposé par défaut. Si de tels cookies sont ajoutés plus tard, un mécanisme de recueil du consentement sera mis en place avant leur dépôt.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>9. Sécurité des données</h2>
+                <p>Le responsable du traitement met en œuvre toutes les mesures techniques et organisationnelles appropriées pour garantir la sécurité et la confidentialité des données personnelles.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>10. Transferts hors Union européenne</h2>
+                <p>Les données personnelles peuvent être traitées par des prestataires situés hors de l'Union européenne, uniquement lorsque ces prestataires offrent des garanties adéquates de protection des données conformément au RGPD.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>11. Modification de la politique de confidentialité</h2>
+                <p>La présente politique de confidentialité peut être modifiée à tout moment afin de rester conforme aux évolutions légales ou techniques.</p>
+                <p>La version en vigueur est celle publiée sur le site à la date de consultation.</p>
+            </article>
+
+            <article class="faq-item">
+                <h2>12. Contact</h2>
+                <p>Pour toute question relative à la protection des données personnelles, vous pouvez contacter :</p>
+                <p><strong>Email :</strong> {{ site_owner.ownerEmail }}</p>
+            </article>
+        </div>
+    </section>
+{% endblock %}

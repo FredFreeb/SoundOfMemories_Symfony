@@ -1,0 +1,254 @@
+{% extends 'layouts/store.html.twig' %}
+
+{% block title %}Gallery | Sound Of Memories Fan Base{% endblock %}
+{% block meta_description %}Clips, albums complets, archives live et galerie photo Sound Of Memories dans une page dédiée.{% endblock %}
+
+{% block page %}
+    {% set videos = [
+        { src: 'https://www.youtube.com/embed/Bhga2fIa_Hw', title: 'Sound of Memories - The Sand Within (Full Album)', width: 1134, height: 638 },
+        { src: 'https://www.youtube.com/embed/Cw02rtBkWTg', title: 'Sound of Memories - To Deliverance (OFFICIAL ALBUM SAMPLER)', width: 1134, height: 638 },
+        { src: 'https://www.youtube.com/embed/McL16R84QOk', title: 'Sound Of Memories - Slave Of Gizeh (OFFICIEL)', width: 712, height: 401 },
+        { src: 'https://www.youtube.com/embed/H6HSYhJlnHc', title: 'Sound Of Memories - Purify Your Soul + Legend Of The Wizard Live @ Batofar', width: 712, height: 401 },
+        { src: 'https://www.youtube.com/embed/0x2Vv9Cx1iE', title: 'Sound Of Memories Official Teaser LIVING CIRCLE IN STORES 31/10/13', width: 712, height: 401 },
+        { src: 'https://www.youtube.com/embed/LdNLQT8mkFo', title: 'Sound Of Memories - Cyborg From Dust Live @ Boule Noire', width: 712, height: 401 },
+        { src: 'https://www.youtube.com/embed/6a-ij74QgxM?list=RDEM6xJuP_KTq1EOF0oWImceYw', title: 'Sound Of Memories - Purify Your Soul [HD] + lyrics', width: 712, height: 401 },
+        { src: 'https://www.youtube.com/embed/biPNu2ys7gI?list=OLAK5uy_nVipBmdHVG-yMtLz0la7D_OhSBcBcxjAI', title: 'Non Compos Mentis', width: 712, height: 671 }
+    ] %}
+
+    <section class="page-banner" style="background-image: linear-gradient(180deg, rgba(8, 8, 8, 0.42), rgba(8, 8, 8, 0.88)), url('{{ asset('uploads/legacy/gal15.jpg') }}');">
+        <div class="container narrow-copy">
+            <p class="eyebrow">Gallery</p>
+            <h1>Clips, lives et archives visuelles du groupe.</h1>
+            <p>Une vraie page dédiée pour rassembler les vidéos YouTube marquantes et les photos historiques de Sound Of Memories.</p>
+        </div>
+    </section>
+
+    <section class="section gallery-video-section bg-light">
+        <h2 class="gallery-video-title">Our clips</h2>
+        <div class="carousel">
+            <figure>
+                <iframe width="1134" height="638" src="https://www.youtube.com/embed/Bhga2fIa_Hw" title="Sound of Memories - The Sand Within (Full Album)"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe width="1134" height="638" src="https://www.youtube.com/embed/Cw02rtBkWTg" title="Sound of Memories - To Deliverance (OFFICIAL ALBUM SAMPLER)"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe width="712" height="401" src="https://www.youtube.com/embed/McL16R84QOk" title="Sound Of Memories - Slave Of Gizeh (OFFICIEL)"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe width="712" height="401" src="https://www.youtube.com/embed/H6HSYhJlnHc" title="Sound Of Memories - Purify Your Soul + Legend Of The Wizard Live @ Batofar"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe width="712" height="401" src="https://www.youtube.com/embed/0x2Vv9Cx1iE" title="Sound Of Memories Official Teaser &quot;LIVING CIRCLE&quot; IN STORES 31/10/13"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe width="712" height="401" src="https://www.youtube.com/embed/LdNLQT8mkFo" title="Sound Of Memories - Cyborg From Dust Live @ Boule Noire"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe width="712" height="401" src="https://www.youtube.com/embed/6a-ij74QgxM?list=RDEM6xJuP_KTq1EOF0oWImceYw" title="Sound Of Memories - Purify Your Soul [HD] + lyrics"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe width="712" height="671" src="https://www.youtube.com/embed/biPNu2ys7gI?list=OLAK5uy_nVipBmdHVG-yMtLz0la7D_OhSBcBcxjAI" title="Non Compos Mentis"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <!-- Ajoutez plus d'iframes pour plus de vidéos -->
+            </figure>
+            <nav>
+                <button class="nav prev" type="button">Prev</button>
+                <button class="nav next" type="button">Next</button>
+            </nav>
+        </div>
+    </section>
+
+    <section class="section section-contrast">
+        <div class="container section-head">
+            <div>
+                <p class="eyebrow">Photos</p>
+                <h2>Une galerie photo plus simple à faire évoluer ensuite dans l’admin.</h2>
+            </div>
+        </div>
+        <div class="container photo-slider" data-photo-slider>
+            <div class="photo-slider-track" data-photo-slider-track>
+                {% for photo in photos %}
+                {% set imageSrc = photo.source == 'admin'
+                    ? asset('uploads/gallery/' ~ photo.imagePath)
+                    : asset(photo.imagePath)
+                %}
+
+                    <article class="photo-slide" data-photo-slide>
+                        <figure class="photo-slide-frame">
+                            <img src="{{ imageSrc }}" alt="{{ photo.altText }}" loading="lazy">
+                        </figure>
+                        {% if photo.title or photo.caption %}
+                            <div class="photo-slide-copy">
+                                {% if photo.title %}
+                                    <h3>{{ photo.title }}</h3>
+                                {% endif %}
+                                {% if photo.caption %}
+                                    <p>{{ photo.caption }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+
+            {% if photos|length > 1 %}
+                <div class="photo-slider-controls">
+                    <button class="photo-slider-button" type="button" data-photo-slider-prev aria-label="Photo précédente">←</button>
+                    <div class="photo-slider-dots" role="tablist" aria-label="Navigation de la galerie photo">
+                        {% for photo in photos %}
+                            <button
+                                class="photo-slider-dot{{ loop.first ? ' is-active' : '' }}"
+                                type="button"
+                                data-photo-slider-dot
+                                data-photo-slider-index="{{ loop.index0 }}"
+                                aria-label="Aller à la photo {{ loop.index }}"
+                                aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                            ></button>
+                        {% endfor %}
+                    </div>
+                    <button class="photo-slider-button" type="button" data-photo-slider-next aria-label="Photo suivante">→</button>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function () {
+            function onReady(callback) {
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', callback);
+                } else {
+                    callback();
+                }
+            }
+
+            function findClosestButton(target) {
+                while (target && target.tagName !== 'BUTTON') {
+                    target = target.parentElement;
+                }
+
+                return target;
+            }
+
+            function initVideoCarousel() {
+                var carousel = document.querySelector('.carousel');
+                if (!carousel) return;
+
+                var figure = carousel.querySelector('figure');
+                var nav = carousel.querySelector('nav');
+                if (!figure || !nav) return;
+
+                var numImages = figure.childElementCount;
+                if (!numImages) return;
+
+                var theta = (2 * Math.PI) / numImages;
+                var currImage = 0;
+
+                nav.addEventListener('click', function (event) {
+                    event.stopPropagation();
+
+                    var button = findClosestButton(event.target);
+                    if (!button) return;
+
+                    if (button.classList.contains('next')) {
+                        currImage++;
+                    } else {
+                        currImage--;
+                    }
+
+                    figure.style.transform = 'rotateY(' + (currImage * -theta) + 'rad)';
+                }, true);
+            }
+
+            function initPhotoSliders() {
+                var sliders = document.querySelectorAll('[data-photo-slider]');
+                if (!sliders.length) return;
+
+                Array.prototype.forEach.call(sliders, function (slider) {
+                    var track = slider.querySelector('[data-photo-slider-track]');
+                    var slides = slider.querySelectorAll('[data-photo-slide]');
+                    var prevButton = slider.querySelector('[data-photo-slider-prev]');
+                    var nextButton = slider.querySelector('[data-photo-slider-next]');
+                    var dots = slider.querySelectorAll('[data-photo-slider-dot]');
+
+                    if (!track || !slides.length) return;
+
+                    var currentIndex = 0;
+
+                    function setActiveDot(index) {
+                        Array.prototype.forEach.call(dots, function (dot, dotIndex) {
+                            var isActive = dotIndex === index;
+                            dot.classList.toggle('is-active', isActive);
+                            dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                        });
+                    }
+
+                    function goToSlide(index, smooth) {
+                        var targetIndex = index;
+
+                        if (targetIndex < 0) {
+                            targetIndex = slides.length - 1;
+                        } else if (targetIndex >= slides.length) {
+                            targetIndex = 0;
+                        }
+
+                        currentIndex = targetIndex;
+
+                        var targetSlide = slides[currentIndex];
+                        var left = targetSlide.offsetLeft - track.offsetLeft;
+
+                        if (typeof track.scrollTo === 'function') {
+                            track.scrollTo({
+                                left: left,
+                                behavior: smooth === false ? 'auto' : 'smooth'
+                            });
+                        } else {
+                            track.scrollLeft = left;
+                        }
+
+                        setActiveDot(currentIndex);
+                    }
+
+                    if (prevButton) {
+                        prevButton.addEventListener('click', function () {
+                            goToSlide(currentIndex - 1);
+                        });
+                    }
+
+                    if (nextButton) {
+                        nextButton.addEventListener('click', function () {
+                            goToSlide(currentIndex + 1);
+                        });
+                    }
+
+                    Array.prototype.forEach.call(dots, function (dot) {
+                        dot.addEventListener('click', function () {
+                            var index = parseInt(dot.getAttribute('data-photo-slider-index') || '0', 10);
+                            goToSlide(index);
+                        });
+                    });
+
+                    var scrollFrame = null;
+                    track.addEventListener('scroll', function () {
+                        if (scrollFrame) {
+                            cancelAnimationFrame(scrollFrame);
+                        }
+
+                        scrollFrame = requestAnimationFrame(function () {
+                            var nearestIndex = 0;
+                            var nearestDistance = Number.POSITIVE_INFINITY;
+
+                            Array.prototype.forEach.call(slides, function (slide, index) {
+                                var distance = Math.abs((slide.offsetLeft - track.offsetLeft) - track.scrollLeft);
+                                if (distance < nearestDistance) {
+                                    nearestDistance = distance;
+                                    nearestIndex = index;
+                                }
+                            });
+
+                            currentIndex = nearestIndex;
+                            setActiveDot(currentIndex);
+                        });
+                    }, { passive: true });
+
+                    setActiveDot(0);
+                    goToSlide(0, false);
+                });
+            }
+
+            onReady(function () {
+                initVideoCarousel();
+                initPhotoSliders();
+            });
+        })();
+    </script>
+{% endblock %}
