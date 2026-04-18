@@ -46,11 +46,47 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $offerBannerImage = null;
 
+    #[ORM\Column(length: 120, nullable: true)]
+    private ?string $merchBadge = null;
+
+    #[ORM\Column(length: 40, nullable: true)]
+    private ?string $merchBadgeTone = null;
+
+    #[ORM\Column]
+    private int $sortPosition = 0;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $featureOne = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $featureTwo = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $featureThree = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $fitDetails = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $materialDetails = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $shippingDetails = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $sizeGuideText = null;
+
     #[ORM\Column(length: 80, nullable: true)]
     private ?string $animationKey = null;
 
     #[ORM\Column]
     private bool $isMonthlyOffer = false;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $promotionStartsAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $promotionEndsAt = null;
 
     #[ORM\Column(length: 120, nullable: true)]
     private ?string $offerBannerEyebrow = null;
@@ -265,6 +301,138 @@ class Product
         return $this;
     }
 
+    public function getMerchBadge(): ?string
+    {
+        return $this->merchBadge;
+    }
+
+    public function setMerchBadge(?string $merchBadge): static
+    {
+        $this->merchBadge = $merchBadge;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getMerchBadgeTone(): string
+    {
+        $tone = trim((string) $this->merchBadgeTone);
+
+        return '' !== $tone ? $tone : 'steel';
+    }
+
+    public function setMerchBadgeTone(?string $merchBadgeTone): static
+    {
+        $this->merchBadgeTone = $merchBadgeTone;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getSortPosition(): int
+    {
+        return $this->sortPosition;
+    }
+
+    public function setSortPosition(int $sortPosition): static
+    {
+        $this->sortPosition = $sortPosition;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getFeatureOne(): ?string
+    {
+        return $this->featureOne;
+    }
+
+    public function setFeatureOne(?string $featureOne): static
+    {
+        $this->featureOne = $featureOne;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getFeatureTwo(): ?string
+    {
+        return $this->featureTwo;
+    }
+
+    public function setFeatureTwo(?string $featureTwo): static
+    {
+        $this->featureTwo = $featureTwo;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getFeatureThree(): ?string
+    {
+        return $this->featureThree;
+    }
+
+    public function setFeatureThree(?string $featureThree): static
+    {
+        $this->featureThree = $featureThree;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getFitDetails(): ?string
+    {
+        return $this->fitDetails;
+    }
+
+    public function setFitDetails(?string $fitDetails): static
+    {
+        $this->fitDetails = $fitDetails;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getMaterialDetails(): ?string
+    {
+        return $this->materialDetails;
+    }
+
+    public function setMaterialDetails(?string $materialDetails): static
+    {
+        $this->materialDetails = $materialDetails;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getShippingDetails(): ?string
+    {
+        return $this->shippingDetails;
+    }
+
+    public function setShippingDetails(?string $shippingDetails): static
+    {
+        $this->shippingDetails = $shippingDetails;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getSizeGuideText(): ?string
+    {
+        return $this->sizeGuideText;
+    }
+
+    public function setSizeGuideText(?string $sizeGuideText): static
+    {
+        $this->sizeGuideText = $sizeGuideText;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
     public function isMonthlyOffer(): bool
     {
         return $this->isMonthlyOffer;
@@ -276,6 +444,98 @@ class Product
         $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
+    }
+
+    public function getPromotionStartsAt(): ?\DateTimeImmutable
+    {
+        return $this->promotionStartsAt;
+    }
+
+    public function setPromotionStartsAt(?\DateTimeImmutable $promotionStartsAt): static
+    {
+        $this->promotionStartsAt = $promotionStartsAt;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getPromotionEndsAt(): ?\DateTimeImmutable
+    {
+        return $this->promotionEndsAt;
+    }
+
+    public function setPromotionEndsAt(?\DateTimeImmutable $promotionEndsAt): static
+    {
+        $this->promotionEndsAt = $promotionEndsAt;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function hasPromotionSchedule(): bool
+    {
+        return null !== $this->promotionStartsAt || null !== $this->promotionEndsAt;
+    }
+
+    public function isPromotionActive(?\DateTimeImmutable $at = null): bool
+    {
+        $at ??= new \DateTimeImmutable();
+
+        if (null !== $this->promotionStartsAt && $at < $this->promotionStartsAt) {
+            return false;
+        }
+
+        if (null !== $this->promotionEndsAt && $at > $this->promotionEndsAt) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isPromotionUpcoming(?\DateTimeImmutable $at = null): bool
+    {
+        $at ??= new \DateTimeImmutable();
+
+        return null !== $this->promotionStartsAt && $at < $this->promotionStartsAt;
+    }
+
+    public function isPromotionExpired(?\DateTimeImmutable $at = null): bool
+    {
+        $at ??= new \DateTimeImmutable();
+
+        return null !== $this->promotionEndsAt && $at > $this->promotionEndsAt;
+    }
+
+    public function hasPromotionPricing(): bool
+    {
+        $defaultVariant = $this->getDefaultVariant();
+
+        if ($defaultVariant instanceof ProductVariant) {
+            return $defaultVariant->hasPromotion();
+        }
+
+        return false;
+    }
+
+    public function getPromotionStateLabel(): string
+    {
+        if (!$this->hasPromotionPricing()) {
+            return 'Sans promo';
+        }
+
+        if ($this->isPromotionUpcoming()) {
+            return 'Programmée';
+        }
+
+        if ($this->isPromotionExpired()) {
+            return 'Terminée';
+        }
+
+        if ($this->hasPromotionSchedule()) {
+            return 'Active';
+        }
+
+        return 'Toujours active';
     }
 
     public function getOfferBannerEyebrow(): ?string
@@ -537,6 +797,10 @@ class Product
 
     public function getDisplayCompareAtPriceCents(): ?int
     {
+        if (!$this->hasPromotionPricing() || !$this->isPromotionActive()) {
+            return null;
+        }
+
         $defaultVariant = $this->getDefaultVariant();
 
         return $defaultVariant?->getCompareAtPriceCents();
@@ -584,6 +848,18 @@ class Product
         $key = trim((string) $this->animationKey);
 
         return '' !== $key ? 'animation-' . $key : 'animation-none';
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getSellingPoints(): array
+    {
+        return array_values(array_filter([
+            $this->featureOne,
+            $this->featureTwo,
+            $this->featureThree,
+        ], static fn (?string $point): bool => null !== $point && '' !== trim($point)));
     }
 
     private function sanitizeLevel(?int $level): ?int

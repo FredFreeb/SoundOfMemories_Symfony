@@ -7,14 +7,29 @@
         <section class="som-admin-hero">
             <p class="som-admin-kicker">Vue d’ensemble</p>
             <h2>Une base admin plus claire pour piloter merch, concerts et visuels du site.</h2>
-            <p>Cette interface remplace l’ancien site statique par une structure administrable, sécurisée et plus simple à transférer sur VPS.</p>
+            <p>Gère le merch, les concerts et le contenu visuel du site depuis un seul espace.</p>
         </section>
 
         <section class="som-admin-grid">
+            <a class="som-admin-card" href="{{ merchOpsUrl }}">
+                <span>Pilotage merch</span>
+                <strong>{{ pendingOrderCount + processingOrderCount }}</strong>
+                <p>Accès direct au cockpit commandes et stock.</p>
+            </a>
+            <a class="som-admin-card" href="{{ promotionsUrl }}">
+                <span>Promotions</span>
+                <strong>{{ activePromotionCount + upcomingPromotionCount }}</strong>
+                <p>Fenêtres promo et campagnes pilotées à part.</p>
+            </a>
             <a class="som-admin-card" href="{{ productsUrl }}">
                 <span>Produits</span>
                 <strong>{{ productCount }}</strong>
                 <p>{{ publishedProductCount }} publiés sur la boutique.</p>
+            </a>
+            <a class="som-admin-card" href="{{ ordersUrl }}">
+                <span>Commandes</span>
+                <strong>{{ orderCount }}</strong>
+                <p>{{ pendingOrderCount }} en attente d’action.</p>
             </a>
             <a class="som-admin-card" href="{{ categoriesUrl }}">
                 <span>Catégories</span>
@@ -36,6 +51,56 @@
                 <strong>{{ adminCount }}</strong>
                 <p>Comptes autorisés à gérer le site.</p>
             </a>
+        </section>
+
+        <section class="som-admin-section">
+            <div class="som-admin-section__head">
+                <p class="som-admin-kicker">Merch ops</p>
+                <h3>Ce qui mérite votre attention aujourd’hui.</h3>
+            </div>
+
+            <div class="som-admin-grid som-admin-grid--compact">
+                <a class="som-admin-card som-admin-card--soft" href="{{ ordersUrl }}">
+                    <span>À préparer</span>
+                    <strong>{{ pendingOrderCount }}</strong>
+                    <p>Commandes payées ou en attente à faire avancer.</p>
+                </a>
+                <a class="som-admin-card som-admin-card--soft" href="{{ ordersUrl }}">
+                    <span>En préparation</span>
+                    <strong>{{ processingOrderCount }}</strong>
+                    <p>Colis à finaliser avant remise transporteur.</p>
+                </a>
+                <a class="som-admin-card som-admin-card--soft" href="{{ ordersUrl }}">
+                    <span>Expédiées</span>
+                    <strong>{{ shippedOrderCount }}</strong>
+                    <p>Suivis déjà partis côté fans.</p>
+                </a>
+                <a class="som-admin-card som-admin-card--soft" href="{{ ordersUrl }}">
+                    <span>Incidents</span>
+                    <strong>{{ issueOrderCount }}</strong>
+                    <p>Cas à reprendre vite côté livraison.</p>
+                </a>
+                <a class="som-admin-card som-admin-card--soft" href="{{ productsUrl }}">
+                    <span>Promos actives</span>
+                    <strong>{{ activePromotionCount }}</strong>
+                    <p>Pièces déjà en prix promo sur le front.</p>
+                </a>
+                <a class="som-admin-card som-admin-card--soft" href="{{ productsUrl }}">
+                    <span>Promos programmées</span>
+                    <strong>{{ upcomingPromotionCount }}</strong>
+                    <p>Promotions à venir déjà cadrées dans le temps.</p>
+                </a>
+                <a class="som-admin-card som-admin-card--soft" href="{{ productsUrl }}">
+                    <span>Ruptures</span>
+                    <strong>{{ outOfStockProductCount }}</strong>
+                    <p>Produits ou variantes vitrines à surveiller.</p>
+                </a>
+                <a class="som-admin-card som-admin-card--soft" href="{{ mailingsUrl }}">
+                    <span>Campagnes</span>
+                    <strong>{{ mailingCount }}</strong>
+                    <p>Préparer la communication promo et drop.</p>
+                </a>
+            </div>
         </section>
     </div>
 {% endblock %}

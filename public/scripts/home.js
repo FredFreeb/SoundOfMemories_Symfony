@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initHeroRotator();
+    initHeroVideo();
     initScrollIndicator();
 });
 
@@ -89,7 +90,7 @@ function safeParseImages(jsonString) {
 
 function initScrollIndicator() {
     const indicator = document.querySelector('[data-scroll-indicator]');
-    const hero = document.querySelector('[data-hero-rotator]');
+    const hero = document.querySelector('[data-home-hero], [data-hero-rotator]');
     if (!indicator || !hero) return;
 
     const target = hero.nextElementSibling;
@@ -98,4 +99,29 @@ function initScrollIndicator() {
     indicator.addEventListener('click', () => {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+}
+
+function initHeroVideo() {
+    const video = document.querySelector('[data-home-hero-video]');
+    if (!video) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        video.pause();
+        return;
+    }
+
+    const playVideo = () => video.play().catch(() => {});
+    playVideo();
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                playVideo();
+            } else {
+                video.pause();
+            }
+        });
+    }, { threshold: 0.2 });
+
+    observer.observe(video);
 }

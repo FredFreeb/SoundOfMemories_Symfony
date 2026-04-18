@@ -234,7 +234,7 @@
                         {% if account.isAdmin %}
                             <div class="account-security-item">
                                 <strong>EasyAdmin</strong>
-                                <a class="account-inline-link" href="{{ path('admin_dashboard') }}">Ouvrir le back-office</a>
+                                <a class="account-inline-link" href="{{ path('admin_dashboard') }}">Ouvrir le Backstage</a>
                             </div>
                         {% endif %}
                     </div>
@@ -244,7 +244,7 @@
                             {{ latestConversation ? 'Reprendre la conversation' : 'Contacter le service client' }}
                         </a>
                         {% if account.isAdmin %}
-                            <a class="button-secondary" href="{{ path('admin_dashboard') }}">Retour au back-office</a>
+                            <a class="button-secondary" href="{{ path('admin_dashboard') }}">Retour au Backstage</a>
                         {% endif %}
                         <form method="post" action="{{ path('app_logout_action') }}">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">

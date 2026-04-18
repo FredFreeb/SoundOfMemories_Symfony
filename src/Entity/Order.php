@@ -551,6 +551,15 @@ class Order
         return number_format($this->getShippingRateCents() / 100, 2, ',', ' ') . ' EUR';
     }
 
+    public function getReferenceLabel(): string
+    {
+        if (null === $this->id) {
+            return 'SOM-NOUVELLE';
+        }
+
+        return sprintf('SOM-%s-%04d', $this->createdAt->format('y'), $this->id);
+    }
+
     /**
      * @return Collection<int, OrderItem>
      */
@@ -578,6 +587,44 @@ class Order
     public function hasDiscount(): bool
     {
         return $this->discountCents > 0;
+    }
+
+    public function getItemsCount(): int
+    {
+        return $this->items->count();
+    }
+
+    public function getItemsSummary(): string
+    {
+        $labels = [];
+
+        foreach ($this->items as $item) {
+            $labels[] = $item->getProductName();
+
+            if (\count($labels) >= 2) {
+                break;
+            }
+        }
+
+        if ([] === $labels) {
+            return 'Aucune ligne';
+        }
+
+        if ($this->getItemsCount() > 2) {
+            $labels[] = sprintf('+ %d autre%s', $this->getItemsCount() - 2, $this->getItemsCount() - 2 > 1 ? 's' : '');
+        }
+
+        return implode(' · ', $labels);
+    }
+
+    public function getShippingSummary(): string
+    {
+        $parts = array_values(array_filter([
+            $this->city,
+            $this->getShippingCountryCode() ? $this->getShippingCountryLabel() : null,
+        ], static fn (?string $part): bool => null !== $part && '' !== trim($part)));
+
+        return [] !== $parts ? implode(', ', $parts) : 'Destination non renseignée';
     }
 
     public function getStatusLabel(): string

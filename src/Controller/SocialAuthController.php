@@ -242,7 +242,7 @@ final class SocialAuthController extends AbstractController
             $currentName = trim((string) $user->getFullName());
             $socialName = $this->buildFullName($firstName, $lastName, $email);
 
-            if ('' === $currentName || 'Fan Sound Of Memories' === $currentName || 'Client Expédition Mystère' === $currentName) {
+            if ('' === $currentName || 'Fan Sound Of Memories' === $currentName || 'Fan invité Sound Of Memories' === $currentName) {
                 $user->setFullName($socialName);
             }
         }
@@ -311,7 +311,7 @@ final class SocialAuthController extends AbstractController
 
         $currentName = trim((string) $currentUser->getFullName());
 
-        if ('' === $currentName || 'Fan Sound Of Memories' === $currentName || 'Client Expédition Mystère' === $currentName) {
+        if ('' === $currentName || 'Fan Sound Of Memories' === $currentName || 'Fan invité Sound Of Memories' === $currentName) {
             $currentUser->setFullName($this->buildFullName($firstName, $lastName, $email));
         }
 

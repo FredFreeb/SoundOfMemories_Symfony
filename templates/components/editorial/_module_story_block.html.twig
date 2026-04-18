@@ -1,0 +1,49 @@
+{% if module is not null %}
+    {% set moduleImagePath = module.imagePath ? (module.imagePath starts with 'uploads/' ? module.imagePath : 'uploads/editorial/' ~ module.imagePath|trim('/')) : null %}
+    {% set moduleImage = moduleImagePath ? asset(moduleImagePath) : null %}
+
+    <section class="section {{ module.backgroundSlot }} editorial-story-section">
+        <div class="container editorial-story-layout" data-editorial-module="story-block" data-editorial-tone="{{ module.accentTone }}">
+            <div class="editorial-story-copy" data-editorial-copy>
+                {% if module.eyebrow %}
+                    <p class="eyebrow">{{ module.eyebrow }}</p>
+                {% endif %}
+                <h2>{{ module.title }}</h2>
+                {% if module.leadText %}
+                    <p class="editorial-story-copy__lead">{{ module.leadText }}</p>
+                {% endif %}
+
+                {% if module.bodyText %}
+                    <div class="editorial-story-copy__body">
+                        {% for paragraph in module.bodyText|split('\n\n') %}
+                            {% if paragraph|trim is not empty %}
+                                <p>{{ paragraph|trim }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="editorial-story-visual">
+                {% if moduleImage %}
+                    <figure class="editorial-story-visual__figure">
+                        <img src="{{ moduleImage }}" alt="{{ module.title }}" width="1409" height="939" loading="lazy" decoding="async">
+                    </figure>
+                {% endif %}
+
+                {% set storyMeta = [module.metaPrimary, module.metaSecondary, module.metaTertiary]|filter(v => v is not empty) %}
+                {% if storyMeta is not empty %}
+                    <div class="editorial-story-visual__note">
+                        {% for item in storyMeta %}
+                            <span>{{ item }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if module.ctaLabel and module.ctaUrl %}
+                    <a class="button button-ghost" href="{{ module.ctaUrl }}">{{ module.ctaLabel }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endif %}

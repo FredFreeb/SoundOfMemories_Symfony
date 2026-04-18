@@ -1,11 +1,12 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Gallery | Sound Of Memories Fan Base{% endblock %}
-{% block meta_description %}Clips, albums complets, archives live et galerie photo Sound Of Memories dans une page dédiée.{% endblock %}
+{% block title %}Gallery | Sound Of Memories
+{% endblock %}
+{% block meta_description %}Clips, albums, lives et galerie photos Sound Of Memories. Plongez dans l'univers visuel et sonore du groupe.{% endblock %}
 
 {% block page %}
-    {% set settings = site_settings() %}
-    {% set videos = [
+	{% set settings = site_settings() %}
+	{% set videos = [
         { id: 'Bhga2fIa_Hw', src: 'https://www.youtube-nocookie.com/embed/Bhga2fIa_Hw', title: 'Sound of Memories - The Sand Within (Full Album)', width: 1134, height: 638 },
         { id: 'Cw02rtBkWTg', src: 'https://www.youtube-nocookie.com/embed/Cw02rtBkWTg', title: 'Sound of Memories - To Deliverance (OFFICIAL ALBUM SAMPLER)', width: 1134, height: 638 },
         { id: 'McL16R84QOk', src: 'https://www.youtube-nocookie.com/embed/McL16R84QOk', title: 'Sound Of Memories - Slave Of Gizeh (OFFICIEL)', width: 712, height: 401 },
@@ -15,15 +16,14 @@
         { id: '6a-ij74QgxM', src: 'https://www.youtube-nocookie.com/embed/6a-ij74QgxM?list=RDEM6xJuP_KTq1EOF0oWImceYw', title: 'Sound Of Memories - Purify Your Soul [HD] + lyrics', width: 712, height: 401 },
         { id: 'biPNu2ys7gI', src: 'https://www.youtube-nocookie.com/embed/biPNu2ys7gI?list=OLAK5uy_nVipBmdHVG-yMtLz0la7D_OhSBcBcxjAI', title: 'Non Compos Mentis', width: 712, height: 671 }
     ] %}
-    {% set albums = [
+	{% set albums = [
         {
             key: 'sand-within',
             title: 'The Sand Within',
-            type: 'Full album',
+            type: '2020 · Album',
             copy: 'Un long format ample et cinématique, pensé pour dérouler l’identité la plus mélodique et immersive de Sound Of Memories.',
             cover: asset('uploads/legacy/SofM-cover.png'),
-            spotifyUri: 'spotify:album:2yemZEPhsqWdvWnKJh7rzd',
-            embed: 'https://open.spotify.com/embed/album/2yemZEPhsqWdvWnKJh7rzd?utm_source=generator',
+            bandcamp: 'https://soundofmemories.bandcamp.com/album/the-sand-within',
             spotify: 'https://open.spotify.com/album/2yemZEPhsqWdvWnKJh7rzd',
             apple: 'https://music.apple.com/fr/search?term=The%20Sand%20Within%20Sound%20Of%20Memories',
             youtube: 'https://music.youtube.com/search?q=The%20Sand%20Within%20Sound%20Of%20Memories',
@@ -32,220 +32,256 @@
         {
             key: 'to-deliverance',
             title: 'To Deliverance',
-            type: 'Album sampler',
+            type: '2015 · Album',
             copy: 'Une matière plus sombre, plus dense et plus frontale, avec ce mélange heavy, thrash et death melodic qui a fixé la signature du groupe.',
             cover: asset('uploads/legacy/Deliv.jpg'),
-            spotifyUri: 'spotify:album:31MSne0xOFwxW3TbVLBtHF',
-            embed: 'https://open.spotify.com/embed/album/31MSne0xOFwxW3TbVLBtHF?utm_source=generator',
+            bandcamp: 'https://soundofmemories.bandcamp.com/album/to-deliverance',
             spotify: 'https://open.spotify.com/album/31MSne0xOFwxW3TbVLBtHF',
             apple: 'https://music.apple.com/fr/search?term=To%20Deliverance%20Sound%20Of%20Memories',
             youtube: 'https://music.youtube.com/search?q=To%20Deliverance%20Sound%20Of%20Memories',
             soundcloud: settings.soundcloudUrl ?: 'https://soundcloud.com/soundofmemoriesmusic'
+        },
+        {
+            key: 'living-circles',
+            title: 'Living Circles',
+            type: '2013 · EP',
+            copy: 'La première sortie du groupe, plus brute et fondatrice. Une pièce importante pour entendre les origines de Sound Of Memories.',
+            cover: asset('uploads/legacy/Living.jpg'),
+            bandcamp: 'https://soundofmemories.bandcamp.com/album/living-circles-ep',
+            spotify: 'https://open.spotify.com/search/Living%20Circles%20Sound%20Of%20Memories',
+            apple: 'https://music.apple.com/fr/search?term=Living%20Circles%20Sound%20Of%20Memories',
+            youtube: 'https://music.youtube.com/search?q=Living%20Circles%20Sound%20Of%20Memories',
+            soundcloud: settings.soundcloudUrl ?: 'https://soundcloud.com/soundofmemoriesmusic'
         }
     ] %}
+    {% set album_labels = {
+        'sand-within': 'The Sand Within',
+        'to-deliverance': 'To Deliverance',
+        'living-circles': 'Living Circles'
+    } %}
 
-    <section class="page-banner page-banner--bg-3">
-        <div class="container narrow-copy">
-            <p class="eyebrow">Gallery</p>
-            <h1>Clips, lives et archives visuelles du groupe.</h1>
-            <p>Une vraie page dédiée pour rassembler les vidéos YouTube marquantes et les photos historiques de Sound Of Memories.</p>
-        </div>
-    </section>
+	<section class="page-banner page-banner--bg-3">
+		<div class="container narrow-copy">
+			<p class="eyebrow">Gallery</p>
+			<h1>Clips, lives et visuels du groupe.</h1>
+		</div>
+	</section>
 
-    <section class="section section-bg-3 gallery-video-section">
-        <h2 class="gallery-video-title">Our clips</h2>
-        <div class="carousel">
-            <figure>
-                {% for video in videos %}
-                    <article
-                        class="carousel-card{{ loop.first ? ' is-active' : '' }}"
-                        data-video-card
-                        data-video-src="{{ video.src }}"
-                        data-video-title="{{ video.title }}"
-                    >
-                        <button class="carousel-card-media carousel-card-preview" type="button" data-video-activate aria-label="Lire {{ video.title }}">
-                            <img
-                                src="https://i.ytimg.com/vi/{{ video.id }}/hqdefault.jpg"
-                                alt=""
-                                width="{{ video.width }}"
-                                height="{{ video.height }}"
-                                loading="{{ loop.first ? 'eager' : 'lazy' }}"
-                                decoding="async"
-                                {% if loop.first %}fetchpriority="high"{% endif %}
-                            >
-                            <span class="carousel-play-badge" aria-hidden="true">Play</span>
-                        </button>
-                        <p class="carousel-card-title">{{ video.title }}</p>
-                    </article>
-                {% endfor %}
-            </figure>
-            <nav>
-                <button class="nav prev" type="button">Prev</button>
-                <button class="nav next" type="button">Next</button>
-            </nav>
-        </div>
-    </section>
+	{% include 'components/editorial/_module_story_block.html.twig' with { module: editorial.intro ?? null } only %}
 
-    <section class="section section-bg-2 album-listen-section" data-album-player>
-        <div class="container album-listen-layout">
-            <div class="album-listen-copy">
-                <p class="eyebrow">Listen</p>
-                <h2>Écouter les albums sans casser l’immersion de la page.</h2>
-                <p>Une section plus claire, plus moderne et plus musicale, avec un visuel vinyle animé, un embed propre et un changement d’album instantané sans charger d’API sensible côté navigateur.</p>
+	<section class="section section-bg-3 gallery-video-section">
+		<h2 class="gallery-video-title">Our clips</h2>
+		<div class="carousel">
+			<figure>
+				{% for video in videos %}
+					<article class="carousel-card{{ loop.first ? ' is-active' : '' }}" data-video-card data-video-src="{{ video.src }}" data-video-title="{{ video.title }}">
+						<button class="carousel-card-media carousel-card-preview" type="button" data-video-activate aria-label="Lire {{ video.title }}">
+							<img src="https://i.ytimg.com/vi/{{ video.id }}/hqdefault.jpg" alt="" width="{{ video.width }}" height="{{ video.height }}" loading="{{ loop.first ? 'eager' : 'lazy' }}" decoding="async" {% if loop.first %} fetchpriority="high" {% endif %}>
+							<span class="carousel-play-badge" aria-hidden="true">Play</span>
+						</button>
+						<p class="carousel-card-title">{{ video.title }}</p>
+					</article>
+				{% endfor %}
+			</figure>
+			<nav>
+				<button class="nav prev" type="button">Prev</button>
+				<button class="nav next" type="button">Next</button>
+			</nav>
+		</div>
+	</section>
 
-                <div class="album-player-switcher" role="tablist" aria-label="Choix des albums">
-                    {% for album in albums %}
-                        <button
-                            type="button"
-                            class="album-chip{{ loop.first ? ' is-active' : '' }}"
-                            data-album-trigger
-                            data-cover="{{ album.cover }}"
-                            data-title="{{ album.title }}"
-                            data-type="{{ album.type }}"
-                            data-copy="{{ album.copy }}"
-                            data-embed="{{ album.embed }}"
-                            data-spotify-uri="{{ album.spotifyUri }}"
-                            data-spotify="{{ album.spotify }}"
-                            data-apple="{{ album.apple }}"
-                            data-youtube="{{ album.youtube }}"
-                            data-soundcloud="{{ album.soundcloud }}"
-                            aria-selected="{{ loop.first ? 'true' : 'false' }}"
-                        >
-                            <span>{{ album.title }}</span>
-                            <small>{{ album.type }}</small>
-                        </button>
-                    {% endfor %}
-                </div>
-            </div>
+		{% set tracks = [
+			{ number: 1, title: 'The Sand Within', album: 'sand-within', src: null },
+			{ number: 2, title: 'Life Ascending', album: 'sand-within', src: null },
+			{ number: 3, title: 'State of Grace', album: 'sand-within', src: null },
+			{ number: 4, title: 'Soul Asylum', album: 'sand-within', src: null },
+			{ number: 5, title: 'The Mirror Behind', album: 'sand-within', src: 'uploads/audio/tracks/Sound of Memories - The Mirror Behind (OFFICIAL TRACK).mp3' },
+			{ number: 6, title: 'Fate and Doom', album: 'sand-within', src: null },
+			{ number: 7, title: 'Black Virgin', album: 'sand-within', src: null },
+			{ number: 8, title: 'This Shivering Whisper', album: 'sand-within', src: 'uploads/audio/tracks/Sound of Memories - This Shivering Whisper (OFFICIAL TRACK).mp3' },
+			{ number: 9, title: 'Inside the Eye of the Storm', album: 'sand-within', src: null },
+			{ number: 10, title: 'Altered', album: 'sand-within', src: 'uploads/audio/tracks/Sound of Memories - Altered (OFFICIAL TRACK).mp3' },
+			{ number: 1, title: 'Non Compos Mentis', album: 'to-deliverance', src: null },
+			{ number: 2, title: 'Momentum', album: 'to-deliverance', src: null },
+			{ number: 3, title: 'Confined in Struggle', album: 'to-deliverance', src: null },
+			{ number: 4, title: 'Eulogy', album: 'to-deliverance', src: null },
+			{ number: 5, title: 'Amenaa', album: 'to-deliverance', src: null },
+			{ number: 6, title: 'Pray for Blood', album: 'to-deliverance', src: null },
+			{ number: 7, title: "The Vulture's Pride", album: 'to-deliverance', src: null },
+			{ number: 8, title: 'Beyond the Maze', album: 'to-deliverance', src: null },
+			{ number: 9, title: 'From Above', album: 'to-deliverance', src: null },
+			{ number: 10, title: 'To Deliverance', album: 'to-deliverance', src: null },
+			{ number: 1, title: 'Cyborg From Dust', album: 'living-circles', src: 'uploads/audio/tracks/Sound Of Memories - Cyborg From Dust (OFFICIEL).mp3' },
+			{ number: 2, title: 'Slave Of Gizeh', album: 'living-circles', src: 'uploads/audio/tracks/Sound Of Memories - Slave Of Gizeh (OFFICIEL).mp3' },
+			{ number: 3, title: 'Purify Your Soul', album: 'living-circles', src: 'uploads/audio/tracks/Sound Of Memories - Purify Your Soul [HD] + lyrics.mp3' }
+		] %}
 
-            <div class="album-player-shell">
-                <div class="album-player-card">
-                    <div class="album-player-card__visual vinyl-panel js-album-visual" style="--album-cover-url: url('{{ albums[0].cover }}');">
-                        <div class="vinyl-disc album-player-card__disc" aria-hidden="true">
-                            <div class="album-player-card__label">
-                                <img
-                                    src="{{ albums[0].cover }}"
-                                    alt="{{ albums[0].title }}"
-                                    class="album-player-card__label-image js-album-cover"
-                                    width="720"
-                                    height="720"
-                                    loading="lazy"
-                                    decoding="async"
+	<section class="section section-bg-2 som-player-section" data-som-player>
+		<div class="container som-player-layout">
+			<div class="som-player-left">
+				<p class="eyebrow">Listen</p>
+				<h2>Nos tracks, sans filtre.</h2>
+				<p class="som-player-intro">Écoute directement nos morceaux. Sélectionne un album, choisis un track et monte le son.</p>
+
+				<div class="som-player-album-switcher" role="tablist" aria-label="Albums">
+					{% for album in albums %}
+							<button type="button" class="album-chip{{ loop.first ? ' is-active' : '' }}" data-album-select data-album-key="{{ album.key }}" data-album-cover="{{ album.cover }}" data-album-title="{{ album.title }}" data-album-type="{{ album.type }}" data-album-copy="{{ album.copy }}" data-album-bandcamp="{{ album.bandcamp }}" data-album-spotify="{{ album.spotify }}" data-album-apple="{{ album.apple }}" data-album-youtube="{{ album.youtube }}" data-album-soundcloud="{{ album.soundcloud }}" aria-selected="{{ loop.first ? 'true' : 'false' }}">
+							<span>{{ album.title }}</span>
+							<small>{{ album.type }}</small>
+						</button>
+					{% endfor %}
+				</div>
+
+				<div class="som-player-stream-links">
+					<span class="som-player-stream-label">Aussi sur :</span>
+					<a class="album-stream-link" href="{{ albums[0].bandcamp }}" target="_blank" rel="noopener noreferrer" data-player-stream-bandcamp>Bandcamp</a>
+					<a class="album-stream-link is-spotify" href="{{ albums[0].spotify }}" target="_blank" rel="noopener noreferrer" data-player-stream-spotify>Spotify</a>
+					<a class="album-stream-link is-apple" href="{{ albums[0].apple }}" target="_blank" rel="noopener noreferrer" data-player-stream-apple>Apple Music</a>
+					<a class="album-stream-link is-youtube" href="{{ albums[0].youtube }}" target="_blank" rel="noopener noreferrer" data-player-stream-youtube>YouTube</a>
+					<a class="album-stream-link is-soundcloud" href="{{ albums[0].soundcloud }}" target="_blank" rel="noopener noreferrer" data-player-stream-soundcloud>SoundCloud</a>
+				</div>
+			</div>
+
+			<div class="som-player-right">
+				<div class="som-player-card">
+					{# ── Vinyl + Cover visual ── #}
+					<div class="som-player-visual" data-player-cover-bg style="--album-cover-url: url('{{ albums[0].cover }}');">
+						<div class="som-player-vinyl" data-player-vinyl>
+							<div class="som-player-vinyl__label">
+								<img src="{{ albums[0].cover }}" alt="{{ albums[0].title }}" data-player-cover-img width="720" height="720" loading="lazy" decoding="async">
+							</div>
+							<div class="som-player-vinyl__hole"></div>
+						</div>
+					</div>
+
+					{# ── Visualizer canvas ── #}
+					<div class="som-player-visualizer-wrap">
+						<canvas class="som-player-visualizer" data-player-visualizer></canvas>
+					</div>
+
+					{# ── Album info ── #}
+					<div class="som-player-info">
+						<p class="som-player-info__type" data-player-album-type>{{ albums[0].type }}</p>
+						<h3 data-player-album-title>{{ albums[0].title }}</h3>
+						<p class="som-player-info__copy" data-player-album-copy>{{ albums[0].copy }}</p>
+					</div>
+
+					{# ── Now playing + Controls ── #}
+					<div class="som-player-controls">
+						<p class="som-player-now-playing" data-player-track-title>The Mirror Behind</p>
+
+						<div class="som-player-transport">
+							<button class="som-player-btn som-player-btn--small" type="button" data-player-prev aria-label="Piste précédente">
+								<span class="player-btn__icon">⏮</span>
+							</button>
+							<button class="som-player-btn som-player-btn--play" type="button" data-player-play aria-pressed="false" aria-label="Lecture / Pause">
+								<span class="player-btn__icon">▶</span>
+								<span class="player-btn__label">Play</span>
+							</button>
+							<button class="som-player-btn som-player-btn--small" type="button" data-player-next aria-label="Piste suivante">
+								<span class="player-btn__icon">⏭</span>
+							</button>
+						</div>
+
+						<div class="som-player-progress-row">
+							<span class="som-player-time" data-player-current-time>0:00</span>
+							<div class="som-player-progress" data-player-progress>
+								<div class="som-player-progress__bar" data-player-progress-bar></div>
+							</div>
+							<span class="som-player-time" data-player-duration>0:00</span>
+						</div>
+					</div>
+
+					{# ── Tracklist ── #}
+					<div class="som-player-tracklist" data-player-tracklist>
+							{% for track in tracks %}
+								<button
+                                    type="button"
+                                    class="som-player-track{{ track.album == 'sand-within' and track.number == 5 ? ' is-active' : '' }}{{ track.src ? '' : ' is-unavailable' }}"
+                                    {% if track.src %}data-track-src="{{ asset(track.src) }}"{% endif %}
+                                    data-track-title="{{ track.title }}"
+                                    data-track-album="{{ track.album }}"
+                                    aria-current="{{ track.album == 'sand-within' and track.number == 5 ? 'true' : 'false' }}"
+                                    {% if not track.src %}title="Disponible via streaming uniquement"{% endif %}
                                 >
-                            </div>
-                            <div class="album-player-card__hole"></div>
-                        </div>
-                    </div>
-
-                    <div class="album-player-card__content">
-                        <p class="album-player-card__type js-album-type">{{ albums[0].type }}</p>
-                        <h3 class="js-album-title">{{ albums[0].title }}</h3>
-                        <p class="album-player-card__text js-album-copy">{{ albums[0].copy }}</p>
-
-                        <div class="album-player-card__links">
-                            <a class="album-stream-link is-spotify js-album-link-spotify" href="{{ albums[0].spotify }}" target="_blank" rel="noopener noreferrer">Spotify</a>
-                            <a class="album-stream-link is-apple js-album-link-apple" href="{{ albums[0].apple }}" target="_blank" rel="noopener noreferrer">Apple Music</a>
-                            <a class="album-stream-link is-youtube js-album-link-youtube" href="{{ albums[0].youtube }}" target="_blank" rel="noopener noreferrer">YouTube Music</a>
-                            <a class="album-stream-link is-soundcloud js-album-link-soundcloud" href="{{ albums[0].soundcloud }}" target="_blank" rel="noopener noreferrer">SoundCloud</a>
-                        </div>
-
-                        <div class="album-player-card__actions">
-                            <button class="album-player-control js-album-toggle" type="button" aria-pressed="false" disabled>
-                                <span class="album-player-control__icon" aria-hidden="true">►</span>
-                                <span class="album-player-control__label">Play</span>
-                            </button>
-                            <p class="album-player-status js-album-status">Chargement du lecteur…</p>
-                        </div>
-
-                        <div class="album-player-card__embed">
-                            <div class="album-player-card__embed-host js-album-embed-host" data-album-spotify-embed aria-label="Lecteur Spotify {{ albums[0].title }}"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-bg-3 section-contrast">
-        <div class="container section-head">
-            <div>
-                <p class="eyebrow">Photos</p>
-                <h2>Une galerie photo plus simple à faire évoluer ensuite dans l’admin.</h2>
-            </div>
-        </div>
-        <div class="container photo-slider" data-photo-slider>
-            <div class="photo-slider-track" data-photo-slider-track>
-                {% for photo in photos %}
-                {% set imageSrc = photo.source == 'admin'
+									<span class="som-player-track__index">{{ '%02d'|format(track.number) }}</span>
+									<span class="som-player-track__title">{{ track.title }}</span>
+									<span class="som-player-track__album">{{ album_labels[track.album]|default(track.album) }}</span>
+								</button>
+							{% endfor %}
+                        <p class="som-player-tracklist__empty" data-player-empty-state hidden>Pas encore de piste locale disponible pour cet album. Utilise les liens de streaming ci-dessus.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="section section-bg-3 section-contrast">
+		<div class="container section-head">
+			<div>
+				<p class="eyebrow">Photos</p>
+				<h2>Concert, press, événements</h2>
+			</div>
+		</div>
+		<div class="container photo-slider" data-photo-slider>
+			<div class="photo-slider-track" data-photo-slider-track>
+				{% for photo in photos %}
+					{% set imageSrc = photo.source == 'admin'
                     ? asset('uploads/gallery/' ~ photo.imagePath)
                     : asset(photo.imagePath)
                 %}
 
-                    <article
-                        class="photo-slide"
-                        data-photo-slide
-                        data-photo-src="{{ imageSrc }}"
-                        data-photo-alt="{{ photo.altText|default('')|e('html_attr') }}"
-                        data-photo-title="{{ photo.title|default('')|e('html_attr') }}"
-                        data-photo-caption="{{ photo.caption|default('')|e('html_attr') }}"
-                    >
-                        <button class="photo-slide-hit" type="button" data-photo-lightbox-open aria-label="Afficher {{ photo.altText ?: photo.title ?: 'la photo' }} en plein écran">
-                            <figure class="photo-slide-frame">
-                                <img src="{{ imageSrc }}" alt="{{ photo.altText }}" loading="lazy" decoding="async">
-                            </figure>
-                        </button>
-                        {% if photo.title or photo.caption %}
-                            <div class="photo-slide-copy">
-                                {% if photo.title %}
-                                    <h3>{{ photo.title }}</h3>
-                                {% endif %}
-                                {% if photo.caption %}
-                                    <p>{{ photo.caption }}</p>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-                    </article>
-                {% endfor %}
-            </div>
+					<article class="photo-slide" data-photo-slide data-photo-src="{{ imageSrc }}" data-photo-alt="{{ photo.altText|default('')|e('html_attr') }}" data-photo-title="{{ photo.title|default('')|e('html_attr') }}" data-photo-caption="{{ photo.caption|default('')|e('html_attr') }}">
+						<button class="photo-slide-hit" type="button" data-photo-lightbox-open aria-label="Afficher {{ photo.altText ?: photo.title ?: 'la photo' }} en plein écran">
+							<figure class="photo-slide-frame">
+								<img src="{{ imageSrc }}" alt="{{ photo.altText }}" loading="lazy" decoding="async">
+							</figure>
+						</button>
+						{% if photo.title or photo.caption %}
+							<div class="photo-slide-copy">
+								{% if photo.title %}
+									<h3>{{ photo.title }}</h3>
+								{% endif %}
+								{% if photo.caption %}
+									<p>{{ photo.caption }}</p>
+								{% endif %}
+							</div>
+						{% endif %}
+					</article>
+				{% endfor %}
+			</div>
 
-            {% if photos|length > 1 %}
-                <div class="photo-slider-controls">
-                    <button class="photo-slider-button" type="button" data-photo-slider-prev aria-label="Photo précédente">←</button>
-                    <div class="photo-slider-dots" role="tablist" aria-label="Navigation de la galerie photo">
-                        {% for photo in photos %}
-                            <button
-                                class="photo-slider-dot{{ loop.first ? ' is-active' : '' }}"
-                                type="button"
-                                data-photo-slider-dot
-                                data-photo-slider-index="{{ loop.index0 }}"
-                                aria-label="Aller à la photo {{ loop.index }}"
-                                aria-selected="{{ loop.first ? 'true' : 'false' }}"
-                            ></button>
-                        {% endfor %}
-                    </div>
-                    <button class="photo-slider-button" type="button" data-photo-slider-next aria-label="Photo suivante">→</button>
-                </div>
-            {% endif %}
-        </div>
-    </section>
+			{% if photos|length > 1 %}
+				<div class="photo-slider-controls">
+					<button class="photo-slider-button" type="button" data-photo-slider-prev aria-label="Photo précédente">←</button>
+					<div class="photo-slider-dots" role="tablist" aria-label="Navigation de la galerie photo">
+						{% for photo in photos %}
+							<button class="photo-slider-dot{{ loop.first ? ' is-active' : '' }}" type="button" data-photo-slider-dot data-photo-slider-index="{{ loop.index0 }}" aria-label="Aller à la photo {{ loop.index }}" aria-selected="{{ loop.first ? 'true' : 'false' }}"></button>
+						{% endfor %}
+					</div>
+					<button class="photo-slider-button" type="button" data-photo-slider-next aria-label="Photo suivante">→</button>
+				</div>
+			{% endif %}
+		</div>
+	</section>
 
-    <dialog class="photo-lightbox" data-photo-lightbox>
-        <div class="photo-lightbox__shell">
-            <button class="photo-lightbox__close" type="button" data-photo-lightbox-close aria-label="Fermer la visionneuse">×</button>
-            <button class="photo-lightbox__nav is-prev" type="button" data-photo-lightbox-prev aria-label="Photo précédente">←</button>
-            <figure class="photo-lightbox__frame">
-                <img class="photo-lightbox__image" src="" alt="" data-photo-lightbox-image>
-                <figcaption class="photo-lightbox__caption">
-                    <strong data-photo-lightbox-title></strong>
-                    <span data-photo-lightbox-text></span>
-                </figcaption>
-            </figure>
-            <button class="photo-lightbox__nav is-next" type="button" data-photo-lightbox-next aria-label="Photo suivante">→</button>
-        </div>
-    </dialog>
+	<dialog class="photo-lightbox" data-photo-lightbox>
+		<div class="photo-lightbox__shell">
+			<button class="photo-lightbox__close" type="button" data-photo-lightbox-close aria-label="Fermer la visionneuse">×</button>
+			<button class="photo-lightbox__nav is-prev" type="button" data-photo-lightbox-prev aria-label="Photo précédente">←</button>
+			<figure class="photo-lightbox__frame">
+				<img class="photo-lightbox__image" src="" alt="" data-photo-lightbox-image>
+				<figcaption class="photo-lightbox__caption">
+					<strong data-photo-lightbox-title></strong>
+					<span data-photo-lightbox-text></span>
+				</figcaption>
+			</figure>
+			<button class="photo-lightbox__nav is-next" type="button" data-photo-lightbox-next aria-label="Photo suivante">→</button>
+		</div>
+	</dialog>
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('scripts/gallery.js') }}" defer></script>
+	{{ parent() }}
+	<script src="{{ asset('scripts/gallery.js') }}" defer></script>
+	<script src="{{ asset('scripts/audio-player.js') }}" defer></script>
 {% endblock %}

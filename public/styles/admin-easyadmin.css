@@ -40,6 +40,21 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.som-admin-grid--compact {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.som-admin-section {
+    display: grid;
+    gap: 1rem;
+}
+
+.som-admin-section__head h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    color: #171717;
+}
+
 .som-admin-card {
     display: grid;
     gap: .45rem;
@@ -67,4 +82,137 @@
 .som-admin-card p {
     margin: 0;
     color: #584e45;
+}
+
+.som-admin-card--soft {
+    box-shadow: none;
+    background: linear-gradient(180deg, #ffffff, #fbf8f4);
+}
+
+.som-admin-list {
+    display: grid;
+    gap: .45rem;
+}
+
+.som-admin-list a,
+.som-admin-list span {
+    color: #584e45;
+    text-decoration: none;
+}
+
+.som-ops-dashboard,
+.som-promo-dashboard {
+    gap: 2rem;
+}
+
+.som-ops-lanes {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.som-ops-lane {
+    display: grid;
+    gap: 1rem;
+    padding: 1.15rem;
+    border-radius: 22px;
+    background: #fff;
+    border: 1px solid rgba(17, 17, 17, 0.08);
+    box-shadow: 0 12px 28px rgba(17, 17, 17, 0.06);
+}
+
+.som-ops-lane__head {
+    display: grid;
+    gap: .55rem;
+}
+
+.som-ops-lane__head h3 {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.som-ops-lane__head p:last-child {
+    margin: 0;
+    color: #5f574f;
+}
+
+.som-ops-order-list,
+.som-promo-list {
+    display: grid;
+    gap: .85rem;
+}
+
+.som-ops-order-card,
+.som-promo-card {
+    display: grid;
+    gap: .75rem;
+    padding: 1rem;
+    border-radius: 18px;
+    background: #fbf8f4;
+    border: 1px solid rgba(17, 17, 17, 0.08);
+}
+
+.som-ops-order-card__head,
+.som-promo-card__head,
+.som-ops-order-card__details,
+.som-promo-card__pricing,
+.som-promo-card__actions,
+.som-ops-order-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .6rem;
+    align-items: center;
+}
+
+.som-ops-order-card__head strong,
+.som-promo-card__head strong {
+    display: block;
+    color: #171717;
+}
+
+.som-ops-order-card__head span,
+.som-promo-card__head span,
+.som-ops-order-card p,
+.som-promo-card p,
+.som-ops-order-card__details span,
+.som-promo-card__pricing span {
+    color: #5f574f;
+    margin: 0;
+}
+
+.som-ops-order-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+}
+
+.som-ops-order-card__actions form,
+.som-promo-card__actions form {
+    margin: 0;
+}
+
+.som-promo-card__highlight {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: .35rem .65rem;
+    border-radius: 999px;
+    background: rgba(255, 107, 53, 0.12);
+    color: #9a4926;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.button.button-small {
+    min-height: 34px;
+    padding: .45rem .7rem;
+    border-radius: 999px;
+}
+
+.button.button-ghost {
+    background: transparent;
 }

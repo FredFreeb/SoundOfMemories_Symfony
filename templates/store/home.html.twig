@@ -1,25 +1,33 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Accueil | Sound Of Memories Fan Base{% endblock %}
-{% block meta_description %}Merchandising, dates de concert et univers visuel Sound Of Memories dans une vitrine mobile-first inspirée du site historique du groupe.{% endblock %}
+{% block body_class %}{{ parent() }} theme-store-home{% endblock %}
+
+{% block title %}Accueil | Sound Of Memories{% endblock %}
+{% block meta_description %}Sound Of Memories — groupe de métal mélodique. Merch officiel, dates de concert, galerie photos et vidéos, albums en streaming.{% endblock %}
 {% block stylesheets %}
     {% set siteSettings = site_settings() %}
     {% set heroBackgroundPreload = siteSettings.homeHeroBackground ? site_asset(siteSettings.homeHeroBackground, 'site') : asset('uploads/legacy/htmlwallpaper.jpg') %}
     {% set heroVisualPreload = siteSettings.homeHeroVisual ? site_asset(siteSettings.homeHeroVisual, 'site') : asset('uploads/optimized/legacy/SofM-cover.jpg') %}
+    {% set heroLogoPreload = siteSettings.headerLogo ? site_asset(siteSettings.headerLogo, 'site') : asset('uploads/legacy/Logo.png') %}
+    {% set heroTrailerPreload = asset('uploads/site/hero/background/Sound%20Of%20Memories%20-%20The%20Living%20Circles%20Tour%20%5BTRAILER%5D.mp4') %}
     <link rel="preload" as="image" href="{{ heroBackgroundPreload }}">
     <link rel="preload" as="image" href="{{ heroVisualPreload }}">
+    <link rel="preload" as="image" href="{{ heroLogoPreload }}">
+    <link rel="preload" as="video" href="{{ heroTrailerPreload }}" type="video/mp4">
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/product-effects.css') }}">
 {% endblock %}
 
 {% block page %}
     {% set heroBackground = siteSettings.homeHeroBackground ? site_asset(siteSettings.homeHeroBackground, 'site') : asset('uploads/legacy/htmlwallpaper.jpg') %}
-    {% set heroSlides = [] %}
-    {% if siteSettings.homeHeroSlideOne %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideOne, 'site')]) %}{% endif %}
-    {% if siteSettings.homeHeroSlideTwo %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideTwo, 'site')]) %}{% endif %}
-    {% if siteSettings.homeHeroSlideThree %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideThree, 'site')]) %}{% endif %}
-    {% if siteSettings.homeHeroSlideFour %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideFour, 'site')]) %}{% endif %}
     {% set heroVisual = siteSettings.homeHeroVisual ? site_asset(siteSettings.homeHeroVisual, 'site') : asset('uploads/optimized/legacy/SofM-cover.jpg') %}
+    {% set heroLogo = siteSettings.headerLogo ? site_asset(siteSettings.headerLogo, 'site') : asset('uploads/legacy/Logo.png') %}
+    {% set heroTrailer = asset('uploads/site/hero/background/Sound%20Of%20Memories%20-%20The%20Living%20Circles%20Tour%20%5BTRAILER%5D.mp4') %}
+    {% set heroFacts = [
+        { value: '2010', label: 'Début du groupe' },
+        { value: '3 releases', label: '2013 · 2015 · 2020' },
+        { value: '50+', label: 'concerts et scènes défendues' }
+    ] %}
     {% set spotlight = monthlyOfferProduct ?: products|first %}
     {% set liveBackgrounds = [
         asset('uploads/optimized/legacy/gal13.jpg'),
@@ -39,36 +47,88 @@
             : random(liveBackgrounds))
     %}
 
-    {% set heroBackgrounds = (heroSlides is not empty ? heroSlides : [heroBackground])|merge(liveBackgrounds) %}
-
     <section
-        class="hero-section hero-animated"
-        data-hero-rotator
-        data-hero-images='{{ heroBackgrounds|json_encode|e('html_attr') }}'
-        style="--hero-image-initial: url('{{ heroBackground }}');"
+        class="hero-section home-hero-cinematic"
+        data-home-hero
+        style="--hero-poster: url('{{ heroBackground }}'); --hero-cover: url('{{ heroVisual }}');"
     >
-        <div class="hero-bg hero-bg--current" data-hero-bg-current></div>
-        <div class="hero-bg hero-bg--next" data-hero-bg-next></div>
-        <div class="container hero-grid">
-            <div class="hero-copy">
-                <p class="eyebrow">Fan base relancée</p>
-                <h1>{{ siteSettings.homeHeroTitle ?: 'Sound Of Memories revient avec un site plus solide.' }}</h1>
-                <p class="hero-text">{{ siteSettings.homeHeroText ?: 'Une base Symfony propre, administrable et prête pour le merchandising, les concerts et un futur déploiement VPS.' }}</p>
-                <div class="button-row">
-                    <a class="button-primary" href="{{ path('store_shop_index') }}">Voir le merch</a>
+        <div class="home-hero-cinematic__media" aria-hidden="true">
+            <video class="home-hero-cinematic__video" data-home-hero-video autoplay muted loop playsinline preload="auto" poster="{{ heroBackground }}">
+                <source src="{{ heroTrailer }}" type="video/mp4">
+            </video>
+        </div>
+        <div class="home-hero-cinematic__veil" aria-hidden="true"></div>
+        <div class="home-hero-cinematic__center-mark" aria-hidden="true" style="--hero-logo-url: url('{{ heroLogo }}');">
+            <span class="home-hero-cinematic__center-glow"></span>
+            <span class="home-hero-cinematic__logo-ghost home-hero-cinematic__logo-ghost--warm"></span>
+            <span class="home-hero-cinematic__logo-ghost home-hero-cinematic__logo-ghost--cool"></span>
+            <img class="home-hero-cinematic__center-logo" src="{{ heroLogo }}" alt="" width="484" height="92" decoding="async">
+        </div>
+        <div class="hero-mist" aria-hidden="true"></div>
+        <div class="hero-edge-flare hero-edge-flare--left" aria-hidden="true"></div>
+        <div class="hero-edge-flare hero-edge-flare--right" aria-hidden="true"></div>
+        <div class="container home-hero-cinematic__grid">
+            <div class="hero-copy home-hero-cinematic__copy">
+                <p class="eyebrow">Living Circles Tour</p>
+                <p class="home-hero-cinematic__kicker">Trailer officiel en fond de scène</p>
+                <h1>{{ siteSettings.homeHeroTitle ?: 'The Sound never dies. The stage remembers.' }}</h1>
+                <p class="hero-text home-hero-cinematic__lead">{{ siteSettings.homeHeroText ?: 'Un hero pensé comme une affiche live en mouvement. La vidéo locale tourne en plein écran, la scène respire, et l’univers Sound Of Memories s’impose dès la première seconde.' }}</p>
+                <div class="button-row home-hero-cinematic__actions">
+                    <a class="button-primary button-primary--glow" href="{{ path('store_shop_index') }}">
+                        <span>Voir le merch</span>
+                    </a>
                     <a class="button-secondary" href="{{ path('store_concerts') }}">Voir les concerts</a>
+                    <a class="text-link" href="{{ path('store_gallery') }}">Entrer dans la gallery</a>
+                </div>
+                <div class="home-hero-cinematic__facts">
+                    {% for fact in heroFacts %}
+                        <article class="home-hero-cinematic__fact">
+                            <strong>{{ fact.value }}</strong>
+                            <span>{{ fact.label }}</span>
+                        </article>
+                    {% endfor %}
                 </div>
             </div>
-            <div class="hero-visual-shell">
+            <div class="hero-visual-shell home-hero-cinematic__aside">
                 <div class="hero-glow"></div>
-                <img class="hero-visual" src="{{ heroVisual }}" alt="Visuel Sound Of Memories" width="1414" height="1414" fetchpriority="high" decoding="async">
+                <div class="home-hero-cinematic__panel home-hero-cinematic__panel--poster">
+                    <div class="home-hero-cinematic__poster-frame">
+                        <img src="{{ heroVisual }}" alt="Visuel Sound Of Memories" width="1414" height="1414" fetchpriority="high" decoding="async">
+                        <span class="home-hero-cinematic__poster-tag">Trailer loop</span>
+                    </div>
+                </div>
+                <div class="hero-rings" aria-hidden="true">
+                    <div class="hero-ring hero-ring--1"></div>
+                    <div class="hero-ring hero-ring--2"></div>
+                    <div class="hero-ring hero-ring--3"></div>
+                </div>
+                <div class="home-hero-cinematic__panel home-hero-cinematic__panel--meta">
+                    <p class="card-kicker">Now loading</p>
+                    <h2>Living Circles Tour</h2>
+                    <p>Le trailer local tourne en fond pour donner une vraie sensation de scène, de souffle et de tension dès l’arrivée sur la home.</p>
+                    <div class="home-hero-cinematic__meta-grid">
+                        <div>
+                            <strong>Source</strong>
+                            <span>MP4 local en autoplay muet</span>
+                        </div>
+                        <div>
+                            <strong>Vibe</strong>
+                            <span>cinématique, live, organique</span>
+                        </div>
+                        <div>
+                            <strong>Focus</strong>
+                            <span>concerts, gallery, merch</span>
+                        </div>
+                    </div>
+                    <a class="text-link" href="{{ path('store_gallery') }}">Voir toutes les vidéos</a>
+                </div>
             </div>
         </div>
         <button class="scroll-indicator" type="button" data-scroll-indicator aria-label="Faire défiler vers le contenu">
             {% if siteSettings.headerLogo %}
                 <img class="scroll-indicator__logo" src="{{ site_asset(siteSettings.headerLogo, 'site') }}" alt="Sound Of Memories" width="484" height="92" loading="lazy" decoding="async">
             {% else %}
-                <span class="scroll-indicator__monogram">SOF</span>
+                <span class="scroll-indicator__monogram">SOM</span>
             {% endif %}
             <svg class="scroll-indicator__chevron" width="18" height="22" viewBox="0 0 18 22" aria-hidden="true" focusable="false">
                 <path d="M2 7l7 8 7-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -89,6 +149,7 @@
             image_alt: spotlight.name,
             class_name: 'masked-image-section--featured'
         } only %}
+
     {% endif %}
 
     <section class="section section-bg-1 som-hero som-hero--section">
@@ -96,8 +157,8 @@
         <div class="som-hero__content">
             <div class="container section-head">
                 <div>
-                    <p class="eyebrow">Merchandising</p>
-                    <h2>Pièces fan base à remettre en circulation.</h2>
+                    <p class="eyebrow">Official Merch</p>
+                    <h2>Porte les couleurs du groupe.</h2>
                 </div>
                 <a class="text-link" href="{{ path('store_shop_index') }}">Tout le catalogue</a>
             </div>
@@ -135,8 +196,8 @@
         <div class="som-hero__content">
             <div class="container section-head">
                 <div>
-                    <p class="eyebrow">Dates live</p>
-                    <h2>Les prochains rendez-vous à ne pas manquer.</h2>
+                    <p class="eyebrow">Live Dates</p>
+                    <h2>On stage. Les prochains rendez-vous.</h2>
                 </div>
                 <a class="text-link" href="{{ path('store_concerts') }}">Toutes les dates</a>
             </div>
@@ -165,49 +226,23 @@
                 {% else %}
                     <article class="empty-card">
                         <h3>Aucune date publiée</h3>
-                        <p>Ajoutez les prochains concerts dans le back-office pour alimenter cette section.</p>
+                        <p>Les prochaines dates seront annoncées ici dès qu'elles seront confirmées.</p>
                     </article>
                 {% endfor %}
             </div>
         </div>
     </section>
 
-    <section class="section section-bg-3 section-gallery som-hero som-hero--section" id="legacy-gallery">
-        <div class="som-hero__bg" aria-hidden="true"></div>
-        <div class="som-hero__content">
-            <div class="container section-head">
-                <div>
-                    <p class="eyebrow">Mémoire visuelle</p>
-                    <h2>On garde les textures, les bannières et l’ADN du site d’origine.</h2>
-                </div>
-            </div>
-            <div class="container gallery-strip" data-scroll-target>
-                <img src="{{ asset('uploads/optimized/legacy/bannerSand.jpg') }}" alt="The Sand Within" width="1920" height="816" loading="lazy" decoding="async">
-                <img src="{{ asset('uploads/optimized/legacy/bannerLiving.jpg') }}" alt="Living Circle" width="1920" height="816" loading="lazy" decoding="async">
-                <img src="{{ asset('uploads/optimized/legacy/bannerToDel.jpg') }}" alt="To Deliverance" width="1920" height="1000" loading="lazy" decoding="async">
-                <img src="{{ asset('uploads/optimized/legacy/gal13.jpg') }}" alt="Photo de groupe" width="3265" height="4898" loading="lazy" decoding="async">
-                <img src="{{ asset('uploads/optimized/legacy/gal15.jpg') }}" alt="Photo de scène" width="3265" height="4898" loading="lazy" decoding="async">
-                <img src="{{ asset('uploads/optimized/legacy/gal18.jpg') }}" alt="Univers du groupe" width="4898" height="3265" loading="lazy" decoding="async">
-            </div>
-        </div>
-    </section>
+    {% if editorial.press is defined and editorial.press is not null %}
+        {% include 'components/editorial/_module_press_clippings.html.twig' with {
+            module: editorial.press,
+            entries: pressEntries,
+            canManage: is_granted('ROLE_ADMIN'),
+            manageUrl: path('admin_dashboard_avis_presse_index'),
+            manageLabel: 'Gérer la presse'
+        } only %}
+    {% endif %}
 
-    <section class="section section-bg-1 som-hero som-hero--section">
-        <div class="som-hero__bg" aria-hidden="true"></div>
-        <div class="som-hero__content">
-            <div class="container cta-panel">
-                <div>
-                    <p class="eyebrow">Base prête pour la suite</p>
-                    <h2>Une refonte pensée pour être administrée facilement puis transférée sur VPS.</h2>
-                    <p>Le front garde une vraie identité visuelle, pendant que le back-office gère produits, visuels et dates de concert sans dépendre du vieux HTML statique.</p>
-                </div>
-                <div class="button-column">
-                    <a class="button-primary" href="{{ path('admin_dashboard') }}">Ouvrir le backstage</a>
-                    <a class="button-secondary" href="{{ path('store_shop_index') }}">Parcourir le merch</a>
-                </div>
-            </div>
-        </div>
-    </section>
 {% endblock %}
 
 {% block javascripts %}

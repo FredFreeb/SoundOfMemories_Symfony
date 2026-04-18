@@ -1,7 +1,7 @@
 {% extends 'layouts/store.html.twig' %}
 
 {% block title %}Commande #{{ order.id }}{% endblock %}
-{% block meta_description %}Détail d'une commande client Expéditions Mystérieuses avec suivi, paiement et récapitulatif des produits.{% endblock %}
+{% block meta_description %}Détail d'une commande Sound Of Memories avec suivi, paiement et récapitulatif des produits.{% endblock %}
 {% block meta_robots %}noindex,nofollow{% endblock %}
 
 {% block page %}
@@ -10,7 +10,7 @@
             <div class="detail-content">
                 <p class="eyebrow">Commande #{{ order.id }}</p>
                 <h1>Suivi de l'expédition</h1>
-                <p>Je donne ici au client un récapitulatif lisible : statut, paiement, livraison et contenu de la commande.</p>
+                <p>Retrouvez ici un récapitulatif clair de la commande, du paiement et de la livraison.</p>
                 <div class="account-meta">
                     <span>Statut : {{ order.statusLabel }}</span>
                     <span>Paiement : {{ order.paymentStatusLabel }}</span>

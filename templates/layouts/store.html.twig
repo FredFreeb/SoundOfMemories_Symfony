@@ -1,6 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block body_class %}theme-store{% endblock %}
+{% block body_class %}
+    {% set routeName = app.request ? (app.request.attributes.get('_route') ?? '') : '' %}
+    {% set isGalleryRoute = routeName starts with 'store_gallery' %}
+    {% set isMerchRoute = routeName starts with 'store_shop' or routeName starts with 'store_cart' %}
+    {% set isContactRoute = routeName matches '/contact/' %}
+    {% set isHomeRoute = routeName == 'store_home' %}
+    theme-store{% if not isGalleryRoute and not isMerchRoute and not isContactRoute %} theme-store-section-slots{% else %} theme-store-no-section-slots{% endif %}{% if not isHomeRoute and not isGalleryRoute and not isMerchRoute and not isContactRoute %} theme-store-masked-auto{% else %} theme-store-no-masks{% endif %}
+{% endblock %}
 
 {% block body %}
     {% set settings = site_settings() %}

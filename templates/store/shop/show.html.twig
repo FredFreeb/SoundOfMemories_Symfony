@@ -19,6 +19,9 @@
     {% endfor %}
     {% set mainMedia = mediaGallery|first %}
     {% set selectedVariant = defaultVariant %}
+    {% set currentPriceCents = selectedVariant ? selectedVariant.priceCents : product.startingPriceCents %}
+    {% set currentCompareAtCents = product.promotionActive and selectedVariant and selectedVariant.compareAtPriceCents ? selectedVariant.compareAtPriceCents : product.displayCompareAtPriceCents %}
+    {% set currentSavingsCents = currentCompareAtCents and currentCompareAtCents > currentPriceCents ? currentCompareAtCents - currentPriceCents : 0 %}
 
     <section class="section section-bg-1 merch-product-section">
         <div class="container merch-product-shell">
@@ -58,10 +61,46 @@
                 {% endif %}
             </div>
 
-            <div class="merch-product-buybox" data-product-options>
-                <p class="eyebrow">{{ product.category ? product.category.name : 'Merchandising' }}</p>
+            <div class="merch-product-buybox" data-product-options data-promotion-active="{{ product.promotionActive ? '1' : '0' }}">
+                <div class="merch-product-header-meta">
+                    <p class="eyebrow">{{ product.category ? product.category.name : 'Merchandising' }}</p>
+                    {% if product.merchBadge %}
+                        <span class="merch-badge merch-badge--{{ product.merchBadgeTone }}">{{ product.merchBadge }}</span>
+                    {% endif %}
+                    {% if product.isMonthlyOffer %}
+                        <span class="merch-badge merch-badge--ember">Offre du mois</span>
+                    {% endif %}
+                    {% if product.hasPromotionPricing and product.promotionUpcoming %}
+                        <span class="merch-badge merch-badge--sand">Promo dès le {{ product.promotionStartsAt|date('d/m') }}</span>
+                    {% elseif product.displayCompareAtPriceCents %}
+                        <span class="merch-badge merch-badge--ember">Prix promo actif</span>
+                    {% endif %}
+                </div>
                 <h1>{{ product.name }}</h1>
                 <p class="merch-product-lead">{{ product.shortDescription ?: product.catalogExcerpt }}</p>
+
+                <div class="merch-product-signals">
+                    <article class="merch-product-signal">
+                        <strong>Collection</strong>
+                        <span>{{ product.category ? product.category.name : 'Merch' }}</span>
+                    </article>
+                    <article class="merch-product-signal">
+                        <strong>Options</strong>
+                        <span>{{ variants|length > 0 ? variants|length ~ ' choix' : 'Edition unique' }}</span>
+                    </article>
+                    <article class="merch-product-signal">
+                        <strong>Disponibilité</strong>
+                        <span>{{ product.displayStock > 0 ? product.displayStock ~ ' en stock' : 'Rupture' }}</span>
+                    </article>
+                </div>
+
+                {% if product.sellingPoints is not empty %}
+                    <div class="merch-points merch-points--product">
+                        {% for point in product.sellingPoints %}
+                            <span>{{ point }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
                 <div class="merch-product-pricing">
                     {% if selectedVariant and selectedVariant.formattedCompareAtPrice %}
@@ -80,13 +119,53 @@
                             {{ product.displayStock }} disponible{{ product.displayStock > 1 ? 's' : '' }}
                         {% endif %}
                     </span>
+                    <span class="merch-product-pricing__saving js-variant-saving{% if currentSavingsCents <= 0 %} is-hidden{% endif %}">
+                        {% if currentSavingsCents > 0 %}
+                            Vous économisez {{ (currentSavingsCents / 100)|number_format(2, ',', ' ') }} EUR
+                        {% endif %}
+                    </span>
                 </div>
+
+                {% if product.hasPromotionPricing and product.promotionUpcoming %}
+                    <p class="merch-product-promo-state">La réduction s’activera automatiquement{% if product.promotionStartsAt %} le {{ product.promotionStartsAt|date('d/m à H\\hi') }}{% endif %}. Le tarif actuel reste disponible tout de suite.</p>
+                {% elseif product.hasPromotionPricing and product.promotionEndsAt and product.promotionActive %}
+                    <p class="merch-product-promo-state">Prix promo actif{% if product.promotionEndsAt %} jusqu’au {{ product.promotionEndsAt|date('d/m') }}{% endif %}.</p>
+                {% endif %}
 
                 <div class="merch-product-trust">
                     <span>Paiement Stripe sécurisé</span>
                     <span>Expédition gérée avec Boxtal</span>
                     <span>Stocks suivis par variante</span>
                 </div>
+
+                {% if product.fitDetails or product.materialDetails or product.sizeGuideText or product.shippingDetails %}
+                    <div class="merch-product-facts">
+                        {% if product.fitDetails %}
+                            <article class="merch-product-fact">
+                                <strong>Coupe / format</strong>
+                                <span>{{ product.fitDetails }}</span>
+                            </article>
+                        {% endif %}
+                        {% if product.materialDetails %}
+                            <article class="merch-product-fact">
+                                <strong>Matière</strong>
+                                <span>{{ product.materialDetails }}</span>
+                            </article>
+                        {% endif %}
+                        {% if product.sizeGuideText %}
+                            <article class="merch-product-fact">
+                                <strong>Guide</strong>
+                                <span>{{ product.sizeGuideText }}</span>
+                            </article>
+                        {% endif %}
+                        {% if product.shippingDetails %}
+                            <article class="merch-product-fact">
+                                <strong>Expédition</strong>
+                                <span>{{ product.shippingDetails }}</span>
+                            </article>
+                        {% endif %}
+                    </div>
+                {% endif %}
 
                 <form method="post" action="{{ path('store_cart_add', {id: product.id}) }}" class="merch-product-form">
                     <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
@@ -104,7 +183,8 @@
                                             data-option-input
                                             data-price="{{ variant.formattedPrice }}"
                                             data-price-cents="{{ variant.priceCents }}"
-                                            data-compare-price="{{ variant.formattedCompareAtPrice ?: '' }}"
+                                            data-compare-price="{{ product.promotionActive ? (variant.formattedCompareAtPrice ?: '') : '' }}"
+                                            data-compare-price-cents="{{ product.promotionActive ? (variant.compareAtPriceCents ?: 0) : 0 }}"
                                             data-stock="{{ variant.stock }}"
                                             data-label="{{ variant.label }}"
                                             {% if selectedVariant and variant.id == selectedVariant.id %}checked{% endif %}
@@ -119,6 +199,10 @@
                                 {% endfor %}
                             </div>
                         </fieldset>
+                    {% endif %}
+
+                    {% if product.sizeGuideText %}
+                        <p class="merch-product-guide-note">{{ product.sizeGuideText }}</p>
                     {% endif %}
 
                     <div class="merch-product-form__row">
@@ -142,19 +226,27 @@
                             Ajouter au panier
                         </button>
                     </div>
+                    <p class="merch-product-form__note">Chaque achat soutient directement les futurs drops, les concerts et la fan base Sound Of Memories.</p>
                 </form>
 
                 <div class="merch-product-panels">
+                    {% if product.category and product.category.description %}
+                        <article class="merch-product-panel merch-product-panel--story">
+                            <h2>Dans la collection {{ product.category.name }}</h2>
+                            <p>{{ product.category.description }}</p>
+                        </article>
+                    {% endif %}
+
                     {% if product.description %}
-                        <article class="merch-product-panel">
-                            <h2>Détails</h2>
+                        <article class="merch-product-panel merch-product-panel--story">
+                            <h2>Histoire de la pièce</h2>
                             <p>{{ product.description|nl2br }}</p>
                         </article>
                     {% endif %}
 
                     <article class="merch-product-panel">
-                        <h2>Pourquoi ça convertit mieux</h2>
-                        <p>Chaque produit garde une fiche claire, des options visibles, un panier simple et un checkout sécurisé. L’admin peut ensuite ajuster tailles, prix, stock et promotion sans toucher au code.</p>
+                        <h2>Pourquoi elle mérite sa place dans le drop</h2>
+                        <p>La fiche garde un achat très lisible : visuel fort, options claires, stock par variante, transport suivi et passage Stripe sans friction.</p>
                     </article>
                 </div>
             </div>

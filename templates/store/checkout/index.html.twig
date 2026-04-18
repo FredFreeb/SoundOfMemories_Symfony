@@ -1,6 +1,6 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Commande | Sound Of Memories Fan Base{% endblock %}
+{% block title %}Commande | Sound Of Memories{% endblock %}
 {% block meta_description %}Validation de commande Sound Of Memories avec livraison, résumé sécurisé et redirection Stripe.{% endblock %}
 {% block meta_robots %}noindex,nofollow{% endblock %}
 
@@ -143,14 +143,41 @@
                             <strong>{{ (previewTotalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
                         </div>
 
-                        <div class="checkout-summary-list">
-                            {% for item in items %}
-                                <div class="summary-line">
-                                    <span>{{ item.displayName }} x{{ item.quantity }}</span>
-                                    <strong>{{ (item.totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
-                                </div>
-                            {% endfor %}
+                        <div class="checkout-trust-list">
+                            <span>Paiement Stripe sécurisé</span>
+                            <span>Livraison suivie</span>
+                            <span>Support Sound Of Memories</span>
+                        </div>
 
+                        <div class="checkout-summary-items">
+                            {% for item in items %}
+                                {% set mediaUrl = item.product.coverImage
+                                    ? (item.product.coverImage starts with 'http' or item.product.coverImage starts with '/'
+                                        ? item.product.coverImage
+                                        : asset('uploads/products/' ~ item.product.coverImage))
+                                    : null
+                                %}
+                                <article class="checkout-summary-item-card">
+                                    <div class="checkout-summary-item-card__media">
+                                        {% if mediaUrl %}
+                                            <img src="{{ mediaUrl }}" alt="{{ item.displayName }}" width="120" height="120" loading="lazy" decoding="async">
+                                        {% else %}
+                                            <span>Visuel à venir</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="checkout-summary-item-card__copy">
+                                        <strong>{{ item.product.name }}</strong>
+                                        {% if item.variant %}
+                                            <span>{{ item.product.variantChoiceLabel }} : {{ item.variant.label }}</span>
+                                        {% endif %}
+                                        <span>Quantité : {{ item.quantity }}</span>
+                                    </div>
+                                    <strong class="checkout-summary-item-card__price">{{ (item.totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                                </article>
+                            {% endfor %}
+                        </div>
+
+                        <div class="checkout-summary-list">
                             <div class="summary-line total">
                                 <span>Sous-total produits</span>
                                 <strong>{{ (totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
@@ -182,11 +209,6 @@
                                 <span>Total à régler</span>
                                 <strong>{{ (previewTotalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
                             </div>
-                        </div>
-
-                        <div class="checkout-trust-list">
-                            <span>Paiement Stripe sécurisé</span>
-                            <span>Suivi par compte ou email</span>
                         </div>
                     </article>
                 </aside>

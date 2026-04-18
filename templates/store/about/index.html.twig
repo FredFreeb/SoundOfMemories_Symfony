@@ -1,116 +1,200 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Le groupe | Sound Of Memories Fan Base{% endblock %}
-{% block meta_description %}Sound Of Memories, groupe de death mélodique né en 2010 entre Paris et l’Essonne, avec une histoire de scène, de composition et de discographie.{% endblock %}
+{% block title %}The Band | Sound Of Memories{% endblock %}
+{% block meta_description %}Sound Of Memories, groupe de death mélodique né en 2010 entre Paris et l'Essonne. Histoire, membres, discographie et univers du groupe.{% endblock %}
 {% block stylesheets %}
-    <link rel="preload" as="image" href="{{ asset('uploads/legacy/about.JPG') }}">
+    {% set aboutHero = editorial.hero ?? null %}
+    {% if aboutHero and aboutHero.imagePath %}
+        {% set aboutHeroImagePath = aboutHero.imagePath starts with 'uploads/' ? aboutHero.imagePath : 'uploads/editorial/' ~ aboutHero.imagePath|trim('/') %}
+        <link rel="preload" as="image" href="{{ asset(aboutHeroImagePath) }}">
+    {% endif %}
     {{ parent() }}
 {% endblock %}
 
 {% block page %}
-    <section class="page-banner page-banner--band" style="--banner-image: url('{{ asset('uploads/legacy/about.JPG') }}');">
-        <div class="container narrow-copy about-hero-copy">
-            <p class="eyebrow">som-band</p>
-            <h1>Death mélodique, énergie live et mémoire sonore.</h1>
-            <p>Depuis 2010, Sound Of Memories développe une identité forgée entre riffs heavy / thrash, base death melodic old school et vraie ambition de scène.</p>
-            <div class="band-hero-meta">
-                <span class="band-meta-chip">Région Essonne</span>
-                <span class="band-meta-chip">Style Death Mélodique</span>
-                <span class="band-meta-chip">Actif depuis 2010</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-bg-1 band-story-section">
-        <div class="container band-story-layout">
-            <div class="band-story-copy">
-                <p class="eyebrow">Notre histoire</p>
-                <h2>Un groupe construit entre studio, réseau et scènes métal.</h2>
-                <div class="band-bio">
-                    <p>Créé en 2010 à Paris par Alain à la guitare, Lucho à la guitare et Fabien à la basse, Sound Of Memories se définit par un mélange de riffs heavy / thrash metal sur une base death melodic old school.</p>
-                    <p>C’est en 2012, avec l’arrivée de Nacim à la batterie puis de Flo au chant l’année suivante, que le combo se fixe des objectifs plus sérieux et concrétise ses efforts en enregistrant son premier E.P. <strong>Living Circles</strong> au studio Zoe-H en septembre 2013.</p>
-                    <p>Suite à des retours plus que favorables, Sound Of Memories intègre Army Of One pour la promotion et le touring, développe son réseau via Thanatos Production et défend ainsi ses compositions sur de nombreuses scènes comme le PYHC Fest, le Covent Garden d’Eragny ou encore La Boule Noire.</p>
-                    <p>En parallèle, le groupe poursuit son travail de composition et rentre en studio en février 2015 afin d’enregistrer son premier album. Julien Delsol prend en charge la production d’un opus plus sombre, plus complexe et plus ambitieux, pendant que la signature sur le label Finisterian Dead End confirme la volonté du groupe de franchir un cap sur la scène métal nationale.</p>
-                    <p><strong>To Deliverance</strong> est disponible dans tous les bacs de France et d’Angleterre depuis le 2 novembre 2015. Le groupe donne alors rendez-vous aux amateurs de headbang sur les routes de France et de Navarre pour défendre une musique énergique, brutale et mélodique.</p>
-                </div>
-            </div>
-
-            <div class="band-story-visual">
-                <figure class="band-story-photo">
-                    <img src="{{ asset('uploads/legacy/about.JPG') }}" alt="Photo du groupe Sound Of Memories" width="1409" height="939" fetchpriority="high" decoding="async">
-                </figure>
-                <div class="band-story-note">
-                    <strong>Essonne / Paris</strong>
-                    <span>Heavy, thrash et death melodic old school dans une même poussée.</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-bg-2 band-lineup-section">
-        <div class="container section-head band-section-head">
-            <div>
-                <p class="eyebrow">Line-up</p>
-                <h2>Un line-up resserré, pensé pour la scène.</h2>
-            </div>
-        </div>
-
-        <div class="container band-lineup-grid">
-            {% for member in [
-                { index: '01', name: 'Alain', role: 'Guitare', note: 'Co-fondateur et colonne vertébrale du son.' },
-                { index: '02', name: 'Lucho', role: 'Guitare', note: 'Contrepoint mélodique et tension rythmique.' },
-                { index: '03', name: 'Fabien', role: 'Basse', note: 'Fondation grave et co-fondateur du projet.' },
-                { index: '04', name: 'Nacim', role: 'Batterie', note: 'Impulsion live et impact old school.' },
-                { index: '05', name: 'Flo', role: 'Chant', note: 'Présence frontale et brutalité maîtrisée.' }
-            ] %}
-                <article class="band-member-card">
-                    <span class="band-member-index">{{ member.index }}</span>
-                    <p class="card-kicker">{{ member.role }}</p>
-                    <h3>{{ member.name }}</h3>
-                    <p>{{ member.note }}</p>
-                </article>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section class="section section-bg-3 band-discography-section">
-        <div class="container section-head band-section-head">
-            <div>
-                <p class="eyebrow">Discographie</p>
-                <h2>Deux sorties pour fixer l’identité du groupe.</h2>
-            </div>
-        </div>
-
-        <div class="container band-discography-grid">
-            <article class="band-release-card">
-                <figure class="band-release-cover">
-                    <img src="{{ asset('uploads/legacy/Living.jpg') }}" alt="Pochette Living Circles" width="720" height="687" loading="lazy" decoding="async">
-                </figure>
-                <div class="band-release-copy">
-                    <p class="card-kicker">EP · 2013</p>
-                    <h3>Living Circles</h3>
-                    <p>Premier E.P. enregistré au studio Zoe-H, point de bascule entre le projet de départ et une ambition de groupe plus affirmée.</p>
-                    <div class="band-release-meta">
-                        <span>Studio Zoe-H</span>
-                        <span>Septembre 2013</span>
+    {# ── Use editorial modules if they exist, otherwise show static content ── #}
+    {% if editorial.hero is defined and editorial.hero is not null %}
+        {% include 'components/editorial/_module_manifesto_hero.html.twig' with { module: editorial.hero } only %}
+    {% else %}
+        <section class="page-banner page-banner--band" style="--banner-image: url('{{ asset('uploads/legacy/gal14.JPG') }}');">
+            <div class="container editorial-band-hero__layout">
+                <div class="editorial-band-hero__copy">
+                    <p class="eyebrow">The Band</p>
+                    <h1>Sound Of Memories</h1>
+                    <p class="editorial-band-hero__lead">Métal mélodique forgé entre Paris et l'Essonne depuis 2010. Entre death mélodique, heavy et thrash, un son qui ne s'oublie pas.</p>
+                    <div class="editorial-band-hero__meta">
+                        <span>Melodic Death Metal</span>
+                        <span>Paris, France</span>
+                        <span>Since 2010</span>
                     </div>
                 </div>
-            </article>
-
-            <article class="band-release-card">
-                <figure class="band-release-cover">
-                    <img src="{{ asset('uploads/legacy/Deliv.jpg') }}" alt="Pochette To Deliverance" width="492" height="492" loading="lazy" decoding="async">
+                <figure class="editorial-band-hero__visual">
+                    <img src="{{ asset('uploads/legacy/about.JPG') }}" alt="Sound Of Memories — photo du groupe" width="1409" height="939" fetchpriority="high" decoding="async">
                 </figure>
-                <div class="band-release-copy">
-                    <p class="card-kicker">Album · 2015</p>
-                    <h3>To Deliverance</h3>
-                    <p>Premier album du groupe, produit par Julien Delsol et porté par une écriture plus sombre, plus dense et plus ambitieuse.</p>
-                    <div class="band-release-meta">
-                        <span>Finisterian Dead End</span>
-                        <span>2 novembre 2015</span>
+            </div>
+        </section>
+    {% endif %}
+
+    {% if editorial.story is defined and editorial.story is not null %}
+        {% include 'components/editorial/_module_story_block.html.twig' with { module: editorial.story } only %}
+    {% else %}
+        <section class="section section-bg-1 editorial-story-section">
+            <div class="container editorial-story-layout">
+                <div class="editorial-story-copy">
+                    <p class="eyebrow">Our Story</p>
+                    <h2>Né du besoin de créer quelque chose de viscéral.</h2>
+                    <p class="editorial-story-copy__lead">Sound Of Memories naît en 2010 d'une envie commune : fusionner la puissance du death mélodique avec des atmosphères cinématiques et des mélodies qui restent gravées.</p>
+
+                    <div class="editorial-story-copy__body">
+                        <p>Le groupe se forme dans le sud de Paris, porté par une fascination pour les contrastes sonores — la brutalité et la beauté, la violence et l'émotion. Dès les premières répétitions, le son prend forme : des riffs tranchants, des leads aériens, une section rythmique massive et des compositions qui osent la longueur et la narration.</p>
+                        <p>Les premiers concerts confirment la direction. Les scènes parisiennes — Le Batofar, La Boule Noire, Le Petit Bain — deviennent le terrain de jeu du groupe. L'énergie live est frontale, organique, sans concession. C'est sur scène que Sound Of Memories prend toute sa dimension.</p>
+                        <p>Avec "Living Circles" en 2013, "To Deliverance" en 2015 puis "The Sand Within" en 2020, le groupe affirme sa signature : un metal mélodique qui ne sacrifie ni la technique ni l'émotion, avec une production soignée et une identité visuelle forte.</p>
                     </div>
                 </div>
-            </article>
-        </div>
-    </section>
+
+                <div class="editorial-story-visual">
+                    <figure class="editorial-story-visual__figure">
+                        <img src="{{ asset('uploads/legacy/gal5.JPG') }}" alt="Sound Of Memories en concert" width="1409" height="939" loading="lazy" decoding="async">
+                    </figure>
+                    <div class="editorial-story-visual__note">
+                        <span>3 albums / EPs</span>
+                        <span>50+ concerts</span>
+                        <span>Paris &amp; Île-de-France</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    {% if editorial.lineup is defined and editorial.lineup is not null %}
+        {% include 'components/editorial/_module_lineup_grid.html.twig' with { module: editorial.lineup } only %}
+    {% else %}
+        <section class="section section-bg-2 band-lineup-section">
+            <div class="container">
+                <div class="editorial-section-head">
+                    <div>
+                        <p class="eyebrow">Lineup</p>
+                        <h2>Les visages derrière le son.</h2>
+                        <p class="editorial-section-head__lead">Chaque membre apporte sa couleur, son énergie et sa vision. Ensemble, ils forment le mur sonore Sound Of Memories.</p>
+                    </div>
+                </div>
+
+                <div class="editorial-lineup-grid">
+                    <div class="editorial-member-card">
+                        <p class="eyebrow">Guitare / Composition</p>
+                        <figure class="editorial-member-card__portrait" aria-hidden="true">
+                            <span>A</span>
+                        </figure>
+                        <h3>Alain</h3>
+                        <p class="editorial-member-card__subtitle">Guitare</p>
+                        <p>Guitares tranchantes, mélodies en tension et énergie frontale. Alain pose l'une des signatures sonores du groupe.</p>
+                    </div>
+                    <div class="editorial-member-card">
+                        <p class="eyebrow">Guitare</p>
+                        <figure class="editorial-member-card__portrait" aria-hidden="true">
+                            <span>L</span>
+                        </figure>
+                        <h3>Lucho</h3>
+                        <p class="editorial-member-card__subtitle">Guitare</p>
+                        <p>Riffs incisifs, attaques nettes et présence scénique immédiate. Lucho renforce la puissance et l'ampleur des morceaux.</p>
+                    </div>
+                    <div class="editorial-member-card">
+                        <p class="eyebrow">Basse</p>
+                        <figure class="editorial-member-card__portrait" aria-hidden="true">
+                            <span>F</span>
+                        </figure>
+                        <h3>Fabien</h3>
+                        <p class="editorial-member-card__subtitle">Basse</p>
+                        <p>Le socle grave qui relie les guitares à la batterie. Fabien donne au son sa profondeur, son poids et sa tenue.</p>
+                    </div>
+                    <div class="editorial-member-card">
+                        <p class="eyebrow">Batterie</p>
+                        <figure class="editorial-member-card__portrait" aria-hidden="true">
+                            <span>N</span>
+                        </figure>
+                        <h3>Nacim</h3>
+                        <p class="editorial-member-card__subtitle">Batterie</p>
+                        <p>La frappe qui propulse chaque titre. Nacim alterne tension, impact et précision pour faire avancer tout le set.</p>
+                    </div>
+                    <div class="editorial-member-card">
+                        <p class="eyebrow">Voix</p>
+                        <figure class="editorial-member-card__portrait" aria-hidden="true">
+                            <span>F</span>
+                        </figure>
+                        <h3>Flo</h3>
+                        <p class="editorial-member-card__subtitle">Chant</p>
+                        <p>Une voix portée par l'intensité et le relief émotionnel. Flo donne son souffle, sa rage et sa présence aux morceaux.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    {% if editorial.discography is defined and editorial.discography is not null %}
+        {% include 'components/editorial/_module_release_grid.html.twig' with { module: editorial.discography } only %}
+    {% else %}
+        <section class="section section-bg-3 band-discography-section">
+            <div class="container">
+                <div class="editorial-section-head">
+                    <div>
+                        <p class="eyebrow">Discography</p>
+                        <h2>Chaque album, une étape.</h2>
+                        <p class="editorial-section-head__lead">De "Living Circles" en 2013 à "The Sand Within" en 2020, trois sorties qui racontent l'évolution du son Sound Of Memories.</p>
+                    </div>
+                </div>
+
+                <div class="editorial-release-grid">
+                    <div class="editorial-release-card">
+                        <figure class="editorial-release-card__cover">
+                            <img src="{{ asset('uploads/legacy/Living.jpg') }}" alt="Living Circles — pochette" loading="lazy" decoding="async">
+                        </figure>
+                        <div class="editorial-release-card__copy">
+                            <p class="card-kicker">2013</p>
+                            <h3>Living Circles</h3>
+                            <p class="editorial-release-card__subtitle">EP</p>
+                            <p>Le premier souffle studio du groupe. Une sortie fondatrice, déjà marquée par la tension mélodique et une vraie intensité d'écriture.</p>
+                            <div class="editorial-release-card__meta">
+                                <span>Première sortie</span>
+                                <span>Melodic Death Metal</span>
+                                <span>3 titres</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editorial-release-card">
+                        <figure class="editorial-release-card__cover">
+                            <img src="{{ asset('uploads/legacy/Deliv.jpg') }}" alt="To Deliverance — pochette" loading="lazy" decoding="async">
+                        </figure>
+                        <div class="editorial-release-card__copy">
+                            <p class="card-kicker">2015</p>
+                            <h3>To Deliverance</h3>
+                            <p class="editorial-release-card__subtitle">Album</p>
+                            <p>Une étape plus sombre, plus massive et plus frontale. Le groupe y durcit son écriture et renforce sa signature entre death, thrash et heavy.</p>
+                            <div class="editorial-release-card__meta">
+                                <span>Death / Thrash / Heavy</span>
+                                <span>10 titres</span>
+                                <span>Album</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editorial-release-card">
+                        <figure class="editorial-release-card__cover">
+                            <img src="{{ asset('uploads/legacy/SofM-cover.png') }}" alt="The Sand Within — pochette" loading="lazy" decoding="async">
+                        </figure>
+                        <div class="editorial-release-card__copy">
+                            <p class="card-kicker">2020</p>
+                            <h3>The Sand Within</h3>
+                            <p class="editorial-release-card__subtitle">Album</p>
+                            <p>Une matière plus vaste, plus sombre et plus cinématique. Le groupe y affine son identité entre violence contenue, mélodie et puissance évocatrice.</p>
+                            <div class="editorial-release-card__meta">
+                                <span>Metal / Melodic Death</span>
+                                <span>10 titres</span>
+                                <span>Album</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+    {% include 'components/_farewell.html.twig' %}
 {% endblock %}

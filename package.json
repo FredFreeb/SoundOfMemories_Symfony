@@ -1,0 +1,19 @@
+{
+  "name": "sound-of-memories-editorial",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort"
+  },
+  "dependencies": {
+    "@chenglou/pretext": "^0.0.4"
+  },
+  "devDependencies": {
+    "vite": "^8.0.0"
+  }
+}

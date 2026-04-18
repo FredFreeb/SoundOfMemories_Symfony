@@ -28,10 +28,10 @@ final class PressMentionCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Avis / Presse')
-            ->setEntityLabelInPlural('Avis / Presse')
+            ->setEntityLabelInSingular('Article de presse')
+            ->setEntityLabelInPlural('Revue de presse')
             ->setDefaultRowAction(Action::EDIT)
-            ->setSearchFields(['authorName', 'sourceLabel', 'quotePrimary', 'quoteSecondary', 'linkLabel'])
+            ->setSearchFields(['authorName', 'sourceLabel', 'quotePrimary', 'quoteSecondary', 'linkLabel', 'linkUrl'])
             ->setDefaultSort(['position' => 'ASC']);
     }
 
@@ -53,19 +53,28 @@ final class PressMentionCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id')->hideOnForm()->hideOnIndex();
-        yield TextField::new('authorName', 'Nom / auteur');
-        yield TextField::new('sourceLabel', 'Source')->hideOnIndex();
-        yield TextareaField::new('quotePrimary', 'Citation principale');
-        yield TextareaField::new('quoteSecondary', 'Citation secondaire')->hideOnIndex();
-        yield TextField::new('linkLabel', 'Texte du lien')->hideOnIndex();
-        yield TextField::new('linkUrl', 'URL du lien')->hideOnIndex();
-        yield ImageField::new('photo', 'Photo')
+        yield TextField::new('authorName', 'Titre de l article')
+            ->setHelp('Le titre principal affiche sur la carte presse.');
+        yield TextField::new('sourceLabel', 'Magazine / media')
+            ->setHelp('Exemple : Metallian, Rock Hard, webzine local.');
+        yield TextareaField::new('quotePrimary', 'Chapô / extrait')
+            ->setHelp('Petit resume ou phrase d accroche visible sur la carte.');
+        yield TextareaField::new('quoteSecondary', 'Accroche secondaire')
+            ->setHelp('Optionnel. Petite ligne supplementaire au-dessus du resume.')
+            ->hideOnIndex();
+        yield TextField::new('linkLabel', 'Texte du lien')
+            ->setHelp('Optionnel. Exemple : Lire l article.')
+            ->hideOnIndex();
+        yield TextField::new('linkUrl', 'URL de l article')
+            ->setHelp('Lien externe vers l article complet.')
+            ->hideOnIndex();
+        yield ImageField::new('photo', 'Visuel article')
             ->setBasePath('uploads/press')
             ->setUploadDir('public/uploads/press')
             ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
             ->setRequired(false)
             ->hideOnIndex();
-        yield ImageField::new('photo', 'Photo')
+        yield ImageField::new('photo', 'Visuel')
             ->setBasePath('uploads/press')
             ->onlyOnIndex();
         yield IntegerField::new('position', 'Position');

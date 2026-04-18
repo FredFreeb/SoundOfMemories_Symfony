@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT_DIR"
+
+DOCKER_CONFIG_DIR="$PROJECT_DIR/var/docker-cli"
+
+mkdir -p "$DOCKER_CONFIG_DIR"
+rm -f "$DOCKER_CONFIG_DIR/cli-plugins" "$DOCKER_CONFIG_DIR/contexts"
+ln -s "$HOME/.docker/cli-plugins" "$DOCKER_CONFIG_DIR/cli-plugins"
+ln -s "$HOME/.docker/contexts" "$DOCKER_CONFIG_DIR/contexts"
+
+cat > "$DOCKER_CONFIG_DIR/config.json" <<'JSON'
+{
+  "auths": {},
+  "currentContext": "desktop-linux"
+}
+JSON
+
+export DOCKER_CONFIG="$DOCKER_CONFIG_DIR"
+
+docker run --rm -it \
+  -p 5173:5173 \
+  -v "$PROJECT_DIR:/app" \
+  -w /app \
+  node:22-alpine \
+  sh -lc "npm install && npm run dev -- --host 0.0.0.0 --port 5173 --strictPort"

@@ -2,7 +2,9 @@
 
 namespace App\Controller\Store;
 
+use App\Entity\EditorialModule;
 use App\Entity\Product;
+use App\Repository\EditorialModuleRepository;
 use App\Repository\ProductRepository;
 use App\Service\SiteSettingsProvider;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -15,7 +17,11 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ShopController extends AbstractController
 {
     #[Route('', name: 'store_shop_index', methods: ['GET'])]
-    public function index(ProductRepository $products, SiteSettingsProvider $siteSettings): Response
+    public function index(
+        ProductRepository $products,
+        EditorialModuleRepository $editorialModules,
+        SiteSettingsProvider $siteSettings
+    ): Response
     {
         $publishedProducts = $products->findPublished();
         $categories = [];
@@ -43,6 +49,7 @@ final class ShopController extends AbstractController
             'categories' => array_values($categories),
             'productsByCategory' => array_values($productsByCategory),
             'featuredProduct' => $products->findCurrentMonthlyOffer() ?? $publishedProducts[0] ?? null,
+            'editorial' => $editorialModules->findPublishedMapForPage(EditorialModule::PAGE_SHOP),
             'siteSettings' => $siteSettings->getCurrent(),
         ]);
     }

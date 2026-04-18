@@ -9,3 +9,7 @@
 
 controllers:
     resource: routing.controllers
+
+admin_merch:
+    resource: '../src/Controller/Admin/MerchControlController.php'
+    type: attribute

@@ -1,0 +1,68 @@
+{% if module is not null %}
+    <section class="section {{ module.backgroundSlot }} editorial-concert-section">
+        <div class="container editorial-concert-layout" data-editorial-module="story-block" data-editorial-tone="{{ module.accentTone }}">
+            <div class="editorial-concert-copy" data-editorial-copy>
+                {% if module.eyebrow %}
+                    <p class="eyebrow">{{ module.eyebrow }}</p>
+                {% endif %}
+                <h2>{{ module.title }}</h2>
+                {% if module.leadText %}
+                    <p class="editorial-concert-copy__lead">{{ module.leadText }}</p>
+                {% endif %}
+
+                {% if module.bodyText %}
+                    <div class="editorial-concert-copy__body">
+                        {% for paragraph in module.bodyText|split('\n\n') %}
+                            {% if paragraph|trim is not empty %}
+                                <p>{{ paragraph|trim }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% set concertMeta = [module.metaPrimary, module.metaSecondary, module.metaTertiary]|filter(v => v is not empty) %}
+                {% if concertMeta is not empty %}
+                    <div class="editorial-concert-meta">
+                        {% for item in concertMeta %}
+                            <span>{{ item }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if module.ctaLabel and module.ctaUrl %}
+                    <a class="button button-ghost" href="{{ module.ctaUrl }}">{{ module.ctaLabel }}</a>
+                {% endif %}
+            </div>
+
+            {% if module.publishedItems is not empty %}
+                <div class="editorial-concert-rail">
+                    {% for item in module.publishedItems %}
+                        <article class="editorial-concert-beat">
+                            {% if item.eyebrow %}
+                                <p class="card-kicker">{{ item.eyebrow }}</p>
+                            {% endif %}
+                            <h3>{{ item.title }}</h3>
+                            {% if item.subtitle %}
+                                <p class="editorial-concert-beat__subtitle">{{ item.subtitle }}</p>
+                            {% endif %}
+                            {% if item.bodyText %}
+                                <p>{{ item.bodyText }}</p>
+                            {% endif %}
+                            <div class="editorial-concert-beat__meta">
+                                {% if item.metaPrimary %}
+                                    <span>{{ item.metaPrimary }}</span>
+                                {% endif %}
+                                {% if item.metaSecondary %}
+                                    <span>{{ item.metaSecondary }}</span>
+                                {% endif %}
+                            </div>
+                            {% if item.linkLabel and item.linkUrl %}
+                                <a class="text-link" href="{{ item.linkUrl }}" target="_blank" rel="noopener">{{ item.linkLabel }}</a>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endif %}

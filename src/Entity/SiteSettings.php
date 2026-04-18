@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\SiteSettingsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: SiteSettingsRepository::class)]
 // Fred note: Je stocke ici les visuels globaux pour que le front puisse se rapprocher du site de reference sans hardcoder les images.
@@ -18,7 +19,7 @@ class SiteSettings
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    private string $siteName = 'Expéditions Mystérieuses';
+    private string $siteName = 'Sound Of Memories';
 
     #[ORM\Column(length: 120)]
     private string $presetName = 'Classique';
@@ -85,6 +86,11 @@ class SiteSettings
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sectionBackgroundTertiary = null;
+
+    /**
+     * @var UploadedFile[]
+     */
+    private array $sectionBackgroundLibraryUploads = [];
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $soundcloudUrl = null;
@@ -436,6 +442,24 @@ class SiteSettings
     {
         $this->sectionBackgroundTertiary = $sectionBackgroundTertiary;
         $this->touch();
+
+        return $this;
+    }
+
+    /**
+     * @return UploadedFile[]
+     */
+    public function getSectionBackgroundLibraryUploads(): array
+    {
+        return $this->sectionBackgroundLibraryUploads;
+    }
+
+    /**
+     * @param UploadedFile[]|null $sectionBackgroundLibraryUploads
+     */
+    public function setSectionBackgroundLibraryUploads(?array $sectionBackgroundLibraryUploads): static
+    {
+        $this->sectionBackgroundLibraryUploads = $sectionBackgroundLibraryUploads ?? [];
 
         return $this;
     }

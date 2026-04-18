@@ -1,0 +1,52 @@
+{% if module is not null %}
+    <section class="section {{ module.backgroundSlot }} editorial-release-section">
+        <div class="container section-head editorial-section-head">
+            <div data-editorial-module="story-block" data-editorial-tone="{{ module.accentTone }}">
+                {% if module.eyebrow %}
+                    <p class="eyebrow">{{ module.eyebrow }}</p>
+                {% endif %}
+                <h2 data-editorial-copy>{{ module.title }}</h2>
+                {% if module.leadText %}
+                    <p class="editorial-section-head__lead">{{ module.leadText }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="container editorial-release-grid">
+            {% for item in module.publishedItems %}
+                {% set releaseImagePath = item.imagePath ? (item.imagePath starts with 'uploads/' ? item.imagePath : 'uploads/editorial/' ~ item.imagePath|trim('/')) : null %}
+                {% set releaseImage = releaseImagePath ? asset(releaseImagePath) : null %}
+                <article class="editorial-release-card">
+                    {% if releaseImage %}
+                        <figure class="editorial-release-card__cover">
+                            <img src="{{ releaseImage }}" alt="{{ item.title }}" width="720" height="720" loading="lazy" decoding="async">
+                        </figure>
+                    {% endif %}
+                    <div class="editorial-release-card__copy">
+                        {% if item.eyebrow %}
+                            <p class="card-kicker">{{ item.eyebrow }}</p>
+                        {% endif %}
+                        <h3>{{ item.title }}</h3>
+                        {% if item.subtitle %}
+                            <p class="editorial-release-card__subtitle">{{ item.subtitle }}</p>
+                        {% endif %}
+                        {% if item.bodyText %}
+                            <p>{{ item.bodyText }}</p>
+                        {% endif %}
+                        <div class="editorial-release-card__meta">
+                            {% if item.metaPrimary %}
+                                <span>{{ item.metaPrimary }}</span>
+                            {% endif %}
+                            {% if item.metaSecondary %}
+                                <span>{{ item.metaSecondary }}</span>
+                            {% endif %}
+                        </div>
+                        {% if item.linkLabel and item.linkUrl %}
+                            <a class="button button-ghost" href="{{ item.linkUrl }}" target="_blank" rel="noopener">{{ item.linkLabel }}</a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

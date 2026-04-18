@@ -1,0 +1,125 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Promotions & campagnes{% endblock %}
+
+{% block main %}
+    <div class="som-admin-dashboard som-promo-dashboard">
+        <section class="som-admin-hero">
+            <p class="som-admin-kicker">Promotions</p>
+            <h2>Une vue séparée pour piloter les fenêtres promo et la communication associée.</h2>
+            <p>Les promotions ne sont plus perdues dans les fiches produit : vous voyez ce qui est actif, programmé, terminé, et les campagnes mail à préparer autour.</p>
+        </section>
+
+        <section class="som-admin-grid">
+            <article class="som-admin-card">
+                <span>Actives</span>
+                <strong>{{ activePromotions|length + alwaysOnPromotions|length }}</strong>
+                <p>Produits déjà en réduction sur le front.</p>
+            </article>
+            <article class="som-admin-card">
+                <span>Programmées</span>
+                <strong>{{ upcomingPromotions|length }}</strong>
+                <p>Promotions prêtes à se déclencher.</p>
+            </article>
+            <article class="som-admin-card">
+                <span>Terminées</span>
+                <strong>{{ expiredPromotions|length }}</strong>
+                <p>Fenêtres promo expirées à nettoyer ou relancer.</p>
+            </article>
+            <article class="som-admin-card">
+                <span>Campagnes mail</span>
+                <strong>{{ mailingStats.draft + mailingStats.scheduled + mailingStats.ready }}</strong>
+                <p>{{ mailingStats.ready }} prêtes, {{ mailingStats.scheduled }} programmées.</p>
+            </article>
+        </section>
+
+        <section class="som-ops-lanes">
+            {% for block in [
+                { title: 'Actives', note: 'Prix promo visibles maintenant.', products: activePromotions|merge(alwaysOnPromotions), type: 'active' },
+                { title: 'Programmées', note: 'Fenêtres déjà posées, activables tout de suite.', products: upcomingPromotions, type: 'upcoming' },
+                { title: 'Terminées', note: 'Promos à clôturer ou réutiliser.', products: expiredPromotions, type: 'expired' }
+            ] %}
+                <article class="som-ops-lane">
+                    <header class="som-ops-lane__head">
+                        <div>
+                            <p class="som-admin-kicker">{{ block.title }}</p>
+                            <h3>{{ block.products|length }}</h3>
+                        </div>
+                        <p>{{ block.note }}</p>
+                    </header>
+
+                    <div class="som-promo-list">
+                        {% for product in block.products %}
+                            <article class="som-promo-card">
+                                <div class="som-promo-card__head">
+                                    <div>
+                                        <strong>{{ product.name }}</strong>
+                                        <span>{{ product.category }}</span>
+                                    </div>
+                                    <span class="badge badge-{{ product.promotionTone }}">{{ product.promotionState }}</span>
+                                </div>
+                                <div class="som-promo-card__pricing">
+                                    <strong>{{ product.price }}</strong>
+                                    {% if product.comparePrice %}
+                                        <span>{{ product.comparePrice }}</span>
+                                    {% endif %}
+                                </div>
+                                <p>{{ product.windowLabel }}</p>
+                                <div class="som-promo-card__actions">
+                                    <a href="{{ product.editUrl }}">Éditer</a>
+                                    <a href="{{ product.frontUrl }}" target="_blank" rel="noopener">Voir la fiche</a>
+
+                                    {% if block.type == 'upcoming' %}
+                                        <form method="post" action="{{ path('admin_merch_promotion_start', {id: product.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_merch_promotion_start_' ~ product.id) }}">
+                                            <button class="button button-small" type="submit">Démarrer maintenant</button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if block.type != 'expired' %}
+                                        <form method="post" action="{{ path('admin_merch_promotion_stop', {id: product.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_merch_promotion_stop_' ~ product.id) }}">
+                                            <button class="button button-small button-ghost" type="submit">Arrêter</button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if not product.isMonthlyOffer %}
+                                        <form method="post" action="{{ path('admin_merch_promotion_highlight', {id: product.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_merch_promotion_highlight_' ~ product.id) }}">
+                                            <button class="button button-small" type="submit">Mettre en offre du mois</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="som-promo-card__highlight">Offre du mois</span>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% else %}
+                            <article class="som-admin-card som-admin-card--soft">
+                                <span>Vide</span>
+                                <p>Aucune promotion dans ce segment pour le moment.</p>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+
+        <section class="som-admin-grid">
+            <a class="som-admin-card som-admin-card--soft" href="{{ mailingsUrl }}">
+                <span>Campagnes brouillon</span>
+                <strong>{{ mailingStats.draft }}</strong>
+                <p>Construire les campagnes qui annoncent les drops et promos.</p>
+            </a>
+            <a class="som-admin-card som-admin-card--soft" href="{{ mailingsUrl }}">
+                <span>Campagnes prêtes</span>
+                <strong>{{ mailingStats.ready }}</strong>
+                <p>Envoyer ou programmer la communication fan base.</p>
+            </a>
+            <a class="som-admin-card som-admin-card--soft" href="{{ productsUrl }}">
+                <span>Retour catalogue</span>
+                <strong>Produits</strong>
+                <p>Revenir au pilotage détaillé produit par produit.</p>
+            </a>
+        </section>
+    </div>
+{% endblock %}

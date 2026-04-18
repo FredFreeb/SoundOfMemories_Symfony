@@ -25,6 +25,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AdminRoute(path: '/produits', name: 'produits')]
 // Fred note: J'utilise ce CRUD pour gérer les produits vendables et leur image de couverture depuis l'admin.
@@ -38,6 +41,13 @@ final class ProductCrudController extends AbstractCrudController
         'Glitch analogique' => 'glitch',
     ];
 
+    private const BADGE_TONE_CHOICES = [
+        'Acier' => 'steel',
+        'Braise' => 'ember',
+        'Sable' => 'sand',
+        'Forêt' => 'forest',
+    ];
+
     private const LEVEL_CHOICES = [
         '1 / 5' => 1,
         '2 / 5' => 2,
@@ -45,11 +55,6 @@ final class ProductCrudController extends AbstractCrudController
         '4 / 5' => 4,
         '5 / 5' => 5,
     ];
-
-    public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
 
     public static function getEntityFqcn(): string
     {
@@ -63,12 +68,18 @@ final class ProductCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Produits')
             ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['name', 'slug', 'shortDescription', 'catalogExcerpt', 'description'])
-            ->setDefaultSort(['createdAt' => 'DESC']);
+            ->setDefaultSort(['sortPosition' => 'ASC', 'createdAt' => 'DESC']);
     }
 
     public function configureActions(Actions $actions): Actions
     {
+        $previewAction = Action::new('previewStoreProduct', 'Voir la fiche', 'fas fa-arrow-up-right-from-square')
+            ->linkToUrl(fn (Product $product): string => $this->getUrlGenerator()->generate('store_shop_show', ['slug' => $product->getSlug()]))
+            ->setHtmlAttributes(['target' => '_blank', 'rel' => 'noopener']);
+
         return $actions
+            ->add(Crud::PAGE_INDEX, $previewAction)
+            ->add(Crud::PAGE_EDIT, $previewAction)
             ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
                 ->setLabel('Gérer')
                 ->setIcon('fas fa-shirt'));
@@ -79,18 +90,107 @@ final class ProductCrudController extends AbstractCrudController
         return $filters
             ->add('category')
             ->add('isPublished')
+            ->add('isMonthlyOffer')
             ->add('createdAt');
     }
 
     public function configureFields(string $pageName): iterable
     {
+        if (Crud::PAGE_INDEX === $pageName) {
+            yield ImageField::new('coverImage', 'Visuel')
+                ->setBasePath('uploads/products');
+            yield TextField::new('name', 'Produit')
+                ->formatValue(function ($value, Product $product): string {
+                    $badge = $product->getMerchBadge();
+                    $suffix = '';
+
+                    if (null !== $badge && '' !== trim($badge)) {
+                        $suffix = sprintf(' · %s', $badge);
+                    }
+
+                    return sprintf(
+                        '<strong>%s</strong><br><small>%s%s</small>',
+                        htmlspecialchars((string) $product->getName(), ENT_QUOTES, 'UTF-8'),
+                        htmlspecialchars((string) $product->getSlug(), ENT_QUOTES, 'UTF-8'),
+                        htmlspecialchars($suffix, ENT_QUOTES, 'UTF-8'),
+                    );
+                })
+                ->renderAsHtml();
+            yield TextField::new('category', 'Catégorie')
+                ->formatValue(fn ($value, Product $product): string => $product->getCategory()?->getName() ?: 'Merch');
+            yield TextField::new('variantChoiceLabel', 'Options')
+                ->formatValue(function ($value, Product $product): string {
+                    $variantCount = count($product->getPublishedVariants());
+
+                    if ($variantCount <= 0) {
+                        return 'Edition unique';
+                    }
+
+                    return sprintf(
+                        '%d %s · %s',
+                        $variantCount,
+                        $variantCount > 1 ? 'variantes' : 'variante',
+                        mb_strtolower($product->getVariantChoiceLabel()),
+                    );
+                });
+            yield MoneyField::new('priceCents', 'Prix départ')
+                ->setCurrency('EUR')
+                ->setStoredAsCents();
+            yield TextField::new('stock', 'Stock')
+                ->formatValue(fn ($value, Product $product): string => sprintf('%d dispo', $product->getDisplayStock()));
+            yield IntegerField::new('sortPosition', 'Ordre');
+            yield TextField::new('promotionStartsAt', 'Fenêtre promo')
+                ->formatValue(function ($value, Product $product): string {
+                    if (!$product->hasPromotionSchedule()) {
+                        return 'Libre';
+                    }
+
+                    $parts = [];
+
+                    if ($product->getPromotionStartsAt() instanceof \DateTimeImmutable) {
+                        $parts[] = 'du ' . $product->getPromotionStartsAt()->format('d/m');
+                    }
+
+                    if ($product->getPromotionEndsAt() instanceof \DateTimeImmutable) {
+                        $parts[] = 'au ' . $product->getPromotionEndsAt()->format('d/m');
+                    }
+
+                    return implode(' ', $parts);
+                });
+            yield TextField::new('promotionStateLabel', 'Promo')
+                ->formatValue(fn ($value, Product $product): string => $this->renderAdminStateBadge(
+                    $product->getPromotionStateLabel(),
+                    match ($product->getPromotionStateLabel()) {
+                        'Active', 'Toujours active' => 'success',
+                        'Programmée' => 'warning',
+                        'Terminée' => 'secondary',
+                        default => 'light',
+                    }
+                ))
+                ->renderAsHtml();
+            yield BooleanField::new('isMonthlyOffer', 'Offre du mois')
+                ->renderAsSwitch(false);
+            yield BooleanField::new('isPublished', 'Publié')
+                ->renderAsSwitch(false);
+
+            return;
+        }
+
         // Fred note: Je fais construire le slug depuis le nom pour garder des URLs propres sans ressaisie.
         yield IdField::new('id')->hideOnForm()->hideOnIndex();
         yield TextField::new('name', 'Nom');
         yield SlugField::new('slug', 'Slug')
             ->setTargetFieldName('name');
+        yield IntegerField::new('sortPosition', 'Ordre vitrine')
+            ->setHelp('Plus la valeur est petite, plus le produit remonte dans la boutique.');
         yield AssociationField::new('category', 'Catégorie')
             ->autocomplete();
+        yield TextField::new('merchBadge', 'Badge vitrine')
+            ->setHelp('Exemples: Nouveau drop, Édition limitée, Best seller.')
+            ->hideOnIndex();
+        yield ChoiceField::new('merchBadgeTone', 'Couleur du badge')
+            ->setChoices(self::BADGE_TONE_CHOICES)
+            ->hideOnIndex();
         yield TextField::new('variantChoiceLabel', 'Nom du selecteur')
             ->hideOnIndex()
             ->setHelp('Exemples: Taille, Format, Edition. Si vide, la boutique affichera "Taille".');
@@ -134,9 +234,6 @@ final class ProductCrudController extends AbstractCrudController
             ->renderExpanded(false)
             ->hideOnIndex()
             ->setHelp('Choisissez une animation légère à afficher sur la carte produit côté front.');
-        yield ImageField::new('coverImage', 'Visuel')
-            ->setBasePath('uploads/products')
-            ->onlyOnIndex();
         yield TextareaField::new('shortDescription', 'Description courte')
             ->hideOnIndex();
         yield TextareaField::new('catalogExcerpt', 'Description d accueil catalogue')
@@ -144,6 +241,24 @@ final class ProductCrudController extends AbstractCrudController
             ->setHelp('Courte accroche utilisée sur la page merchandising.');
         yield TextareaField::new('description', 'Description')
             ->hideOnIndex();
+        yield FormField::addPanel('Arguments de vente')
+            ->hideOnIndex();
+        yield TextField::new('featureOne', 'Point fort 1')
+            ->hideOnIndex();
+        yield TextField::new('featureTwo', 'Point fort 2')
+            ->hideOnIndex();
+        yield TextField::new('featureThree', 'Point fort 3')
+            ->hideOnIndex();
+        yield TextField::new('fitDetails', 'Coupe / format')
+            ->hideOnIndex()
+            ->setHelp('Exemple: Coupe standard, unisexe, poster 50 x 70 cm.');
+        yield TextField::new('materialDetails', 'Matière / finition')
+            ->hideOnIndex();
+        yield TextField::new('sizeGuideText', 'Guide taille / choix')
+            ->hideOnIndex();
+        yield TextField::new('shippingDetails', 'Info expédition')
+            ->hideOnIndex()
+            ->setHelp('Exemple: Expédition sous 3 à 5 jours ouvrés.');
         yield FormField::addPanel('Repères de lecture')
             ->hideOnIndex();
         yield ChoiceField::new('readingLevel', 'Lecture')
@@ -166,6 +281,12 @@ final class ProductCrudController extends AbstractCrudController
         yield BooleanField::new('isMonthlyOffer', 'Mettre en avant dans l’offre du mois')
             ->hideOnIndex()
             ->setHelp('Une seule offre du mois doit être active à la fois. Si tu l’actives ici, les autres produits promotionnels seront désactivés.');
+        yield DateTimeField::new('promotionStartsAt', 'Début de la promo')
+            ->hideOnIndex()
+            ->setHelp('Laissez vide pour une promo immédiatement visible.');
+        yield DateTimeField::new('promotionEndsAt', 'Fin de la promo')
+            ->hideOnIndex()
+            ->setHelp('Laissez vide pour une promo sans date de fin.');
         yield TextField::new('offerBannerEyebrow', 'Surtitre de l’offre')
             ->hideOnIndex();
         yield TextField::new('offerBannerTitle', 'Titre de l’offre')
@@ -222,11 +343,20 @@ final class ProductCrudController extends AbstractCrudController
             return;
         }
 
-        foreach ($this->entityManager->getRepository(Product::class)->findBy(['isMonthlyOffer' => true]) as $product) {
+        foreach ($this->getEntityManager()->getRepository(Product::class)->findBy(['isMonthlyOffer' => true]) as $product) {
             if ($product instanceof Product && $product !== $current) {
                 $product->setIsMonthlyOffer(false);
             }
         }
+    }
+
+    private function renderAdminStateBadge(string $label, string $tone): string
+    {
+        return sprintf(
+            '<span class="badge badge-%s">%s</span>',
+            $tone,
+            htmlspecialchars($label, ENT_QUOTES, 'UTF-8'),
+        );
     }
 
     private function synchronizeVariants(Product $product): void
@@ -259,5 +389,29 @@ final class ProductCrudController extends AbstractCrudController
                 ->setPriceCents($defaultVariant->getPriceCents())
                 ->setStock($product->getDisplayStock());
         }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    private function getEntityManager(): EntityManagerInterface
+    {
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $this->container->get(EntityManagerInterface::class);
+
+        return $entityManager;
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    private function getUrlGenerator(): UrlGeneratorInterface
+    {
+        /** @var UrlGeneratorInterface $urlGenerator */
+        $urlGenerator = $this->container->get('router');
+
+        return $urlGenerator;
     }
 }

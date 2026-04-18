@@ -1,0 +1,76 @@
+{% if module is not null %}
+    {% set merchImagePath = module.imagePath ? (module.imagePath starts with 'uploads/' ? module.imagePath : 'uploads/editorial/' ~ module.imagePath|trim('/')) : null %}
+    {% set merchImage = merchImagePath ? asset(merchImagePath) : null %}
+
+    <section class="section {{ module.backgroundSlot }} editorial-merch-section">
+        <div class="container editorial-merch-layout" data-editorial-module="story-block" data-editorial-tone="{{ module.accentTone }}">
+            <div class="editorial-merch-copy" data-editorial-copy>
+                {% if module.eyebrow %}
+                    <p class="eyebrow">{{ module.eyebrow }}</p>
+                {% endif %}
+                <h2>{{ module.title }}</h2>
+                {% if module.leadText %}
+                    <p class="editorial-merch-copy__lead">{{ module.leadText }}</p>
+                {% endif %}
+
+                {% if module.bodyText %}
+                    <div class="editorial-merch-copy__body">
+                        {% for paragraph in module.bodyText|split('\n\n') %}
+                            {% if paragraph|trim is not empty %}
+                                <p>{{ paragraph|trim }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% set merchMeta = [module.metaPrimary, module.metaSecondary, module.metaTertiary]|filter(v => v is not empty) %}
+                {% if merchMeta is not empty %}
+                    <div class="editorial-merch-meta">
+                        {% for item in merchMeta %}
+                            <span>{{ item }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="editorial-merch-visual">
+                {% if merchImage %}
+                    <figure class="editorial-merch-visual__figure">
+                        <img src="{{ merchImage }}" alt="{{ module.title }}" width="1409" height="939" loading="lazy" decoding="async">
+                    </figure>
+                {% endif %}
+
+                {% if module.ctaLabel and module.ctaUrl %}
+                    <a class="button button-primary" href="{{ module.ctaUrl }}">{{ module.ctaLabel }}</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if module.publishedItems is not empty %}
+            <div class="container editorial-merch-grid">
+                {% for item in module.publishedItems %}
+                    <article class="editorial-merch-card">
+                        {% if item.eyebrow %}
+                            <p class="card-kicker">{{ item.eyebrow }}</p>
+                        {% endif %}
+                        <h3>{{ item.title }}</h3>
+                        {% if item.subtitle %}
+                            <p class="editorial-merch-card__subtitle">{{ item.subtitle }}</p>
+                        {% endif %}
+                        {% if item.bodyText %}
+                            <p>{{ item.bodyText }}</p>
+                        {% endif %}
+                        <div class="editorial-merch-card__meta">
+                            {% if item.metaPrimary %}
+                                <span>{{ item.metaPrimary }}</span>
+                            {% endif %}
+                            {% if item.metaSecondary %}
+                                <span>{{ item.metaSecondary }}</span>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endif %}

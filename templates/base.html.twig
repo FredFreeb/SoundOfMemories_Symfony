@@ -5,7 +5,7 @@
         {% set request = app.request %}
         {% set canonical = request ? (request.schemeAndHttpHost ~ request.pathInfo) : '' %}
         {% set meta_description_block %}{% block meta_description %}{% endblock %}{% endset %}
-        {% set description = meta_description_block|trim ?: (settings.tagline ?: 'Fan base Sound Of Memories, merchandising et dates de concert.') %}
+        {% set description = meta_description_block|trim ?: (settings.tagline ?: 'Sound Of Memories — Melodic Metal. Merch officiel, concerts, albums et univers visuel du groupe.') %}
         {% set meta_robots_block %}{% block meta_robots %}index,follow{% endblock %}{% endset %}
         {% set robots = meta_robots_block|trim ?: 'index,follow' %}
         <meta charset="UTF-8">
@@ -13,7 +13,7 @@
         <meta name="theme-color" content="#111111">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
-        <title>{% block title %}{{ settings.siteName ?: 'Sound Of Memories Fan Base' }}{% endblock %}</title>
+        <title>{% block title %}{{ settings.siteName ?: 'Sound Of Memories' }}{% endblock %}</title>
         <meta name="description" content="{{ description }}">
         <meta name="robots" content="{{ robots }}">
         {% if canonical %}
@@ -30,6 +30,8 @@
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link href="https://fonts.googleapis.com/css2?family=Eagle+Lake&family=Metal+Mania&display=swap" rel="stylesheet">
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+            <link rel="stylesheet" href="{{ asset('styles/metal-effects.css') }}">
+            {{ vite_entry_link_tags('assets/editorial/main.js') }}
         {% endblock %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
@@ -37,6 +39,8 @@
 
         {% block javascripts %}
             <script src="{{ asset('scripts/site.js') }}" defer></script>
+            <script src="{{ asset('scripts/effects.js') }}" defer></script>
+            {{ vite_entry_script_tags('assets/editorial/main.js') }}
         {% endblock %}
     </body>
 </html>

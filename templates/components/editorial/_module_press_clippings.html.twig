@@ -1,0 +1,99 @@
+{% if module is not null %}
+    <section class="section {{ module.backgroundSlot }} editorial-press-section">
+        <div class="container section-head editorial-section-head">
+            <div data-editorial-module="story-block" data-editorial-tone="{{ module.accentTone }}">
+                {% if module.eyebrow %}
+                    <p class="eyebrow">{{ module.eyebrow }}</p>
+                {% endif %}
+                <h2 data-editorial-copy>{{ module.title }}</h2>
+                {% if module.leadText %}
+                    <p class="editorial-section-head__lead">{{ module.leadText }}</p>
+                {% endif %}
+            </div>
+
+            {% if module.ctaLabel and module.ctaUrl %}
+                <a class="text-link" href="{{ module.ctaUrl }}">{{ module.ctaLabel }}</a>
+            {% elseif canManage|default(false) and manageUrl|default(null) %}
+                <a class="text-link" href="{{ manageUrl }}">{{ manageLabel|default('Gérer') }}</a>
+            {% endif %}
+        </div>
+
+        <div class="container">
+            {% if entries is not empty %}
+                <div class="press-grid">
+                    {% for entry in entries|slice(0, 4) %}
+                        {% set pressPhoto = entry.photo
+                            ? ((entry.photo starts with 'http' or entry.photo starts with '/') ? entry.photo : asset('uploads/press/' ~ entry.photo))
+                            : null
+                        %}
+
+                        <article class="press-card{% if loop.first %} is-featured{% endif %}">
+                            {% if entry.url %}
+                                <a
+                                    class="press-card__media"
+                                    href="{{ entry.url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="{{ entry.linkLabel }} : {{ entry.title }}"
+                                >
+                                    {% if pressPhoto %}
+                                        <img src="{{ pressPhoto }}" alt="{{ entry.title }}" width="720" height="900" loading="lazy" decoding="async">
+                                    {% else %}
+                                        <span class="press-card__media-fallback">{{ entry.source }}</span>
+                                    {% endif %}
+                                </a>
+                            {% else %}
+                                <div class="press-card__media">
+                                    {% if pressPhoto %}
+                                        <img src="{{ pressPhoto }}" alt="{{ entry.title }}" width="720" height="900" loading="lazy" decoding="async">
+                                    {% else %}
+                                        <span class="press-card__media-fallback">{{ entry.source }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <div class="press-card__content">
+                                <div class="press-card__masthead">
+                                    <span class="press-card__source">{{ entry.source }}</span>
+                                    <span class="press-card__issue">Press clipping</span>
+                                </div>
+
+                                <h3>{{ entry.title }}</h3>
+
+                                {% if entry.lead %}
+                                    <p class="press-card__lead">{{ entry.lead }}</p>
+                                {% endif %}
+
+                                {% if entry.excerpt %}
+                                    <p class="press-card__excerpt">{{ entry.excerpt }}</p>
+                                {% endif %}
+
+                                {% if entry.url %}
+                                    <div class="press-card__footer">
+                                        <a
+                                            class="press-card__cta"
+                                            href="{{ entry.url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="{{ entry.linkLabel }} : {{ entry.title }}"
+                                        >
+                                            {{ entry.linkLabel }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <article class="empty-card">
+                    <h3>Aucun article publié</h3>
+                    <p>Ajoutez des articles ou reviews dans le Backstage pour alimenter cette section éditoriale.</p>
+                    {% if canManage|default(false) and manageUrl|default(null) %}
+                        <a class="text-link" href="{{ manageUrl }}">{{ manageLabel|default('Gérer') }}</a>
+                    {% endif %}
+                </article>
+            {% endif %}
+        </div>
+    </section>
+{% endif %}

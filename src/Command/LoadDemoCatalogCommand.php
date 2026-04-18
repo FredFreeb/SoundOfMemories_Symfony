@@ -57,7 +57,19 @@ class LoadDemoCatalogCommand extends Command
                 ->setStock($item['stock'])
                 ->setCoverImage($item['coverImage'])
                 ->setAnimationKey($item['animationKey'])
+                ->setMerchBadge($item['merchBadge'] ?? null)
+                ->setMerchBadgeTone($item['merchBadgeTone'] ?? null)
+                ->setSortPosition($item['sortPosition'] ?? 0)
+                ->setFeatureOne($item['featureOne'] ?? null)
+                ->setFeatureTwo($item['featureTwo'] ?? null)
+                ->setFeatureThree($item['featureThree'] ?? null)
+                ->setFitDetails($item['fitDetails'] ?? null)
+                ->setMaterialDetails($item['materialDetails'] ?? null)
+                ->setShippingDetails($item['shippingDetails'] ?? null)
+                ->setSizeGuideText($item['sizeGuideText'] ?? null)
                 ->setIsMonthlyOffer($item['isMonthlyOffer'])
+                ->setPromotionStartsAt($item['promotionStartsAt'] ?? null)
+                ->setPromotionEndsAt($item['promotionEndsAt'] ?? null)
                 ->setOfferBannerEyebrow($item['offerBannerEyebrow'])
                 ->setOfferBannerTitle($item['offerBannerTitle'])
                 ->setOfferBannerText($item['offerBannerText'])
@@ -116,7 +128,7 @@ class LoadDemoCatalogCommand extends Command
             ->setPresetName('Sound Of Memories')
             ->setPresetKey('default')
             ->setIsActive(true)
-            ->setSiteName('Sound Of Memories Fan Base')
+            ->setSiteName('Sound Of Memories')
             ->setTagline('Fan base officielle non-officielle, merchandising, dates de concert et atmosphère metal moderne.')
             ->setHeaderLogo('/uploads/legacy/Logo.png')
             ->setHomeHeroBackground('/uploads/legacy/htmlwallpaper.jpg')
@@ -191,7 +203,19 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 38,
                 'coverImage' => '/uploads/legacy/Tee-shirtSOM.png',
                 'animationKey' => 'vinyl',
+                'merchBadge' => 'Best seller',
+                'merchBadgeTone' => 'ember',
+                'sortPosition' => 10,
+                'featureOne' => 'Logo poitrine haute densité',
+                'featureTwo' => 'Coupe unisexe scène / quotidien',
+                'featureThree' => 'Drop phare de la boutique',
+                'fitDetails' => 'Coupe régulière, facile à porter sur scène comme au quotidien.',
+                'materialDetails' => 'Coton noir épais avec impression frontale contrastée.',
+                'shippingDetails' => 'Expédition suivie, plié à plat pour limiter les marques.',
+                'sizeGuideText' => 'Si vous hésitez entre deux tailles, prenez la plus large pour un tombé plus live.',
                 'isMonthlyOffer' => true,
+                'promotionStartsAt' => new \DateTimeImmutable('2026-04-01 00:00:00'),
+                'promotionEndsAt' => new \DateTimeImmutable('2026-04-30 23:59:59'),
                 'offerBannerEyebrow' => 'Drop mis en avant',
                 'offerBannerTitle' => 'Le classique qui ouvre la boutique',
                 'offerBannerText' => 'Un vrai best seller d’entrée de gamme avec tailles gérables, stock par variante et promo immédiate.',
@@ -221,7 +245,19 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 20,
                 'coverImage' => '/uploads/legacy/vueTShirt.png',
                 'animationKey' => 'pulse',
+                'merchBadge' => 'Premium',
+                'merchBadgeTone' => 'steel',
+                'sortPosition' => 20,
+                'featureOne' => 'Molleton plus dense',
+                'featureTwo' => 'Pièce forte hors scène',
+                'featureThree' => 'Stock court par taille',
+                'fitDetails' => 'Coupe droite, légèrement ample pour superposition facile.',
+                'materialDetails' => 'Molleton intérieur brossé, rendu plus lourd et plus premium.',
+                'shippingDetails' => 'Envoi suivi avec emballage renforcé pour garder le volume.',
+                'sizeGuideText' => 'Prenez votre taille habituelle pour un rendu net, une taille au-dessus pour un fit plus oversize.',
                 'isMonthlyOffer' => false,
+                'promotionStartsAt' => new \DateTimeImmutable('2026-04-15 00:00:00'),
+                'promotionEndsAt' => new \DateTimeImmutable('2026-05-05 23:59:59'),
                 'offerBannerEyebrow' => null,
                 'offerBannerTitle' => null,
                 'offerBannerText' => null,
@@ -250,6 +286,16 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 50,
                 'coverImage' => '/uploads/legacy/Logo.png',
                 'animationKey' => 'embers',
+                'merchBadge' => 'Petit prix',
+                'merchBadgeTone' => 'forest',
+                'sortPosition' => 40,
+                'featureOne' => 'Accessoire entrée de gamme',
+                'featureTwo' => 'Lecture immédiate du logo',
+                'featureThree' => 'Parfait en ajout panier',
+                'fitDetails' => 'Format unique pour veste, sac, board ou flightcase.',
+                'materialDetails' => 'Pin métal compact, pensé comme un petit collector durable.',
+                'shippingDetails' => 'Glissé à part dans une protection rigide.',
+                'sizeGuideText' => 'Format unique.',
                 'isMonthlyOffer' => false,
                 'offerBannerEyebrow' => null,
                 'offerBannerTitle' => null,
@@ -277,6 +323,16 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 24,
                 'coverImage' => '/uploads/legacy/bannerToDel.png',
                 'animationKey' => 'glitch',
+                'merchBadge' => 'Wall art',
+                'merchBadgeTone' => 'sand',
+                'sortPosition' => 30,
+                'featureOne' => 'Visuel album iconique',
+                'featureTwo' => 'Deux formats encadrables',
+                'featureThree' => 'Parfait pour coin écoute',
+                'fitDetails' => 'Disponible en A3 et A2 pour s’adapter au mur comme au studio.',
+                'materialDetails' => 'Impression mate pensée pour un rendu plus magazine / affiche.',
+                'shippingDetails' => 'Tube renforcé pour les grands formats.',
+                'sizeGuideText' => 'A3 pour une lecture compacte, A2 pour un vrai statement mural.',
                 'isMonthlyOffer' => false,
                 'offerBannerEyebrow' => null,
                 'offerBannerTitle' => null,
@@ -305,6 +361,16 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 20,
                 'coverImage' => '/uploads/legacy/bannerLiving.png',
                 'animationKey' => 'pulse',
+                'merchBadge' => 'Collector',
+                'merchBadgeTone' => 'steel',
+                'sortPosition' => 31,
+                'featureOne' => 'Première ère du groupe',
+                'featureTwo' => 'Belle pièce de décor',
+                'featureThree' => 'Stock volontairement limité',
+                'fitDetails' => 'Formats A3 et A2 pour compléter la série visuelle du groupe.',
+                'materialDetails' => 'Papier premium avec rendu légèrement texturé.',
+                'shippingDetails' => 'Expédition roulée et suivie.',
+                'sizeGuideText' => 'A2 si vous voulez un rendu plus expo / collector.',
                 'isMonthlyOffer' => false,
                 'offerBannerEyebrow' => null,
                 'offerBannerTitle' => null,
@@ -333,6 +399,16 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 30,
                 'coverImage' => '/uploads/legacy/Deliv.jpg',
                 'animationKey' => 'vinyl',
+                'merchBadge' => 'Album phare',
+                'merchBadgeTone' => 'ember',
+                'sortPosition' => 50,
+                'featureOne' => 'Support physique essentiel',
+                'featureTwo' => 'Facile à ajouter au panier',
+                'featureThree' => 'Existe en bundle signé',
+                'fitDetails' => 'Digipack classique ou bundle signé selon le niveau d’engagement fan.',
+                'materialDetails' => 'CD physique avec visuel album, parfait pour compléter un achat textile.',
+                'shippingDetails' => 'Expédié en protection rigide adaptée aux formats musicaux.',
+                'sizeGuideText' => 'Le bundle signé est la meilleure option pour un cadeau ou un collector fan base.',
                 'isMonthlyOffer' => false,
                 'offerBannerEyebrow' => null,
                 'offerBannerTitle' => null,
@@ -361,6 +437,16 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 18,
                 'coverImage' => '/uploads/legacy/Living.jpg',
                 'animationKey' => 'vinyl',
+                'merchBadge' => 'Origines',
+                'merchBadgeTone' => 'forest',
+                'sortPosition' => 51,
+                'featureOne' => 'Premier souffle studio',
+                'featureTwo' => 'Fort capital narratif',
+                'featureThree' => 'Excellent cross-sell discographie',
+                'fitDetails' => 'Disponible en CD simple ou en bundle artwork plus collectionneur.',
+                'materialDetails' => 'Format physique conçu pour donner de la profondeur à la discographie merch.',
+                'shippingDetails' => 'Expédié à plat avec protection rigide.',
+                'sizeGuideText' => 'Le bundle artwork est la version la plus collector.',
                 'isMonthlyOffer' => false,
                 'offerBannerEyebrow' => null,
                 'offerBannerTitle' => null,
@@ -389,6 +475,16 @@ class LoadDemoCatalogCommand extends Command
                 'stock' => 8,
                 'coverImage' => '/uploads/legacy/SOFWatch.jpg',
                 'animationKey' => 'glitch',
+                'merchBadge' => 'Ultra limité',
+                'merchBadgeTone' => 'steel',
+                'sortPosition' => 80,
+                'featureOne' => 'Collector premium',
+                'featureTwo' => 'Stock volontairement court',
+                'featureThree' => 'Pièce inattendue du catalogue',
+                'fitDetails' => 'Edition collector unique pour les fans qui veulent une pièce plus rare.',
+                'materialDetails' => 'Accessoire premium pensé comme objet de collection autant que produit merch.',
+                'shippingDetails' => 'Emballage renforcé et suivi complet.',
+                'sizeGuideText' => 'Edition unique, disponible tant que le stock court tient.',
                 'isMonthlyOffer' => false,
                 'offerBannerEyebrow' => null,
                 'offerBannerTitle' => null,

@@ -138,7 +138,7 @@ class CartService
             }
 
             $unitPriceCents = $resolvedVariant?->getPriceCents() ?? $product->getPriceCents();
-            $compareAtPriceCents = $resolvedVariant?->getCompareAtPriceCents();
+            $compareAtPriceCents = $product->isPromotionActive() ? $resolvedVariant?->getCompareAtPriceCents() : null;
             $variantLabel = $resolvedVariant?->getLabel();
             $displayName = $product->getName() ?? 'Produit';
 
@@ -176,6 +176,24 @@ class CartService
         return array_reduce(
             $this->getDetailedItems(),
             static fn (int $carry, array $item): int => $carry + $item['totalCents'],
+            0,
+        );
+    }
+
+    public function getCompareAtSavingsCents(): int
+    {
+        return array_reduce(
+            $this->getDetailedItems(),
+            static function (int $carry, array $item): int {
+                $referencePrice = (int) ($item['compareAtPriceCents'] ?? 0);
+                $unitPrice = (int) $item['unitPriceCents'];
+
+                if ($referencePrice <= $unitPrice) {
+                    return $carry;
+                }
+
+                return $carry + (($referencePrice - $unitPrice) * (int) $item['quantity']);
+            },
             0,
         );
     }

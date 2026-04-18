@@ -16,7 +16,7 @@ final class UserChecker implements UserCheckerInterface
         }
 
         if ($user->isAccountClosed()) {
-            throw new CustomUserMessageAccountStatusException('Ce compte a été clôturé. Contactez Expédition Mystère si vous avez besoin d’un justificatif lié à une commande.');
+            throw new CustomUserMessageAccountStatusException('Ce compte a été clôturé. Contactez Sound Of Memories si vous avez besoin d’un justificatif lié à une commande.');
         }
 
         if (!$user->isAdmin() && !$user->isVerified()) {

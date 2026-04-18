@@ -26,7 +26,8 @@ class ProductRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('p')
             ->andWhere('p.isPublished = :published')
             ->setParameter('published', true)
-            ->orderBy('p.createdAt', 'DESC');
+            ->orderBy('p.sortPosition', 'ASC')
+            ->addOrderBy('p.createdAt', 'DESC');
 
         if (null !== $limit) {
             $queryBuilder->setMaxResults($limit);
@@ -39,15 +40,55 @@ class ProductRepository extends ServiceEntityRepository
 
     public function findCurrentMonthlyOffer(): ?Product
     {
-        return $this->createQueryBuilder('p')
+        $products = $this->createQueryBuilder('p')
             ->andWhere('p.isPublished = :published')
             ->andWhere('p.isMonthlyOffer = :monthlyOffer')
             ->setParameter('published', true)
             ->setParameter('monthlyOffer', true)
-            ->orderBy('p.updatedAt', 'DESC')
-            ->setMaxResults(1)
+            ->orderBy('p.sortPosition', 'ASC')
+            ->addOrderBy('p.updatedAt', 'DESC')
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getResult();
+
+        foreach ($products as $product) {
+            if ($product instanceof Product && $product->isPromotionActive()) {
+                return $product;
+            }
+        }
+
+        return $products[0] ?? null;
+    }
+
+    /**
+     * @param int[] $excludedProductIds
+     * @param int[] $preferredCategoryIds
+     *
+     * @return Product[]
+     */
+    public function findCartUpsells(array $excludedProductIds, array $preferredCategoryIds = [], int $limit = 4): array
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->andWhere('p.isPublished = :published')
+            ->setParameter('published', true)
+            ->orderBy('p.sortPosition', 'ASC')
+            ->addOrderBy('p.updatedAt', 'DESC')
+            ->setMaxResults($limit);
+
+        if ([] !== $excludedProductIds) {
+            $queryBuilder
+                ->andWhere('p.id NOT IN (:excludedIds)')
+                ->setParameter('excludedIds', array_values(array_unique(array_map('intval', $excludedProductIds))));
+        }
+
+        if ([] !== $preferredCategoryIds) {
+            $queryBuilder
+                ->addOrderBy('CASE WHEN IDENTITY(p.category) IN (:preferredCategories) THEN 0 ELSE 1 END', 'ASC')
+                ->setParameter('preferredCategories', array_values(array_unique(array_map('intval', $preferredCategoryIds))));
+        }
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -60,7 +101,8 @@ class ProductRepository extends ServiceEntityRepository
             ->andWhere('p != :product')
             ->setParameter('published', true)
             ->setParameter('product', $product)
-            ->orderBy('p.updatedAt', 'DESC')
+            ->orderBy('p.sortPosition', 'ASC')
+            ->addOrderBy('p.updatedAt', 'DESC')
             ->setMaxResults($limit);
 
         if (null !== $product->getCategory()) {

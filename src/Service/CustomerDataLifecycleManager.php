@@ -207,7 +207,7 @@ final class CustomerDataLifecycleManager
     private function buildAnonymizedEmail(User $user): string
     {
         return sprintf(
-            'compte-ferme+%d+%s@expeditionmystere.invalid',
+            'compte-ferme+%d+%s@soundofmemories.invalid',
             $user->getId() ?? 0,
             bin2hex(random_bytes(3))
         );

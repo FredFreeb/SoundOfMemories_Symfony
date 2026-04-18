@@ -1,55 +1,62 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Concerts | Sound Of Memories Fan Base{% endblock %}
-{% block meta_description %}Retrouvez les prochaines dates de concert Sound Of Memories et gérez-les facilement depuis l’admin.{% endblock %}
+{% block title %}Concerts | Sound Of Memories
+{% endblock %}
+{% block meta_description %}Dates de concert Sound Of Memories. Retrouvez les prochains shows live et les dates passées du groupe.{% endblock %}
 
 {% block page %}
-    <section class="page-banner page-banner--bg-2">
-        <div class="container narrow-copy">
-            <p class="eyebrow">Dates live</p>
-            <h1>Une page concerts simple à mettre à jour.</h1>
-            <p>Chaque date est pilotée dans le back-office avec statut, salle, ville et lien de billetterie.</p>
-        </div>
-    </section>
+	<section class="page-banner page-banner--bg-2">
+		<div class="container narrow-copy">
+			<p class="eyebrow">Live Dates</p>
+			<h1>On stage. Sound Of Memories en live.</h1>
+			<p>Retrouvez nos prochaines dates et l'historique de nos concerts.</p>
+		</div>
+	</section>
 
-    <section class="section section-bg-2">
-        <div class="container concert-list">
-            {% for concert in concerts %}
-                <article class="concert-card{% if concert.isHighlighted %} is-highlighted{% endif %}">
-                    <div class="concert-date">
-                        <strong>{{ concert.concertAt|date('d') }}</strong>
-                        <span>{{ concert.concertAt|date('M Y')|upper }}</span>
-                    </div>
-                    <div class="concert-copy">
-                        <p class="card-kicker">{{ concert.venue }}</p>
-                        <h2>{{ concert.title }}</h2>
-                        <p>{{ concert.locationLabel }} · {{ concert.concertAt|date('H:i') }}</p>
-                        {% if concert.details %}
-                            <p>{{ concert.details }}</p>
-                        {% endif %}
-                    </div>
-                    <div class="concert-side">
-                        <figure class="concert-poster{% if not concert.posterImage %} is-empty{% endif %}">
-                            {% if concert.posterImage %}
-                                <img src="{{ asset('uploads/concerts/' ~ concert.posterImage) }}" alt="Affiche du concert {{ concert.title }}" width="300" height="400" loading="lazy" decoding="async">
-                            {% else %}
-                                <span>Affiche concert</span>
-                            {% endif %}
-                        </figure>
-                    </div>
-                    <div class="concert-meta">
-                        <span class="status-badge status-{{ concert.status }}">{{ concert.statusLabel }}</span>
-                        {% if concert.ticketUrl %}
-                            <a class="button-secondary" href="{{ concert.ticketUrl }}" target="_blank" rel="noopener">Billetterie</a>
-                        {% endif %}
-                    </div>
-                </article>
-            {% else %}
-                <article class="empty-card">
-                    <h2>Aucune date publiée</h2>
-                    <p>Les dates de concert apparaîtront ici dès qu’elles seront ajoutées depuis le backstage.</p>
-                </article>
-            {% endfor %}
-        </div>
-    </section>
+	{% include 'components/editorial/_module_concert_chronicle.html.twig' with { module: editorial.intro ?? null } only %}
+
+	<section class="section section-bg-2" id="dates-live">
+		<div class="container concert-list">
+			{% for concert in concerts %}
+				<article class="concert-card{% if concert.isHighlighted %} is-highlighted{% endif %}">
+					<div class="concert-date">
+						<strong>{{ concert.concertAt|date('d') }}</strong>
+						<span>{{ concert.concertAt|date('M Y')|upper }}</span>
+					</div>
+					<div class="concert-copy">
+						<p class="card-kicker">{{ concert.venue }}</p>
+						<h2>{{ concert.title }}</h2>
+						<p>{{ concert.locationLabel }}
+							·
+							{{ concert.concertAt|date('H:i') }}</p>
+						{% if concert.details %}
+							<p>{{ concert.details }}</p>
+						{% endif %}
+					</div>
+					<div class="concert-side">
+						<figure class="concert-poster{% if not concert.posterImage %} is-empty{% endif %}">
+							{% if concert.posterImage %}
+								<img src="{{ asset('uploads/concerts/' ~ concert.posterImage) }}" alt="Affiche du concert {{ concert.title }}" width="300" height="400" loading="lazy" decoding="async">
+							{% else %}
+								<span>Affiche concert</span>
+							{% endif %}
+						</figure>
+					</div>
+					<div class="concert-meta">
+						<span class="status-badge status-{{ concert.status }}">{{ concert.statusLabel }}</span>
+						{% if concert.ticketUrl %}
+							<a class="button-secondary" href="{{ concert.ticketUrl }}" target="_blank" rel="noopener">Billetterie</a>
+						{% endif %}
+					</div>
+				</article>
+			{% else %}
+				<article class="empty-card">
+					<h2>Aucune date publiée</h2>
+					<p>Les dates de concert apparaîtront ici dès qu’elles seront ajoutées depuis le backstage.</p>
+				</article>
+			{% endfor %}
+		</div>
+	</section>
+
+    {% include 'components/_farewell.html.twig' %}
 {% endblock %}

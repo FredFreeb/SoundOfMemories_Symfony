@@ -5,8 +5,22 @@ namespace App;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
-// Fred note: Le kernel est le point d'entree principal de Symfony pour charger le projet.
 class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
+
+    public function getCacheDir(): string
+    {
+        return sys_get_temp_dir().'/soundofmemories/cache/'.$this->environment;
+    }
+
+    public function getBuildDir(): string
+    {
+        return $this->getCacheDir();
+    }
+
+    public function getLogDir(): string
+    {
+        return sys_get_temp_dir().'/soundofmemories/log';
+    }
 }

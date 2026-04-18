@@ -2,7 +2,9 @@
 
 namespace App\Controller\Store;
 
+use App\Entity\EditorialModule;
 use App\Entity\GalleryPhoto;
+use App\Repository\EditorialModuleRepository;
 use App\Repository\GalleryPhotoRepository;
 use App\Service\SiteSettingsProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,12 +17,14 @@ final class GalleryController extends AbstractController
     public function __invoke(
         SiteSettingsProvider $siteSettings,
         GalleryPhotoRepository $galleryPhotoRepository,
+        EditorialModuleRepository $editorialModules,
     ): Response
     {
         $photos = $galleryPhotoRepository->findPublishedOrdered();
 
         return $this->render('store/gallery/index.html.twig', [
             'siteSettings' => $siteSettings->getCurrent(),
+            'editorial' => $editorialModules->findPublishedMapForPage(EditorialModule::PAGE_GALLERY),
             'photos' => [] !== $photos ? array_map(
                 static fn (GalleryPhoto $photo): array => [
                     'source' => 'admin',

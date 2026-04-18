@@ -3,14 +3,14 @@ Configuration locale des intégrations
 
 Tous les secrets locaux se règlent dans :
 
-- [\.env.local](/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/.env.local)
+- [\.env.local](/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/.env.local)
 
 Le projet lit actuellement ces variables :
 
 ```dotenv
 DEFAULT_URI=http://127.0.0.1:8081
 
-MAILER_DSN=sendmail://default?command=/usr/bin/env%20php%20/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/bin/dev-sendmail.php%20-t
+MAILER_DSN=sendmail://default?command=/usr/bin/env%20php%20/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/bin/dev-sendmail.php%20-t
 
 MOLLIE_API_KEY=
 
@@ -26,7 +26,7 @@ OAUTH_APPLE_ENABLED=0
 OAUTH_APPLE_CLIENT_ID=
 OAUTH_APPLE_TEAM_ID=
 OAUTH_APPLE_KEY_FILE_ID=
-OAUTH_APPLE_KEY_FILE_PATH=/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/config/oauth/keys/AuthKey_XXXX.p8
+OAUTH_APPLE_KEY_FILE_PATH=/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/config/oauth/keys/AuthKey_XXXX.p8
 ```
 
 Google
@@ -96,7 +96,7 @@ Valeurs à récupérer dans Apple Developer :
 
 Dépose la clé téléchargée ici :
 
-- [keys](/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/config/oauth/keys)
+- [keys](/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/config/oauth/keys)
 
 Exemple :
 
@@ -105,7 +105,7 @@ OAUTH_APPLE_ENABLED=1
 OAUTH_APPLE_CLIENT_ID=com.expeditionmystere.web
 OAUTH_APPLE_TEAM_ID=ABCD123456
 OAUTH_APPLE_KEY_FILE_ID=9XYZ123ABC
-OAUTH_APPLE_KEY_FILE_PATH=/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/config/oauth/keys/AuthKey_9XYZ123ABC.p8
+OAUTH_APPLE_KEY_FILE_PATH=/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/config/oauth/keys/AuthKey_9XYZ123ABC.p8
 ```
 
 Stripe
@@ -142,7 +142,7 @@ Messagerie
 En développement local, tu peux garder la boîte de capture actuelle :
 
 ```dotenv
-MAILER_DSN=sendmail://default?command=/usr/bin/env%20php%20/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/bin/dev-sendmail.php%20-t
+MAILER_DSN=sendmail://default?command=/usr/bin/env%20php%20/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/bin/dev-sendmail.php%20-t
 ```
 
 Pour envoyer de vrais emails, remplace par un SMTP ou une API compatible Symfony Mailer.
@@ -159,5 +159,5 @@ Conseil pratique
 ----------------
 
 - garde `\.env` avec des valeurs vides ou d'exemple
-- mets toujours les vraies clés dans [\.env.local](/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/.env.local)
-- garde la clé Apple `.p8` dans [keys](/Users/papounet/Coding/SOF_Website/SoundOfMemories_Symfony/config/oauth/keys), déjà exclu de Git
+- mets toujours les vraies clés dans [\.env.local](/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/.env.local)
+- garde la clé Apple `.p8` dans [keys](/Users/papounet/Coding/SOM_Website/SoundOfMemories_Symfony/config/oauth/keys), déjà exclu de Git

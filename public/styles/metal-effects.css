@@ -1,0 +1,1110 @@
+/*
+ * Sound Of Memories — Metal Effects Layer
+ * Inspired by metallica.com / ironmaiden.com aesthetics.
+ * Dynamic backgrounds, scroll reveals, glow effects, aggressive hover states.
+ * Layered on top of app.css — does not replace the existing nav or layout.
+ */
+
+/* ── Film Grain Canvas ───────────────────────────────────────────── */
+.film-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+}
+
+/* ── Cursor Glow (Hero interactive light) ────────────────────────── */
+.cursor-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 107, 53, 0.12), transparent 60%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    left: var(--glow-x, 50%);
+    top: var(--glow-y, 50%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+}
+
+/* ── Scroll Reveal Animations ────────────────────────────────────── */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered delays for grid items */
+.card-grid .reveal:nth-child(2),
+.press-grid .reveal:nth-child(2),
+.band-lineup-grid .reveal:nth-child(2),
+.editorial-lineup-grid .reveal:nth-child(2) {
+    transition-delay: 0.08s;
+}
+.card-grid .reveal:nth-child(3),
+.press-grid .reveal:nth-child(3),
+.band-lineup-grid .reveal:nth-child(3),
+.editorial-lineup-grid .reveal:nth-child(3) {
+    transition-delay: 0.16s;
+}
+.card-grid .reveal:nth-child(4),
+.press-grid .reveal:nth-child(4),
+.band-lineup-grid .reveal:nth-child(4),
+.editorial-lineup-grid .reveal:nth-child(4) {
+    transition-delay: 0.24s;
+}
+.card-grid .reveal:nth-child(5),
+.band-lineup-grid .reveal:nth-child(5),
+.editorial-lineup-grid .reveal:nth-child(5) {
+    transition-delay: 0.32s;
+}
+
+/* Hero elements get a different entrance */
+.hero-copy.reveal {
+    transform: translateX(-60px);
+    opacity: 0;
+}
+.hero-copy.reveal--visible {
+    transform: translateX(0);
+}
+
+.hero-visual-shell.reveal {
+    transform: translateX(60px) rotate(-5deg) scale(0.92);
+    opacity: 0;
+}
+.hero-visual-shell.reveal--visible {
+    transform: translateX(0) rotate(0deg) scale(1);
+}
+
+/* Login cards */
+.login-showcase.reveal {
+    transform: translateX(-40px);
+}
+.login-card.reveal {
+    transform: translateX(40px);
+}
+
+/* ── Parallax Effect ─────────────────────────────────────────────── */
+.section::before,
+.page-banner::before {
+    transform: scale(1.016) translateY(var(--parallax-y, 0));
+    will-change: transform;
+}
+
+.hero-bg {
+    transform: translateY(var(--parallax-y, 0));
+    will-change: transform;
+}
+
+/* ── Enhanced Glow & Neon Effects ────────────────────────────────── */
+
+/* Accent glow on eyebrows — more aggressive neon feel */
+.eyebrow,
+.card-kicker {
+    color: #7fc46f;
+    text-shadow:
+        0 0 8px rgba(127, 196, 111, 0.6),
+        0 0 24px rgba(127, 196, 111, 0.2),
+        0 1px 0 rgba(255, 193, 87, 0.75);
+}
+
+/* Hero title glow */
+h1 {
+    text-shadow:
+        0 0 40px rgba(255, 107, 53, 0.15),
+        0 6px 22px rgba(0, 0, 0, 0.28);
+}
+
+/* ── Aggressive Card Hover Effects ───────────────────────────────── */
+.product-card {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(255, 107, 53, 0.35);
+    box-shadow:
+        0 32px 64px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(255, 107, 53, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.concert-card {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+}
+
+.concert-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 193, 87, 0.3);
+    box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.35),
+        0 0 30px rgba(255, 193, 87, 0.06);
+}
+
+.concert-card.is-highlighted:hover {
+    border-color: rgba(255, 193, 87, 0.6);
+    box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.35),
+        0 0 40px rgba(255, 193, 87, 0.12);
+}
+
+.press-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease;
+}
+
+.press-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 32px 64px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(212, 168, 79, 0.08);
+}
+
+/* ── Enhanced Button Effects ─────────────────────────────────────── */
+.button-primary {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s ease;
+}
+
+.button-primary::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent 40%, transparent 60%, rgba(255, 255, 255, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.button-primary:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 12px 32px rgba(255, 107, 53, 0.3),
+        0 0 16px rgba(255, 107, 53, 0.15);
+}
+
+.button-primary:hover::before {
+    opacity: 1;
+}
+
+.button-secondary {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s ease,
+                border-color 0.25s ease,
+                background 0.25s ease;
+}
+
+.button-secondary:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 107, 53, 0.4);
+    background: rgba(255, 107, 53, 0.08);
+    box-shadow:
+        0 12px 24px rgba(0, 0, 0, 0.3),
+        0 0 12px rgba(255, 107, 53, 0.08);
+}
+
+/* ── Hero Section Enhanced ───────────────────────────────────────── */
+.hero-section {
+    background: #050506;
+}
+
+/* Subtle vignette overlay */
+.hero-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 20% 80%, rgba(255, 107, 53, 0.06), transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(121, 242, 223, 0.04), transparent 50%);
+}
+
+/* Animated gradient border on hero visual */
+.hero-visual {
+    border: 1px solid rgba(255, 107, 53, 0.2);
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.35),
+        0 0 60px rgba(255, 107, 53, 0.08),
+        inset 0 0 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.6s ease;
+}
+
+.hero-visual:hover {
+    transform: rotate(-2deg) scale(1.03);
+    box-shadow:
+        0 32px 72px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(255, 107, 53, 0.12),
+        inset 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Scroll Indicator Pulse ──────────────────────────────────────── */
+@keyframes som-scroll-pulse {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+}
+
+.scroll-indicator {
+    animation: som-scroll-pulse 2.4s ease-in-out infinite;
+}
+
+.scroll-indicator:hover {
+    animation: none;
+}
+
+/* ── Section Divider Lines ───────────────────────────────────────── */
+.section + .section::before {
+    border-top: 1px solid rgba(255, 107, 53, 0.08);
+}
+
+/* ── Enhanced Product Media ──────────────────────────────────────── */
+.product-media {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.5s ease;
+}
+
+.product-card:hover .product-media {
+    transform: scale(1.05);
+}
+
+/* ── Hero Mist / Smoke Effect ────────────────────────────────────── */
+@keyframes som-mist-drift {
+    0% { transform: translateX(-5%) scaleY(1); opacity: 0.5; }
+    50% { transform: translateX(5%) scaleY(1.1); opacity: 0.7; }
+    100% { transform: translateX(-5%) scaleY(1); opacity: 0.5; }
+}
+
+.hero-mist {
+    position: absolute;
+    bottom: -10%;
+    left: -10%;
+    right: -10%;
+    height: 40%;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 120% 100% at 50% 100%, rgba(11, 11, 13, 0.95), transparent 70%),
+        radial-gradient(ellipse 80% 60% at 30% 100%, rgba(255, 107, 53, 0.04), transparent 60%),
+        radial-gradient(ellipse 80% 60% at 70% 100%, rgba(121, 242, 223, 0.03), transparent 60%);
+    animation: som-mist-drift 12s ease-in-out infinite;
+}
+
+/* ── Hero Edge Flares ────────────────────────────────────────────── */
+@keyframes som-flare-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+.hero-edge-flare {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.hero-edge-flare--left {
+    left: 0;
+    background: linear-gradient(180deg, transparent, rgba(255, 107, 53, 0.15) 30%, rgba(255, 107, 53, 0.3) 50%, rgba(255, 107, 53, 0.15) 70%, transparent);
+    animation: som-flare-pulse 4s ease-in-out infinite;
+}
+
+.hero-edge-flare--right {
+    right: 0;
+    background: linear-gradient(180deg, transparent, rgba(121, 242, 223, 0.1) 30%, rgba(121, 242, 223, 0.2) 50%, rgba(121, 242, 223, 0.1) 70%, transparent);
+    animation: som-flare-pulse 4s ease-in-out infinite 2s;
+}
+
+/* ── Hero Animated Rings ─────────────────────────────────────────── */
+.hero-rings {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+@keyframes som-ring-pulse {
+    0% { transform: scale(0.8); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.08; }
+    100% { transform: scale(0.8); opacity: 0.3; }
+}
+
+.hero-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 107, 53, 0.12);
+    animation: som-ring-pulse 6s ease-in-out infinite;
+}
+
+.hero-ring--1 {
+    width: 120%;
+    height: 120%;
+    animation-delay: 0s;
+}
+
+.hero-ring--2 {
+    width: 140%;
+    height: 140%;
+    border-color: rgba(121, 242, 223, 0.08);
+    animation-delay: 2s;
+}
+
+.hero-ring--3 {
+    width: 160%;
+    height: 160%;
+    border-color: rgba(255, 193, 87, 0.06);
+    animation-delay: 4s;
+}
+
+/* ── Glowing CTA Button ──────────────────────────────────────────── */
+@keyframes som-glow-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.button-primary--glow {
+    background: linear-gradient(135deg, #ff6b35, #ff9348, #ffb36b, #ff9348, #ff6b35);
+    background-size: 200% 200%;
+    animation: som-glow-shift 4s ease infinite;
+    box-shadow:
+        0 4px 16px rgba(255, 107, 53, 0.25),
+        0 0 30px rgba(255, 107, 53, 0.08);
+}
+
+.button-primary--glow:hover {
+    box-shadow:
+        0 8px 32px rgba(255, 107, 53, 0.4),
+        0 0 50px rgba(255, 107, 53, 0.15);
+}
+
+/* ── Enhanced Navigation Glow ────────────────────────────────────── */
+.site-header {
+    background: rgba(0, 0, 0, 0.96);
+    box-shadow: 0 1px 0 rgba(255, 107, 53, 0.06);
+}
+
+.menu-link:hover,
+.nav-ghost:hover {
+    color: var(--text);
+    background: rgba(255, 107, 53, 0.06);
+    text-shadow: 0 0 12px rgba(255, 107, 53, 0.2);
+}
+
+.menu-link::after {
+    background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+}
+
+/* ── Enhanced Footer ─────────────────────────────────────────────── */
+.site-footer {
+    border-top: 1px solid rgba(255, 107, 53, 0.08);
+}
+
+.footer-stream-link {
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.footer-stream-link:hover {
+    transform: translateY(-3px) scale(1.15);
+}
+
+/* ── Flash Message Enhancement ───────────────────────────────────── */
+.flash {
+    backdrop-filter: blur(12px);
+    border-left: 3px solid var(--accent);
+}
+
+.flash-success {
+    border-left-color: var(--ice);
+}
+
+.flash-warning {
+    border-left-color: var(--accent-soft);
+}
+
+.flash-error {
+    border-left-color: #ff4444;
+}
+
+/* ── Enhanced Status Badges ──────────────────────────────────────── */
+.status-announced {
+    color: var(--ice);
+    border-color: rgba(121, 242, 223, 0.25);
+    background: rgba(121, 242, 223, 0.06);
+    text-shadow: 0 0 8px rgba(121, 242, 223, 0.3);
+}
+
+.status-sold_out {
+    color: var(--accent-soft);
+    border-color: rgba(255, 193, 87, 0.25);
+    background: rgba(255, 193, 87, 0.06);
+    text-shadow: 0 0 8px rgba(255, 193, 87, 0.3);
+}
+
+.status-completed {
+    color: var(--muted);
+    border-color: rgba(192, 183, 174, 0.15);
+    background: rgba(192, 183, 174, 0.04);
+}
+
+/* ── Smooth page transitions ─────────────────────────────────────── */
+@keyframes som-page-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+main {
+    animation: som-page-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Enhanced Masked Image Section ───────────────────────────────── */
+.masked-image-section__art {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.masked-image-section:hover .masked-image-section__art {
+    transform: scale(1.02);
+}
+
+/* ── Login Page Enhancement ──────────────────────────────────────── */
+.login-shell {
+    background:
+        radial-gradient(circle at 15% 85%, rgba(255, 107, 53, 0.12), transparent 40%),
+        radial-gradient(circle at 85% 15%, rgba(121, 242, 223, 0.08), transparent 35%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02), transparent 60%),
+        linear-gradient(180deg, #050506 0%, #0d0e12 100%);
+}
+
+/* ── Band Member Cards Enhanced ──────────────────────────────────── */
+.band-member-card,
+.editorial-member-card {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+}
+
+.band-member-card:hover,
+.editorial-member-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 193, 87, 0.25);
+    box-shadow:
+        0 28px 56px rgba(0, 0, 0, 0.35),
+        0 0 30px rgba(255, 193, 87, 0.06);
+}
+
+/* ── Gallery Photo Hover ─────────────────────────────────────────── */
+.photo-slide {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s ease;
+}
+
+.photo-slide:hover {
+    transform: scale(1.01);
+    box-shadow:
+        0 32px 72px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(255, 107, 53, 0.06);
+}
+
+/* ── FAQ Items ───────────────────────────────────────────────────── */
+.faq-item {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.faq-item:hover {
+    border-color: rgba(255, 107, 53, 0.2);
+    box-shadow:
+        0 16px 36px rgba(0, 0, 0, 0.25),
+        0 0 20px rgba(255, 107, 53, 0.04);
+}
+
+/* ── Video Carousel Enhancement ──────────────────────────────────── */
+.carousel-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s ease;
+}
+
+.carousel-card.is-active {
+    box-shadow:
+        0 32px 64px rgba(0, 0, 0, 0.35),
+        0 0 40px rgba(255, 107, 53, 0.08),
+        inset 0 0 0 1px rgba(255, 248, 229, 0.32);
+}
+
+.carousel-play-badge {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.carousel-card:hover .carousel-play-badge {
+    background: rgba(255, 107, 53, 0.85);
+    box-shadow:
+        0 8px 24px rgba(255, 107, 53, 0.3),
+        0 0 40px rgba(255, 107, 53, 0.15);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* ── Shop Page Enhancement ───────────────────────────────────────── */
+.shop-storefront-header {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.merch-spotlight {
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.merch-spotlight:hover {
+    border-color: rgba(255, 107, 53, 0.25);
+    box-shadow:
+        0 36px 72px rgba(0, 0, 0, 0.3),
+        0 0 50px rgba(255, 107, 53, 0.06);
+}
+
+.merch-card {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+}
+
+.merch-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 107, 53, 0.3);
+    box-shadow:
+        0 28px 56px rgba(0, 0, 0, 0.35),
+        0 0 30px rgba(255, 107, 53, 0.06);
+}
+
+/* ── Album Player Enhancement ────────────────────────────────────── */
+.album-chip {
+    position: relative;
+    overflow: hidden;
+}
+
+.album-chip::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), transparent 40%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.album-chip:hover::before,
+.album-chip.is-active::before {
+    opacity: 1;
+}
+
+.album-player-card__visual {
+    transition: box-shadow 0.5s ease;
+}
+
+.album-player-card:hover .album-player-card__visual {
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 -24px 48px rgba(0, 0, 0, 0.24),
+        0 0 60px rgba(255, 107, 53, 0.06);
+}
+
+/* ── Page Banner Enhancement ─────────────────────────────────────── */
+.page-banner .narrow-copy {
+    position: relative;
+    z-index: 3;
+}
+
+.page-banner h1 {
+    text-shadow:
+        0 0 40px rgba(255, 107, 53, 0.12),
+        0 6px 22px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Vinyl Disc Enhancement ──────────────────────────────────────── */
+@keyframes disc-glow {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 107, 53, 0.05); }
+    50% { box-shadow: 0 0 50px rgba(255, 107, 53, 0.12); }
+}
+
+.vinyl-disc {
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.05);
+}
+
+.album-player-card.is-playing .album-player-card__disc {
+    animation: album-disc-spin 12s linear infinite, disc-glow 4s ease-in-out infinite;
+}
+
+/* ── Native Audio Player ─────────────────────────────────────────── */
+.som-player-section {
+    color: var(--text);
+}
+
+.som-player-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+    gap: clamp(1.2rem, 3vw, 2.4rem);
+    align-items: start;
+}
+
+.som-player-left {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+}
+
+.som-player-intro {
+    max-width: 42ch;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.som-player-album-switcher {
+    display: grid;
+    gap: .8rem;
+    margin-top: .35rem;
+}
+
+.som-player-stream-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .6rem;
+    margin-top: .5rem;
+}
+
+.som-player-stream-label {
+    color: var(--muted);
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+.som-player-right {
+    display: grid;
+}
+
+.som-player-card {
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+        linear-gradient(180deg, rgba(18, 18, 22, 0.95), rgba(10, 10, 12, 0.98));
+    box-shadow:
+        0 32px 64px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.som-player-visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: clamp(260px, 34vw, 430px);
+    overflow: hidden;
+    background:
+        linear-gradient(180deg, rgba(12, 12, 14, 0.3), rgba(12, 12, 14, 0.6)),
+        var(--album-cover-url) center / cover no-repeat,
+        radial-gradient(circle at 30% 40%, rgba(255, 107, 53, 0.15), transparent 50%),
+        rgba(15, 15, 17, 0.9);
+    transition: background 0.5s ease;
+}
+
+.som-player-visual::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(20px) saturate(0.8);
+    pointer-events: none;
+}
+
+.som-player-vinyl {
+    position: relative;
+    width: min(290px, 68%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.14) 0 8%, transparent 9% 100%),
+        repeating-radial-gradient(circle at center, rgba(255, 255, 255, 0.06) 0 2px, rgba(0, 0, 0, 0) 3px 9px),
+        #111;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        inset 0 0 12px rgba(255, 255, 255, 0.04);
+    transition: transform 0.4s ease;
+}
+
+.som-player-vinyl.is-spinning {
+    animation: disc-spin 8s linear infinite;
+}
+
+@keyframes disc-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.som-player-vinyl__label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 38%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px rgba(255, 248, 229, 0.08);
+}
+
+.som-player-vinyl__label img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.som-player-vinyl__hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #0a0a0b;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 3px rgba(8, 8, 10, 0.7);
+}
+
+.som-player-visualizer-wrap {
+    height: 80px;
+    background: rgba(8, 8, 10, 0.95);
+    border-top: 1px solid rgba(255, 107, 53, 0.1);
+    border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+}
+
+.som-player-visualizer {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.som-player-info {
+    display: grid;
+    gap: .5rem;
+    padding: 1rem 1.2rem;
+}
+
+.som-player-info__type {
+    margin: 0;
+    color: rgba(255, 193, 87, 0.84);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.som-player-info h3 {
+    margin: 0;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    line-height: 1;
+}
+
+.som-player-info__copy {
+    margin: 0;
+    max-width: 52ch;
+    color: rgba(248, 241, 223, 0.72);
+    line-height: 1.6;
+    font-size: .95rem;
+}
+
+.som-player-controls {
+    display: grid;
+    gap: .75rem;
+    padding: 1rem 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(6, 6, 8, 0.5);
+}
+
+.som-player-now-playing {
+    margin: 0;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: .02em;
+}
+
+.som-player-transport {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.som-player-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    min-height: 44px;
+    padding: .7rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.som-player-btn:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 107, 53, 0.35);
+    background: rgba(255, 107, 53, 0.08);
+}
+
+.som-player-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.som-player-btn--play {
+    min-width: 120px;
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 107, 53, 0.05));
+    border-color: rgba(255, 107, 53, 0.25);
+}
+
+.som-player-btn--play:hover {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.25), rgba(255, 107, 53, 0.1));
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.1);
+}
+
+.som-player-btn--small {
+    min-height: 38px;
+    padding: .5rem .8rem;
+    font-size: .9rem;
+}
+
+.som-player-progress-row {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.som-player-time {
+    font-size: .82rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 3.5ch;
+}
+
+.som-player-progress {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.som-player-progress.is-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.som-player-progress__bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+    transition: width 0.1s linear;
+    position: relative;
+}
+
+.som-player-progress__bar::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translate(50%, -50%);
+    box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+}
+
+.som-player-tracklist {
+    display: grid;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    max-height: 320px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.som-player-track {
+    appearance: none;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto;
+    gap: .5rem;
+    align-items: center;
+    padding: .85rem 1.2rem;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    background: transparent;
+    color: var(--muted);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.som-player-track:hover {
+    background: rgba(255, 107, 53, 0.04);
+    color: var(--text);
+}
+
+.som-player-track:disabled,
+.som-player-track.is-unavailable {
+    opacity: 0.46;
+    cursor: not-allowed;
+}
+
+.som-player-track:disabled:hover,
+.som-player-track.is-unavailable:hover {
+    background: transparent;
+    color: var(--muted);
+}
+
+.som-player-track.is-active {
+    background: rgba(255, 107, 53, 0.08);
+    color: var(--accent);
+}
+
+.som-player-track__index {
+    font-size: .82rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.som-player-track.is-active .som-player-track__index {
+    color: var(--accent);
+}
+
+.som-player-track__title {
+    font-weight: 700;
+    font-size: .95rem;
+}
+
+.som-player-track__album {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.som-player-tracklist__empty {
+    margin: 0;
+    padding: 1rem 1.2rem 1.2rem;
+    color: rgba(248, 241, 223, 0.68);
+    line-height: 1.6;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 980px) {
+    .som-player-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .som-player-visual {
+        min-height: 240px;
+    }
+    .som-player-vinyl {
+        width: min(220px, 62%);
+    }
+}
+
+/* ── Empty State Enhancement ─────────────────────────────────────── */
+.empty-card {
+    text-align: center;
+    border-style: dashed;
+    border-color: rgba(255, 107, 53, 0.15);
+    background:
+        radial-gradient(circle at center, rgba(255, 107, 53, 0.02), transparent 60%),
+        var(--bg-elevated);
+}
+
+/* ── Reduced Motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .film-grain {
+        display: none;
+    }
+
+    .scroll-indicator {
+        animation: none;
+    }
+
+    .cursor-glow {
+        display: none;
+    }
+
+    .section::before,
+    .page-banner::before,
+    .hero-bg {
+        transform: none;
+        will-change: auto;
+    }
+
+    main {
+        animation: none;
+    }
+
+    .product-card,
+    .concert-card,
+    .press-card,
+    .band-member-card,
+    .editorial-member-card,
+    .photo-slide,
+    .faq-item,
+    .merch-card,
+    .carousel-card,
+    .album-chip {
+        transition: none;
+    }
+
+    .hero-mist,
+    .hero-edge-flare,
+    .hero-ring {
+        display: none;
+    }
+
+    .button-primary--glow {
+        animation: none;
+    }
+}

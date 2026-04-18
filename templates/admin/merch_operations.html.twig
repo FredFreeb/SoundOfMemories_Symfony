@@ -1,0 +1,107 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Pilotage merch{% endblock %}
+
+{% block main %}
+    <div class="som-admin-dashboard som-ops-dashboard">
+        <section class="som-admin-hero">
+            <p class="som-admin-kicker">Cockpit merch</p>
+            <h2>Suivre les commandes et les stocks sans passer par quatre écrans.</h2>
+            <p>Chaque colonne montre les commandes qui demandent une action immédiate. Les blocs stock servent de garde-fou pour éviter les ruptures surprises.</p>
+        </section>
+
+        <section class="som-ops-lanes">
+            {% for lane in lanes %}
+                <article class="som-ops-lane">
+                    <header class="som-ops-lane__head">
+                        <div>
+                            <p class="som-admin-kicker">{{ lane.title }}</p>
+                            <h3>{{ lane.orders|length }}</h3>
+                        </div>
+                        <p>{{ lane.description }}</p>
+                    </header>
+
+                    <div class="som-ops-order-list">
+                        {% for order in lane.orders %}
+                            <article class="som-ops-order-card">
+                                <div class="som-ops-order-card__head">
+                                    <div>
+                                        <strong>{{ order.reference }}</strong>
+                                        <span>{{ order.customer }}</span>
+                                    </div>
+                                    <a href="{{ order.editUrl }}">Gérer</a>
+                                </div>
+                                <div class="som-ops-order-card__meta">
+                                    <span class="badge badge-{{ order.statusTone }}">{{ order.status }}</span>
+                                    <span class="badge badge-{{ order.paymentTone }}">{{ order.payment }}</span>
+                                    <span class="badge badge-{{ order.deliveryTone }}">{{ order.delivery }}</span>
+                                </div>
+                                <p>{{ order.items }}</p>
+                                <div class="som-ops-order-card__details">
+                                    <span>{{ order.destination }}</span>
+                                    <strong>{{ order.total }}</strong>
+                                </div>
+                                <div class="som-ops-order-card__actions">
+                                    {% if lane.key == 'toPrepare' %}
+                                        <form method="post" action="{{ path('admin_merch_order_prepare', {id: order.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_merch_order_prepare_' ~ order.id) }}">
+                                            <button class="button button-small" type="submit">Préparer</button>
+                                        </form>
+                                    {% elseif lane.key == 'preparing' %}
+                                        <form method="post" action="{{ path('admin_merch_order_ship', {id: order.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_merch_order_ship_' ~ order.id) }}">
+                                            <button class="button button-small" type="submit">Expédier</button>
+                                        </form>
+                                    {% elseif lane.key == 'shipped' %}
+                                        <form method="post" action="{{ path('admin_merch_order_receive', {id: order.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_merch_order_receive_' ~ order.id) }}">
+                                            <button class="button button-small" type="submit">Clôturer</button>
+                                        </form>
+                                    {% endif %}
+
+                                    <form method="post" action="{{ path('admin_merch_order_issue', {id: order.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_merch_order_issue_' ~ order.id) }}">
+                                        <button class="button button-small button-ghost" type="submit">Incident</button>
+                                    </form>
+                                </div>
+                            </article>
+                        {% else %}
+                            <article class="som-admin-card som-admin-card--soft">
+                                <span>Rien à traiter</span>
+                                <p>Cette colonne est vide pour le moment.</p>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+
+        <section class="som-admin-grid">
+            <article class="som-admin-card">
+                <span>Stock faible</span>
+                <strong>{{ lowStockProducts|length }}</strong>
+                <p>Produits sous le seuil de vigilance.</p>
+                <div class="som-admin-list">
+                    {% for product in lowStockProducts|slice(0, 5) %}
+                        <a href="{{ product.editUrl }}">{{ product.name }} · {{ product.stock }} dispo</a>
+                    {% else %}
+                        <span>Aucun produit fragile pour l’instant.</span>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="som-admin-card">
+                <span>Ruptures</span>
+                <strong>{{ outOfStockProducts|length }}</strong>
+                <p>Pièces à réapprovisionner ou masquer.</p>
+                <div class="som-admin-list">
+                    {% for product in outOfStockProducts|slice(0, 5) %}
+                        <a href="{{ product.editUrl }}">{{ product.name }}</a>
+                    {% else %}
+                        <span>Aucune rupture visible.</span>
+                    {% endfor %}
+                </div>
+            </article>
+        </section>
+    </div>
+{% endblock %}

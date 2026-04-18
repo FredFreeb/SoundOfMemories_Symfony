@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT_DIR"
+
+PROJECT_NAME="soundofmemories"
+DOCKER_CONFIG_DIR="$PROJECT_DIR/var/docker-cli"
+
+mkdir -p "$DOCKER_CONFIG_DIR"
+rm -f "$DOCKER_CONFIG_DIR/cli-plugins"
+ln -s "$HOME/.docker/cli-plugins" "$DOCKER_CONFIG_DIR/cli-plugins"
+rm -f "$DOCKER_CONFIG_DIR/contexts"
+ln -s "$HOME/.docker/contexts" "$DOCKER_CONFIG_DIR/contexts"
+
+cat > "$DOCKER_CONFIG_DIR/config.json" <<'JSON'
+{
+  "auths": {},
+  "currentContext": "desktop-linux"
+}
+JSON
+
+export DOCKER_CONFIG="$DOCKER_CONFIG_DIR"
+
+if docker compose version >/dev/null 2>&1; then
+  DOCKER_COMPOSE=(docker compose)
+elif command -v docker-compose >/dev/null 2>&1; then
+  DOCKER_COMPOSE=(docker-compose)
+else
+  echo "Docker Compose is not available on this machine." >&2
+  exit 1
+fi
+
+echo "Stopping Docker services for ${PROJECT_NAME}..."
+"${DOCKER_COMPOSE[@]}" -f compose.yaml -f compose.override.yaml down
+
+echo "Docker services stopped."

@@ -31,8 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const priceNode = optionsRoot.querySelector('.js-variant-price');
     const compareNode = optionsRoot.querySelector('.js-variant-compare');
     const stockNode = optionsRoot.querySelector('.js-variant-stock');
+    const savingsNode = optionsRoot.querySelector('.js-variant-saving');
     const quantityInput = optionsRoot.querySelector('.js-variant-quantity');
     const submitButton = optionsRoot.querySelector('.js-variant-submit');
+    const promotionActive = optionsRoot.getAttribute('data-promotion-active') === '1';
 
     const applyVariantState = (input) => {
         if (!input) {
@@ -40,7 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const stock = Number.parseInt(input.getAttribute('data-stock') || '0', 10);
-        const comparePrice = input.getAttribute('data-compare-price') || '';
+        const comparePrice = promotionActive ? (input.getAttribute('data-compare-price') || '') : '';
+        const priceCents = Number.parseInt(input.getAttribute('data-price-cents') || '0', 10);
+        const comparePriceCents = promotionActive
+            ? Number.parseInt(input.getAttribute('data-compare-price-cents') || '0', 10)
+            : 0;
+        const savingsCents = comparePriceCents > priceCents ? comparePriceCents - priceCents : 0;
 
         if (priceNode) {
             priceNode.textContent = input.getAttribute('data-price') || '';
@@ -53,6 +60,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (stockNode) {
             stockNode.textContent = `${stock} disponible${stock > 1 ? 's' : ''}`;
+        }
+
+        if (savingsNode) {
+            if (savingsCents > 0) {
+                savingsNode.textContent = `Vous économisez ${(savingsCents / 100).toFixed(2).replace('.', ',')} EUR`;
+                savingsNode.classList.remove('is-hidden');
+            } else {
+                savingsNode.textContent = '';
+                savingsNode.classList.add('is-hidden');
+            }
         }
 
         if (quantityInput) {

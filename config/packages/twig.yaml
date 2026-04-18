@@ -5,6 +5,12 @@ twig:
         social_auth_google_enabled: '%social_auth_google_enabled%'
         social_auth_apple_enabled: '%social_auth_apple_enabled%'
         site_owner: '@App\Service\SiteOwnerManager'
+        band_separation_year: '%band_separation_year%'
+        member_link_alain: '%member_link_alain%'
+        member_link_lucho: '%member_link_lucho%'
+        member_link_fabien: '%member_link_fabien%'
+        member_link_nacim: '%member_link_nacim%'
+        member_link_flo: '%member_link_flo%'
 
 when@test:
     twig:

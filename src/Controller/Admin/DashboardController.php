@@ -4,6 +4,9 @@ namespace App\Controller\Admin;
 
 use App\Entity\Category;
 use App\Entity\Concert;
+use App\Entity\EditorialModule;
+use App\Entity\MailingCampaign;
+use App\Entity\Order;
 use App\Entity\Product;
 use App\Entity\SiteSettings;
 use App\Entity\User;
@@ -37,17 +40,54 @@ final class DashboardController extends AbstractDashboardController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
+        $productRepository = $this->entityManager->getRepository(Product::class);
+        $products = $productRepository->findAll();
+        $activePromotionCount = 0;
+        $upcomingPromotionCount = 0;
+        $outOfStockProductCount = 0;
+
+        foreach ($products as $product) {
+            if (!$product instanceof Product) {
+                continue;
+            }
+
+            if ($product->getDisplayStock() <= 0) {
+                ++$outOfStockProductCount;
+            }
+
+            if ($product->hasPromotionPricing()) {
+                if ($product->isPromotionUpcoming()) {
+                    ++$upcomingPromotionCount;
+                } elseif ($product->isPromotionActive()) {
+                    ++$activePromotionCount;
+                }
+            }
+        }
+
         return $this->render('admin/dashboard.html.twig', [
-            'productCount' => $this->entityManager->getRepository(Product::class)->count([]),
-            'publishedProductCount' => $this->entityManager->getRepository(Product::class)->count(['isPublished' => true]),
+            'productCount' => $productRepository->count([]),
+            'publishedProductCount' => $productRepository->count(['isPublished' => true]),
+            'activePromotionCount' => $activePromotionCount,
+            'upcomingPromotionCount' => $upcomingPromotionCount,
+            'outOfStockProductCount' => $outOfStockProductCount,
             'categoryCount' => $this->entityManager->getRepository(Category::class)->count([]),
+            'orderCount' => $this->entityManager->getRepository(Order::class)->count([]),
+            'pendingOrderCount' => $this->entityManager->getRepository(Order::class)->count(['status' => Order::STATUS_PENDING]),
+            'processingOrderCount' => $this->entityManager->getRepository(Order::class)->count(['status' => Order::STATUS_PROCESSING]),
+            'shippedOrderCount' => $this->entityManager->getRepository(Order::class)->count(['status' => Order::STATUS_SHIPPED]),
+            'issueOrderCount' => $this->entityManager->getRepository(Order::class)->count(['deliveryStatus' => Order::DELIVERY_STATUS_ISSUE]),
             'concertCount' => $this->entityManager->getRepository(Concert::class)->count([]),
             'publishedConcertCount' => $this->entityManager->getRepository(Concert::class)->count(['isPublished' => true]),
             'visualPresetCount' => $this->entityManager->getRepository(SiteSettings::class)->count([]),
+            'mailingCount' => $this->entityManager->getRepository(MailingCampaign::class)->count([]),
             'adminCount' => (int) $this->entityManager->createQuery('SELECT COUNT(u.id) FROM App\Entity\User u WHERE u.roles LIKE :role')
                 ->setParameter('role', '%ROLE_ADMIN%')
                 ->getSingleScalarResult(),
             'productsUrl' => $this->buildAdminIndexUrl(ProductCrudController::class),
+            'ordersUrl' => $this->buildAdminIndexUrl(OrderCrudController::class),
+            'merchOpsUrl' => $this->urlGenerator->generate('admin_merch_operations'),
+            'promotionsUrl' => $this->urlGenerator->generate('admin_merch_promotions'),
+            'mailingsUrl' => $this->buildAdminIndexUrl(MailingCampaignCrudController::class),
             'categoriesUrl' => $this->buildAdminIndexUrl(CategoryCrudController::class),
             'concertsUrl' => $this->buildAdminIndexUrl(ConcertCrudController::class),
             'siteSettingsUrl' => $this->buildAdminIndexUrl(SiteSettingsCrudController::class),
@@ -90,8 +130,12 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Vue d’ensemble', 'fas fa-gauge-high');
 
         yield MenuItem::subMenu('Merch', 'fas fa-boxes-stacked')->setSubItems([
+            MenuItem::linkToRoute('Pilotage merch', 'fas fa-gauge', 'admin_merch_operations'),
+            MenuItem::linkToRoute('Promotions & campagnes', 'fas fa-bullhorn', 'admin_merch_promotions'),
+            MenuItem::linkTo(OrderCrudController::class, 'Commandes', 'fas fa-receipt'),
             MenuItem::linkTo(ProductCrudController::class, 'Produits', 'fas fa-shirt'),
             MenuItem::linkTo(CategoryCrudController::class, 'Catégories', 'fas fa-tags'),
+            MenuItem::linkTo(MailingCampaignCrudController::class, 'Mailings', 'fas fa-envelope-open-text'),
         ]);
 
         yield MenuItem::subMenu('Concerts', 'fas fa-music')->setSubItems([
@@ -106,6 +150,8 @@ final class DashboardController extends AbstractDashboardController
 
         yield MenuItem::subMenu('Identité', 'fas fa-bolt')->setSubItems([
             MenuItem::linkTo(GalleryPhotoCrudController::class, 'Photos galerie', 'fas fa-images'),
+            MenuItem::linkToRoute('Revue de presse', 'fas fa-newspaper', 'admin_dashboard_avis_presse_index'),
+            MenuItem::linkTo(EditorialModuleCrudController::class, 'Modules éditoriaux', 'fas fa-layer-group'),
             MenuItem::linkTo(SiteSettingsCrudController::class, 'Visuels du site', 'fas fa-image'),
         ]);
 

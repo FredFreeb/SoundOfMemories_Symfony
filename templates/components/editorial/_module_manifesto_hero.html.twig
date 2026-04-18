@@ -1,0 +1,35 @@
+{% if module is not null %}
+    {% set heroImagePath = module.imagePath ? (module.imagePath starts with 'uploads/' ? module.imagePath : 'uploads/editorial/' ~ module.imagePath|trim('/')) : null %}
+    {% set backgroundImagePath = module.backgroundImagePath ? (module.backgroundImagePath starts with 'uploads/' ? module.backgroundImagePath : 'uploads/editorial/' ~ module.backgroundImagePath|trim('/')) : heroImagePath %}
+    {% set heroImage = heroImagePath ? asset(heroImagePath) : null %}
+    {% set backgroundImage = backgroundImagePath ? asset(backgroundImagePath) : heroImage %}
+
+    <section class="page-banner page-banner--band editorial-band-hero {{ module.backgroundSlot }}" {% if backgroundImage %}style="--banner-image: url('{{ backgroundImage }}');"{% endif %}>
+        <div class="container editorial-band-hero__layout" data-editorial-module="story-block" data-editorial-tone="{{ module.accentTone }}">
+            <div class="editorial-band-hero__copy" data-editorial-copy>
+                {% if module.eyebrow %}
+                    <p class="eyebrow">{{ module.eyebrow }}</p>
+                {% endif %}
+                <h1>{{ module.title }}</h1>
+                {% if module.leadText %}
+                    <p class="editorial-band-hero__lead">{{ module.leadText }}</p>
+                {% endif %}
+
+                {% set heroMeta = [module.metaPrimary, module.metaSecondary, module.metaTertiary]|filter(v => v is not empty) %}
+                {% if heroMeta is not empty %}
+                    <div class="editorial-band-hero__meta">
+                        {% for item in heroMeta %}
+                            <span>{{ item }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if heroImage %}
+                <figure class="editorial-band-hero__visual">
+                    <img src="{{ heroImage }}" alt="{{ module.title }}" width="1409" height="939" fetchpriority="high" decoding="async">
+                </figure>
+            {% endif %}
+        </div>
+    </section>
+{% endif %}

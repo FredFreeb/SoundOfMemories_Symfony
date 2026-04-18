@@ -4,6 +4,7 @@ namespace App\Controller\Store;
 
 use App\Entity\Product;
 use App\Entity\ProductVariant;
+use App\Repository\ProductRepository;
 use App\Service\CartService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,11 +16,26 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CartController extends AbstractController
 {
     #[Route('', name: 'store_cart', methods: ['GET'])]
-    public function index(CartService $cart): Response
+    public function index(CartService $cart, ProductRepository $products): Response
     {
+        $items = $cart->getDetailedItems();
+        $excludedProductIds = [];
+        $preferredCategoryIds = [];
+
+        foreach ($items as $item) {
+            $excludedProductIds[] = $item['product']->getId();
+            $categoryId = $item['product']->getCategory()?->getId();
+
+            if (null !== $categoryId) {
+                $preferredCategoryIds[] = $categoryId;
+            }
+        }
+
         return $this->render('store/cart/index.html.twig', [
-            'items' => $cart->getDetailedItems(),
+            'items' => $items,
             'totalCents' => $cart->getTotalCents(),
+            'savingsCents' => $cart->getCompareAtSavingsCents(),
+            'recommendedProducts' => $products->findCartUpsells($excludedProductIds, $preferredCategoryIds),
         ]);
     }
 

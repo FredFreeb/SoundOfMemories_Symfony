@@ -10,7 +10,7 @@
             <aside class="login-showcase">
                 <p class="eyebrow">Déconnexion</p>
                 <h1>Vous êtes sur l’écran de déconnexion sécurisé.</h1>
-                <p class="login-intro">La déconnexion du site et du back-office se fait en `POST` avec protection CSRF, donc l’URL seule ne suffit pas.</p>
+                <p class="login-intro">Confirmez la déconnexion pour quitter votre espace en toute sécurité.</p>
             </aside>
 
             <div class="login-card login-card-modern">
@@ -25,7 +25,7 @@
 
                 <div class="login-footer-links">
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a class="button-secondary" href="{{ path('admin_dashboard') }}">Retour au back-office</a>
+                        <a class="button-secondary" href="{{ path('admin_dashboard') }}">Retour au Backstage</a>
                     {% elseif is_granted('ROLE_USER') %}
                         <a class="button-secondary" href="{{ path('app_account') }}">Retour à mon compte</a>
                     {% else %}

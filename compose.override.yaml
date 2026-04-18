@@ -1,14 +1,17 @@
 services:
   database:
+    restart: unless-stopped
     ports:
-      - "${DATABASE_FORWARD_PORT:-3307}:3306"
+      - "127.0.0.1:${DATABASE_FORWARD_PORT:-13307}:3306"
 
 ###> symfony/mailer ###
   mailer:
     image: axllent/mailpit
+    profiles: ["tools"]
+    restart: unless-stopped
     ports:
-      - "${MAILER_SMTP_PORT:-1026}:1025"
-      - "${MAILER_HTTP_PORT:-8026}:8025"
+      - "127.0.0.1:${MAILER_SMTP_PORT:-11026}:1025"
+      - "127.0.0.1:${MAILER_HTTP_PORT:-18026}:8025"
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
