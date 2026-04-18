@@ -1,43 +1,120 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Merch | Sound Of Memories Fan Base{% endblock %}
-{% block meta_description %}Découvrez le merchandising Sound Of Memories: textile, collectors et accessoires administrables depuis le back-office.{% endblock %}
+{% block title %}Boutique | Sound Of Memories{% endblock %}
+{% block meta_description %}Pins, textiles, posters et collectors Sound Of Memories. Une boutique merch complète, administrable et pensée pour convertir rapidement.{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/product-effects.css') }}">
+{% endblock %}
 
 {% block page %}
-    {% set shopBackground = siteSettings.shopHeroBackground ? site_asset(siteSettings.shopHeroBackground, 'site') : asset('uploads/legacy/Sof.jpg') %}
+    <section class="section section-bg-1 shop-storefront">
+        <div class="container shop-storefront-shell">
+            <header class="shop-storefront-header">
+                <div class="shop-storefront-copy">
+                    <p class="eyebrow">Boutique officielle</p>
+                    <h1>Le merch Sound Of Memories, pensé comme un vrai drop de tournée.</h1>
+                    <p>Textiles, posters, pins, éditions collectors et formats album. Chaque fiche reste pilotable depuis l’admin avec variantes, prix, stock et promotion.</p>
+                </div>
+                <div class="shop-storefront-stats" aria-label="Repères boutique">
+                    <span>{{ products|length }} produit{{ products|length > 1 ? 's' : '' }}</span>
+                    <span>{{ categories|length }} univers merch</span>
+                    <span>Paiement Stripe sécurisé</span>
+                    <span>Stocks pilotés par variante</span>
+                </div>
+            </header>
 
-    <section class="page-banner" style="background-image: linear-gradient(180deg, rgba(12, 12, 12, 0.5), rgba(12, 12, 12, 0.9)), url('{{ shopBackground }}');">
-        <div class="container narrow-copy">
-            <p class="eyebrow">Merchandising</p>
-            <h1>Une boutique fan base plus lisible, plus simple à gérer.</h1>
-            <p>Le catalogue s’appuie sur Doctrine et EasyAdmin, avec un front pensé mobile-first et des visuels hérités du site historique.</p>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container card-grid">
-            {% for product in products %}
-                <article class="product-card">
-                    <a href="{{ path('store_shop_show', {slug: product.slug}) }}">
-                        {% include 'store/components/_product_media.html.twig' with {
-                            product: product,
-                            media_classes: 'product-media'
-                        } only %}
-                    </a>
-                    <div class="product-card-copy">
-                        <p class="card-kicker">{{ product.category ? product.category.name : 'Merch' }}</p>
-                        <h2><a href="{{ path('store_shop_show', {slug: product.slug}) }}">{{ product.name }}</a></h2>
-                        <p>{{ product.catalogExcerpt ?: product.shortDescription }}</p>
-                        <div class="product-card-footer">
-                            <strong>{{ product.formattedPrice }}</strong>
-                            <span>{{ product.stock }} stock</span>
+            {% if featuredProduct %}
+                <article class="merch-spotlight">
+                    <div class="merch-spotlight__media">
+                        <a href="{{ path('store_shop_show', {slug: featuredProduct.slug}) }}" aria-label="{{ featuredProduct.name }}">
+                            {% include 'store/components/_product_media.html.twig' with {
+                                product: featuredProduct,
+                                media_classes: 'product-media merch-spotlight__frame'
+                            } only %}
+                        </a>
+                    </div>
+                    <div class="merch-spotlight__copy">
+                        <p class="card-kicker">{{ featuredProduct.offerBannerEyebrow ?: 'Drop mis en avant' }}</p>
+                        <h2>{{ featuredProduct.offerBannerTitle ?: featuredProduct.name }}</h2>
+                        <p>{{ featuredProduct.offerBannerText ?: featuredProduct.catalogExcerpt ?: featuredProduct.shortDescription }}</p>
+                        <div class="merch-spotlight__meta">
+                            <strong>{{ featuredProduct.formattedStartingPrice }}</strong>
+                            <span>{{ featuredProduct.displayStock }} en stock</span>
+                            {% if featuredProduct.publishedVariants|length > 0 %}
+                                <span>{{ featuredProduct.publishedVariants|length }} option{{ featuredProduct.publishedVariants|length > 1 ? 's' : '' }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="button-row">
+                            <a class="button-primary" href="{{ path('store_shop_show', {slug: featuredProduct.slug}) }}">Acheter maintenant</a>
+                            <a class="button-secondary" href="#catalogue">Voir tout le catalogue</a>
                         </div>
                     </div>
                 </article>
+            {% endif %}
+
+            {% if categories is not empty %}
+                <nav class="merch-category-nav" aria-label="Catégories boutique">
+                    {% for category in categories %}
+                        <a href="#category-{{ category.slug }}">{{ category.name }}</a>
+                    {% endfor %}
+                </nav>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="section section-bg-2 shop-shelves-section" id="catalogue">
+        <div class="container shop-shelves">
+            {% for group in productsByCategory %}
+                {% set category = group.category %}
+                <section class="merch-shelf" id="{{ category ? 'category-' ~ category.slug : 'category-merch' }}">
+                    <header class="merch-shelf__header">
+                        <div>
+                            <p class="eyebrow">{{ category ? category.name : 'Merch' }}</p>
+                            <h2>{{ category ? category.name : 'Autres pièces' }}</h2>
+                        </div>
+                        <p>{{ category and category.description ? category.description : 'Une sélection Sound Of Memories prête pour la scène, la collection ou le quotidien.' }}</p>
+                    </header>
+
+                    <div class="merch-shelf__grid">
+                        {% for product in group.products %}
+                            <article class="merch-card">
+                                <a class="merch-card__media" href="{{ path('store_shop_show', {slug: product.slug}) }}" aria-label="{{ product.name }}">
+                                    {% include 'store/components/_product_media.html.twig' with {
+                                        product: product,
+                                        media_classes: 'product-media merch-card__frame'
+                                    } only %}
+                                </a>
+
+                                <div class="merch-card__copy">
+                                    <div class="merch-card__head">
+                                        <p class="card-kicker">{{ product.category ? product.category.name : 'Merch' }}</p>
+                                        {% if product.displayCompareAtPriceCents %}
+                                            <span class="merch-card__compare">{{ product.formattedDisplayCompareAtPrice }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <h3><a href="{{ path('store_shop_show', {slug: product.slug}) }}" aria-label="{{ product.name }}">{{ product.name }}</a></h3>
+                                    <p>{{ product.catalogExcerpt ?: product.shortDescription }}</p>
+
+                                    <div class="merch-card__footer">
+                                        <div class="merch-card__pricing">
+                                            <strong>{{ product.formattedStartingPrice }}</strong>
+                                            <span>{{ product.displayStock }} dispo</span>
+                                        </div>
+                                        <a class="button-secondary merch-card__button" href="{{ path('store_shop_show', {slug: product.slug}) }}">
+                                            {{ product.hasVariants ? 'Choisir ' ~ product.variantChoiceLabel|lower : 'Voir le produit' }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
             {% else %}
-                <article class="empty-card">
-                    <h3>Boutique vide</h3>
-                    <p>Ajoutez vos premiers produits depuis le backstage pour remplir cette page.</p>
+                <article class="empty-card shop-empty-card">
+                    <h2>Boutique vide</h2>
+                    <p>Ajoutez vos premiers produits depuis le backstage pour alimenter le catalogue.</p>
                 </article>
             {% endfor %}
         </div>

@@ -14,7 +14,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
@@ -23,6 +22,7 @@ final class SiteSettingsCrudController extends AbstractCrudController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly string $projectDir,
     ) {
     }
 
@@ -36,7 +36,8 @@ final class SiteSettingsCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Paramètre visuel')
             ->setEntityLabelInPlural('Paramètres visuels')
-            ->setHelp(Crud::PAGE_EDIT, 'Pilotez ici le logo, les fonds et les visuels principaux de la fan base.')
+            ->setDefaultRowAction(Action::EDIT)
+            ->setHelp(Crud::PAGE_EDIT, 'Pilotez ici la bibliothèque visuelle du site en choisissant les images déjà rangées dans les bons dossiers.')
             ->setHelp(Crud::PAGE_NEW, 'Créez une variante visuelle active pour préparer une nouvelle saison ou une nouvelle tournée.')
             ->setDefaultSort(['id' => 'ASC']);
     }
@@ -44,7 +45,9 @@ final class SiteSettingsCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-sliders'))
             ->disable(Action::DELETE, Action::BATCH_DELETE);
     }
 
@@ -64,12 +67,7 @@ final class SiteSettingsCrudController extends AbstractCrudController
             ->setColumns(6)
             ->hideOnIndex();
         yield FormField::addPanel('Navigation et logo');
-        yield ImageField::new('headerLogo', 'Logo')
-            ->setBasePath('uploads/site')
-            ->setUploadDir('public/uploads/site')
-            ->setUploadedFileNamePattern('logo-[timestamp].[extension]')
-            ->setRequired(false)
-            ->setColumns(6);
+        yield $this->buildSiteImageChoiceField('headerLogo', 'Logo', 'logo', 6);
         yield FormField::addPanel('Page d accueil');
         yield TextField::new('homeHeroTitle', 'Titre hero')
             ->setColumns(6)
@@ -77,71 +75,33 @@ final class SiteSettingsCrudController extends AbstractCrudController
         yield TextareaField::new('homeHeroText', 'Texte hero')
             ->setColumns(6)
             ->hideOnIndex();
-        yield ImageField::new('homeHeroBackground', 'Fond hero')
-            ->setBasePath('uploads/site')
-            ->setUploadDir('public/uploads/site')
-            ->setUploadedFileNamePattern('home-bg-[timestamp].[extension]')
-            ->setRequired(false)
-            ->setColumns(6)
-            ->hideOnIndex();
-        yield ImageField::new('homeHeroVisual', 'Visuel principal')
-            ->setBasePath('uploads/site')
-            ->setUploadDir('public/uploads/site')
-            ->setUploadedFileNamePattern('home-visual-[timestamp].[extension]')
-            ->setRequired(false)
-            ->setColumns(6)
-            ->hideOnIndex();
-        yield FormField::addPanel('Container type 2 · Présentation');
-        yield ChoiceField::new('homeIntroStylePreset', 'Style du container')
-            ->setChoices(SiteSettings::getSectionStyleChoices())
-            ->setHelp('Utilisé sur le bloc de présentation du groupe et de la fan base.')
-            ->setColumns(12)
-            ->hideOnIndex();
+        yield $this->buildSiteImageChoiceField('homeHeroBackground', 'Fond hero par défaut', 'hero/background', 6);
+        yield $this->buildSiteImageChoiceField('homeHeroVisual', 'Visuel principal', 'hero/visual', 6);
+        yield $this->buildSiteImageChoiceField('homeHeroSlideOne', 'Slide hero #1', 'hero/slides', 3);
+        yield $this->buildSiteImageChoiceField('homeHeroSlideTwo', 'Slide hero #2', 'hero/slides', 3);
+        yield $this->buildSiteImageChoiceField('homeHeroSlideThree', 'Slide hero #3', 'hero/slides', 3);
+        yield $this->buildSiteImageChoiceField('homeHeroSlideFour', 'Slide hero #4', 'hero/slides', 3);
         yield FormField::addPanel('Presentation de la home');
-        yield ImageField::new('homeOverviewImageOne', 'Visuel bloc 1')
-            ->setBasePath('uploads/site')
-            ->setUploadDir('public/uploads/site')
-            ->setUploadedFileNamePattern('home-overview-1-[timestamp].[extension]')
-            ->setRequired(false)
-            ->setColumns(4)
-            ->hideOnIndex();
-        yield ImageField::new('homeOverviewImageTwo', 'Visuel bloc 2')
-            ->setBasePath('uploads/site')
-            ->setUploadDir('public/uploads/site')
-            ->setUploadedFileNamePattern('home-overview-2-[timestamp].[extension]')
-            ->setRequired(false)
-            ->setColumns(4)
-            ->hideOnIndex();
-        yield ImageField::new('homeOverviewImageThree', 'Visuel bloc 3')
-            ->setBasePath('uploads/site')
-            ->setUploadDir('public/uploads/site')
-            ->setUploadedFileNamePattern('home-overview-3-[timestamp].[extension]')
-            ->setRequired(false)
-            ->setColumns(4)
-            ->hideOnIndex();
-        yield FormField::addPanel('Container type 1 · Appel à l’action');
-        yield ChoiceField::new('homeArchiveCtaStylePreset', 'Style du container')
-            ->setChoices(SiteSettings::getSectionStyleChoices())
-            ->setHelp('Utilisé sur le grand appel à l’action final en bas de l’accueil.')
-            ->setColumns(12)
-            ->hideOnIndex();
-        yield FormField::addPanel('Le groupe · Containers');
-        yield ChoiceField::new('aboutPrimaryStylePreset', 'Containers dominants')
-            ->setChoices(SiteSettings::getSectionStyleChoices())
-            ->setHelp('Utilisé pour les sections fortes de la page groupe.')
-            ->setColumns(6)
-            ->hideOnIndex();
-        yield ChoiceField::new('aboutSecondaryStylePreset', 'Containers éditoriaux')
-            ->setChoices(SiteSettings::getSectionStyleChoices())
-            ->setHelp('Utilisé pour les sections éditoriales plus calmes.')
-            ->setColumns(6)
-            ->hideOnIndex();
+        yield $this->buildSiteImageChoiceField('homeOverviewImageOne', 'Visuel bloc 1', 'overview', 4);
+        yield $this->buildSiteImageChoiceField('homeOverviewImageTwo', 'Visuel bloc 2', 'overview', 4);
+        yield $this->buildSiteImageChoiceField('homeOverviewImageThree', 'Visuel bloc 3', 'overview', 4);
+        yield FormField::addPanel('Fonds de section');
+        yield $this->buildSiteImageChoiceField('sectionBackgroundPrimary', 'Fond section #1', 'background/section', 4, 'Ce fond sera utilisé par les sections marquées `section-bg-1`.');
+        yield $this->buildSiteImageChoiceField('sectionBackgroundSecondary', 'Fond section #2', 'background/section', 4, 'Ce fond sera utilisé par les sections marquées `section-bg-2`.');
+        yield $this->buildSiteImageChoiceField('sectionBackgroundTertiary', 'Fond section #3', 'background/section', 4, 'Ce fond sera utilisé par les sections marquées `section-bg-3`.');
         yield FormField::addPanel('Merchandising');
-        yield ImageField::new('shopHeroBackground', 'Fond page boutique')
-            ->setBasePath('uploads/site')
-            ->setUploadDir('public/uploads/site')
-            ->setUploadedFileNamePattern('shop-bg-[timestamp].[extension]')
-            ->setRequired(false)
+        yield $this->buildSiteImageChoiceField('shopHeroBackground', 'Fond page boutique', 'background/shop', 6);
+        yield FormField::addPanel('Plateformes du footer');
+        yield TextField::new('soundcloudUrl', 'Lien SoundCloud')
+            ->setColumns(6)
+            ->hideOnIndex();
+        yield TextField::new('spotifyUrl', 'Lien Spotify')
+            ->setColumns(6)
+            ->hideOnIndex();
+        yield TextField::new('appleMusicUrl', 'Lien Apple Music')
+            ->setColumns(6)
+            ->hideOnIndex();
+        yield TextField::new('youtubeMusicUrl', 'Lien YouTube Music')
             ->setColumns(6)
             ->hideOnIndex();
         yield DateTimeField::new('updatedAt', 'Mis à jour le')
@@ -177,5 +137,60 @@ final class SiteSettingsCrudController extends AbstractCrudController
                 $settings->setIsActive(false);
             }
         }
+    }
+
+    private function buildSiteImageChoiceField(string $property, string $label, string $relativeDirectory, int $columns = 6, ?string $help = null): ChoiceField
+    {
+        $directoryHelp = sprintf('Dossier : /public/uploads/site/%s', trim($relativeDirectory, '/'));
+
+        return ChoiceField::new($property, $label)
+            ->setChoices($this->listSiteImageChoices($relativeDirectory))
+            ->setRequired(false)
+            ->setColumns($columns)
+            ->setFormTypeOption('placeholder', 'Aucune image')
+            ->setFormTypeOption('choice_translation_domain', false)
+            ->setHelp(trim(sprintf('%s %s', $help ?? '', $directoryHelp)))
+            ->hideOnIndex();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function listSiteImageChoices(string $relativeDirectory): array
+    {
+        $absoluteDirectory = sprintf('%s/public/uploads/site/%s', rtrim($this->projectDir, '/'), trim($relativeDirectory, '/'));
+        if (!is_dir($absoluteDirectory)) {
+            return [];
+        }
+
+        $entries = scandir($absoluteDirectory);
+        if (false === $entries) {
+            return [];
+        }
+
+        $choices = [];
+        foreach ($entries as $entry) {
+            if ('.' === $entry || '..' === $entry || str_starts_with($entry, '.')) {
+                continue;
+            }
+
+            if (!is_file($absoluteDirectory . '/' . $entry)) {
+                continue;
+            }
+
+            $choices[$this->humanizeImageLabel($entry)] = trim($relativeDirectory, '/') . '/' . $entry;
+        }
+
+        ksort($choices, \SORT_NATURAL | \SORT_FLAG_CASE);
+
+        return $choices;
+    }
+
+    private function humanizeImageLabel(string $filename): string
+    {
+        $name = pathinfo($filename, \PATHINFO_FILENAME);
+        $name = preg_replace('/[-_]+/', ' ', $name) ?? $name;
+
+        return ucfirst(trim($name));
     }
 }

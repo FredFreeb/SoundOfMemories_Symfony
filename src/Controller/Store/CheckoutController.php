@@ -59,7 +59,7 @@ final class CheckoutController extends AbstractController
                 ['createdAt' => 'DESC']
             );
 
-            // Fred note: Je pre-remplis la commande depuis le compte client pour accelerer l'achat.
+            // Fred note: Je pre-remplis la commande depuis le compte fan pour accelerer l'achat.
             $order
                 ->setCustomerAccount($account)
                 ->setCustomerName($account->getFullName() ?? '')
@@ -68,12 +68,17 @@ final class CheckoutController extends AbstractController
                 ->setShippingAddress($this->buildShippingAddress($account) ?: ($latestOrder instanceof Order ? $latestOrder->getShippingAddress() : null))
                 ->setPostalCode($account->getPostalCode() ?: ($latestOrder instanceof Order ? $latestOrder->getPostalCode() : null))
                 ->setCity($account->getCity() ?: ($latestOrder instanceof Order ? $latestOrder->getCity() : null))
-                ->setShippingCountryCode($latestOrder instanceof Order ? $latestOrder->getShippingCountryCode() : null)
+                ->setNote($this->resolveAccountShippingNote($account, $latestOrder))
+                ->setShippingCountryCode($account->getCountryCode() ?: ($latestOrder instanceof Order ? $latestOrder->getShippingCountryCode() : null))
                 ->setPaymentProvider('stripe');
         }
 
         if (null === $order->getPaymentProvider()) {
             $order->setPaymentProvider('stripe');
+        }
+
+        if (null === $order->getShippingCountryCode()) {
+            $order->setShippingCountryCode('FR');
         }
 
         $submittedCheckout = $request->request->all('checkout');
@@ -93,10 +98,7 @@ final class CheckoutController extends AbstractController
             $order->setShippingMethodCode($defaultShippingChoice['code']);
         }
 
-        $allowMarketingOptIn = !($this->getUser() instanceof User && $order->getCustomerAccount()?->isMarketingOptIn());
         $form = $this->createForm(CheckoutType::class, $order, [
-            'allow_marketing_opt_in' => $allowMarketingOptIn,
-            'marketing_opt_in_default' => $order->getCustomerAccount()?->isMarketingOptIn() ?? false,
             'shipping_country_choices' => $boxtalShipping->getDestinationCountryChoices(),
             'shipping_choices' => $shippingChoices,
             'shipping_help' => $boxtalShipping->getCheckoutHint($order->getShippingCountryCode(), $shippingChoices),
@@ -138,8 +140,11 @@ final class CheckoutController extends AbstractController
                 $orderItem = (new OrderItem())
                     ->setProductName($item['product']->getName() ?? 'Produit')
                     ->setProductIdSnapshot($item['product']->getId())
+                    ->setProductVariantIdSnapshot($item['variant']?->getId())
+                    ->setVariantLabel($item['variant']?->getLabel())
+                    ->setVariantSku($item['variant']?->getSku())
                     ->setQuantity($item['quantity'])
-                    ->setUnitPriceCents($item['product']->getPriceCents());
+                    ->setUnitPriceCents($item['unitPriceCents']);
 
                 $order->addItem($orderItem);
             }
@@ -162,22 +167,20 @@ final class CheckoutController extends AbstractController
             if ($this->getUser() instanceof User) {
                 /** @var User $customerAccount */
                 $customerAccount = $this->getUser();
-                $joinSecretSociety = $allowMarketingOptIn && $form->has('joinSecretSociety') && true === $form->get('joinSecretSociety')->getData();
-
-                if ($joinSecretSociety) {
-                    $customerAccount->setMarketingOptIn(true);
-                }
 
                 $customerAccount
-                    ->setFullName($order->getCustomerName() !== '' ? $order->getCustomerName() : ($customerAccount->getFullName() ?? 'Client Expédition Mystère'))
+                    ->setFullName($order->getCustomerName() !== '' ? $order->getCustomerName() : ($customerAccount->getFullName() ?? 'Fan Sound Of Memories'))
                     ->setPhone($order->getCustomerPhone() ?: $customerAccount->getPhone())
-                    ->setDefaultAddress($order->getShippingAddress() ?: $customerAccount->getDefaultAddress())
+                    ->setCountryCode($order->getShippingCountryCode() ?: $customerAccount->getCountryCode())
+                    ->setDefaultAddress($this->extractStreetFromShippingAddress($order->getShippingAddress()) ?: $customerAccount->getDefaultAddress())
+                    ->setAddressBuilding($this->extractStreetNumberFromShippingAddress($order->getShippingAddress()) ?: $customerAccount->getAddressBuilding())
+                    ->setAddressExtra($order->getNote() ?: $customerAccount->getAddressExtra())
                     ->setPostalCode($order->getPostalCode() ?: $customerAccount->getPostalCode())
                     ->setCity($order->getCity() ?: $customerAccount->getCity());
 
                 $order->setCustomerAccount($customerAccount);
             } else {
-                // Fred note: Je relie aussi les commandes guest a un vrai compte client pour que l'admin voie tous les acheteurs au meme endroit.
+                // Fred note: Je relie aussi les commandes guest a un vrai compte fan pour que l'admin voie tous les acheteurs au meme endroit.
                 $customerAccount = $entityManager->getRepository(User::class)->findOneBy([
                     'email' => mb_strtolower($order->getCustomerEmail()),
                 ]);
@@ -185,22 +188,19 @@ final class CheckoutController extends AbstractController
                 if (!$customerAccount instanceof User) {
                     $customerAccount = (new User())
                         ->setEmail($order->getCustomerEmail())
-                        ->setFullName($order->getCustomerName() !== '' ? $order->getCustomerName() : 'Client Expédition Mystère')
+                        ->setFullName($order->getCustomerName() !== '' ? $order->getCustomerName() : 'Fan Sound Of Memories')
                         ->setRoles([]);
                     $customerAccount->setPassword($passwordHasher->hashPassword($customerAccount, bin2hex(random_bytes(24))));
                     $entityManager->persist($customerAccount);
                 }
 
-                $joinSecretSociety = $form->has('joinSecretSociety') && true === $form->get('joinSecretSociety')->getData();
-
-                if ($joinSecretSociety) {
-                    $customerAccount->setMarketingOptIn(true);
-                }
-
                 $customerAccount
-                    ->setFullName($order->getCustomerName() !== '' ? $order->getCustomerName() : ($customerAccount->getFullName() ?? 'Client Expédition Mystère'))
+                    ->setFullName($order->getCustomerName() !== '' ? $order->getCustomerName() : ($customerAccount->getFullName() ?? 'Fan Sound Of Memories'))
                     ->setPhone($order->getCustomerPhone() ?: $customerAccount->getPhone())
-                    ->setDefaultAddress($order->getShippingAddress() ?: $customerAccount->getDefaultAddress())
+                    ->setCountryCode($order->getShippingCountryCode() ?: $customerAccount->getCountryCode())
+                    ->setDefaultAddress($this->extractStreetFromShippingAddress($order->getShippingAddress()) ?: $customerAccount->getDefaultAddress())
+                    ->setAddressBuilding($this->extractStreetNumberFromShippingAddress($order->getShippingAddress()) ?: $customerAccount->getAddressBuilding())
+                    ->setAddressExtra($order->getNote() ?: $customerAccount->getAddressExtra())
                     ->setPostalCode($order->getPostalCode() ?: $customerAccount->getPostalCode())
                     ->setCity($order->getCity() ?: $customerAccount->getCity());
 
@@ -245,10 +245,6 @@ final class CheckoutController extends AbstractController
         $checkoutEmail = trim((string) ($form->get('customerEmail')->getData() ?: $order->getCustomerEmail()));
         $wantsWelcomeOffer = $currentAccount instanceof User && $currentAccount->isMarketingOptIn();
 
-        if ($form->has('joinSecretSociety')) {
-            $wantsWelcomeOffer = $wantsWelcomeOffer || true === $form->get('joinSecretSociety')->getData();
-        }
-
         $welcomeOfferEligible = $welcomeOfferService->isEligibleForPreview(
             $currentAccount,
             $checkoutEmail,
@@ -257,26 +253,6 @@ final class CheckoutController extends AbstractController
 
         if ($welcomeOfferEligible) {
             $previewDiscountCents = $welcomeOfferService->calculateDiscountCents($cart->getTotalCents());
-        }
-
-        $welcomeOfferMessage = $wantsWelcomeOffer
-            ? 'L’avantage bienvenue n’est plus disponible pour cette commande.'
-            : sprintf(
-                'Activez la Société secrète pour débloquer %d %% sur une première commande payée.',
-                $welcomeOfferService->getPercent(),
-            );
-
-        if ($welcomeOfferEligible) {
-            $welcomeOfferMessage = sprintf(
-                'Votre réduction de bienvenue de %d %% s’appliquera au produit dès cette première commande payée.',
-                $welcomeOfferService->getPercent(),
-            );
-        } elseif ($wantsWelcomeOffer && '' === $checkoutEmail) {
-            $welcomeOfferMessage = 'Renseignez un email valide pour confirmer l’avantage bienvenue sur cette commande.';
-        } elseif ($currentAccount instanceof User && $currentAccount->hasUsedWelcomeDiscount()) {
-            $welcomeOfferMessage = 'Votre réduction de bienvenue a déjà été utilisée sur une commande précédente.';
-        } elseif ($wantsWelcomeOffer && $welcomeOfferService->hasCommercialOrder($currentAccount, $checkoutEmail)) {
-            $welcomeOfferMessage = 'Une première commande existe déjà pour ce compte ou cet email : la réduction de bienvenue n’est donc plus disponible.';
         }
 
         $previewShippingCents = $selectedShippingChoice['priceCents'] ?? ($defaultShippingChoice['priceCents'] ?? 0);
@@ -293,9 +269,6 @@ final class CheckoutController extends AbstractController
             'previewShippingLabel' => $previewShippingLabel,
             'previewShippingEstimated' => $previewShippingEstimated,
             'previewTotalCents' => $previewTotalCents,
-            'welcomeOfferEligible' => $welcomeOfferEligible,
-            'welcomeOfferMessage' => $welcomeOfferMessage,
-            'welcomeOfferPercent' => $welcomeOfferService->getPercent(),
             'mollieConfigured' => $mollieCheckout->isConfigured(),
             'stripeConfigured' => $stripeCheckout->isConfigured(),
             'boxtalConfigured' => $boxtalShipping->isLiveConfigured(),
@@ -314,10 +287,15 @@ final class CheckoutController extends AbstractController
     ): Response {
         $orderId = (int) $request->query->get('order');
         $sessionId = (string) $request->query->get('session_id');
+        $accessToken = trim((string) $request->query->get('token'));
         $order = $entityManager->getRepository(Order::class)->find($orderId);
 
         if (!$order instanceof Order || $orderId <= 0) {
             throw $this->createNotFoundException('Commande introuvable.');
+        }
+
+        if (!$this->canAccessSuccessPage($order, $accessToken)) {
+            throw $this->createAccessDeniedException('Cette confirmation de commande n’est pas accessible.');
         }
 
         if ('stripe' === $order->getPaymentProvider() && $stripeCheckout->isConfigured() && null !== $order->getStripeCheckoutSessionId()) {
@@ -448,6 +426,18 @@ final class CheckoutController extends AbstractController
         $parts = array_filter([
             $user->getDefaultAddress(),
             $user->getAddressBuilding(),
+        ], static fn (?string $value): bool => null !== $value && '' !== trim($value));
+
+        if ($parts === []) {
+            return null;
+        }
+
+        return implode(' ', array_map(static fn (string $value): string => trim($value), $parts));
+    }
+
+    private function buildShippingNote(User $user): ?string
+    {
+        $parts = array_filter([
             $user->getAddressExtra(),
         ], static fn (?string $value): bool => null !== $value && '' !== trim($value));
 
@@ -456,6 +446,11 @@ final class CheckoutController extends AbstractController
         }
 
         return implode(', ', array_map(static fn (string $value): string => trim($value), $parts));
+    }
+
+    private function resolveAccountShippingNote(User $user, ?Order $latestOrder): ?string
+    {
+        return $this->buildShippingNote($user) ?: ($latestOrder instanceof Order ? $latestOrder->getNote() : null);
     }
 
     /**
@@ -467,7 +462,72 @@ final class CheckoutController extends AbstractController
             ->setShippingCountryCode(isset($submittedCheckout['shippingCountryCode']) ? (string) $submittedCheckout['shippingCountryCode'] : $order->getShippingCountryCode())
             ->setPostalCode(isset($submittedCheckout['postalCode']) ? (string) $submittedCheckout['postalCode'] : $order->getPostalCode())
             ->setCity(isset($submittedCheckout['city']) ? (string) $submittedCheckout['city'] : $order->getCity())
-            ->setShippingAddress(isset($submittedCheckout['shippingAddress']) ? (string) $submittedCheckout['shippingAddress'] : $order->getShippingAddress())
+            ->setShippingAddress($this->buildSubmittedShippingAddress($submittedCheckout, $order->getShippingAddress()))
             ->setShippingMethodCode(isset($submittedCheckout['shippingMethodCode']) ? (string) $submittedCheckout['shippingMethodCode'] : $order->getShippingMethodCode());
+    }
+
+    private function buildSubmittedShippingAddress(array $submittedCheckout, ?string $fallbackAddress): ?string
+    {
+        $street = trim((string) ($submittedCheckout['shippingAddress'] ?? ''));
+        $number = trim((string) ($submittedCheckout['shippingStreetNumber'] ?? ''));
+
+        $parts = array_filter([$street, $number], static fn (string $value): bool => '' !== $value);
+
+        if ($parts === []) {
+            return $fallbackAddress;
+        }
+
+        return implode(' ', $parts);
+    }
+
+    private function extractStreetFromShippingAddress(?string $shippingAddress): ?string
+    {
+        [$street] = $this->splitShippingAddress($shippingAddress);
+
+        return $street;
+    }
+
+    private function extractStreetNumberFromShippingAddress(?string $shippingAddress): ?string
+    {
+        [, $number] = $this->splitShippingAddress($shippingAddress);
+
+        return $number;
+    }
+
+    /**
+     * @return array{0:?string,1:?string}
+     */
+    private function splitShippingAddress(?string $shippingAddress): array
+    {
+        $value = trim((string) $shippingAddress);
+
+        if ('' === $value) {
+            return [null, null];
+        }
+
+        if (preg_match('/^(\d+[^\s,]*)\s+(.*)$/u', $value, $matches)) {
+            return [trim($matches[2]), trim($matches[1])];
+        }
+
+        if (preg_match('/^(.*?)(?:\s+)(\d+[^\s,]*)$/u', $value, $matches)) {
+            return [trim($matches[1]), trim($matches[2])];
+        }
+
+        return [$value, null];
+    }
+
+    private function canAccessSuccessPage(Order $order, string $accessToken): bool
+    {
+        if ('' !== $accessToken && hash_equals((string) $order->getCheckoutAccessToken(), $accessToken)) {
+            return true;
+        }
+
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return false;
+        }
+
+        return $order->getCustomerAccount()?->getId() === $user->getId()
+            || $order->getCustomerEmail() === $user->getEmail();
     }
 }

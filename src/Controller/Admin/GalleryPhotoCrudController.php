@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\GalleryPhoto;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -28,8 +30,17 @@ final class GalleryPhotoCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Photo')
             ->setEntityLabelInPlural('Galerie photo')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['title', 'altText', 'caption', 'imagePath'])
             ->setDefaultSort(['position' => 'ASC', 'createdAt' => 'DESC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-images'));
     }
 
     public function configureFilters(Filters $filters): Filters

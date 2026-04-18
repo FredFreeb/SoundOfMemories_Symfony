@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Déconnexion{% endblock %}
+{% block meta_robots %}noindex,nofollow{% endblock %}
+{% block body_class %}theme-admin{% endblock %}
+
+{% block body %}
+    <section class="login-shell">
+        <div class="login-stage">
+            <aside class="login-showcase">
+                <p class="eyebrow">Déconnexion</p>
+                <h1>Vous êtes sur l’écran de déconnexion sécurisé.</h1>
+                <p class="login-intro">La déconnexion du site et du back-office se fait en `POST` avec protection CSRF, donc l’URL seule ne suffit pas.</p>
+            </aside>
+
+            <div class="login-card login-card-modern">
+                <p class="eyebrow">Confirmation</p>
+                <h2>Se déconnecter maintenant ?</h2>
+                <p class="login-intro">Cliquez ci-dessous pour fermer votre session en toute sécurité.</p>
+
+                <form method="post" action="{{ path('app_logout_action') }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                    <button class="button-primary login-submit" type="submit">Se déconnecter</button>
+                </form>
+
+                <div class="login-footer-links">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="button-secondary" href="{{ path('admin_dashboard') }}">Retour au back-office</a>
+                    {% elseif is_granted('ROLE_USER') %}
+                        <a class="button-secondary" href="{{ path('app_account') }}">Retour à mon compte</a>
+                    {% else %}
+                        <a class="button-secondary" href="{{ path('store_home') }}">Retour au site</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

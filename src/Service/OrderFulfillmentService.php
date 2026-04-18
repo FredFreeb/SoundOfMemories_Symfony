@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Order;
 use App\Repository\ProductRepository;
+use App\Repository\ProductVariantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class OrderFulfillmentService
@@ -11,6 +12,7 @@ class OrderFulfillmentService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ProductRepository $products,
+        private readonly ProductVariantRepository $variants,
         private readonly WelcomeOfferService $welcomeOfferService,
     ) {
     }
@@ -27,6 +29,22 @@ class OrderFulfillmentService
                 : null;
 
             if (null === $product) {
+                continue;
+            }
+
+            $variant = null !== $item->getProductVariantIdSnapshot()
+                ? $this->variants->find($item->getProductVariantIdSnapshot())
+                : null;
+
+            if (null !== $variant && $variant->getProduct() === $product) {
+                $variant->setStock(max(0, $variant->getStock() - $item->getQuantity()));
+                $product->setStock($product->getDisplayStock());
+
+                $defaultVariant = $product->getDefaultVariant();
+                if (null !== $defaultVariant) {
+                    $product->setPriceCents($defaultVariant->getPriceCents());
+                }
+
                 continue;
             }
 

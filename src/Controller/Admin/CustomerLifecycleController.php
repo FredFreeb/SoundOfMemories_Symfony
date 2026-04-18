@@ -24,14 +24,14 @@ final class CustomerLifecycleController extends AbstractController
             $result = $customerDataLifecycleManager->processErasureRequest($user);
 
             if ('deleted' === $result) {
-                $this->addFlash('success', 'Le compte client a été supprimé, ainsi que ses données marketing et ses échanges sans commande.');
+                $this->addFlash('success', 'Le compte fan a été supprimé, ainsi que ses données marketing et ses échanges sans commande.');
             } else {
-                $this->addFlash('success', 'Le compte client a été clôturé. Les données marketing ont été retirées et les données de commande conservées au titre des obligations légales.');
+                $this->addFlash('success', 'Le compte fan a été clôturé. Les données marketing ont été retirées et les données de commande conservées au titre des obligations légales.');
             }
         } catch (\LogicException $exception) {
             $this->addFlash('warning', $exception->getMessage());
         } catch (\Throwable) {
-            $this->addFlash('error', 'Impossible de traiter cette demande client pour le moment.');
+            $this->addFlash('error', 'Impossible de traiter cette demande fan pour le moment.');
         }
 
         $referer = $request->headers->get('referer');

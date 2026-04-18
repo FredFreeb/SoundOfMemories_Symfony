@@ -9,7 +9,7 @@
 parameters:
     product_images_dir: '%kernel.project_dir%/public/uploads/products'
     site_images_dir: '%kernel.project_dir%/public/uploads/site'
-    user_avatars_dir: '%kernel.project_dir%/public/uploads/avatars'
+    user_avatars_dir: '%kernel.project_dir%/public/uploads/fans/avatars'
     address_autocomplete_endpoint: 'https://photon.komoot.io/api'
     site_owner_default_name: 'Sound Of Memories Fan Base'
     site_owner_default_email: 'contact@soundofmemories.local'

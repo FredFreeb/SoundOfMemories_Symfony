@@ -16,7 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
     name: 'app:sync-order-customers',
     description: 'Cree ou relie des comptes clients a partir des commandes existantes.',
 )]
-// Fred note: J'utilise cette commande pour que le back-office "Clients" reste coherent meme si certaines commandes ont ete passees sans compte explicite.
+// Fred note: J'utilise cette commande pour que le back-office "Fans" reste coherent meme si certaines commandes ont ete passees sans compte explicite.
 final class SyncOrderCustomersCommand extends Command
 {
     public function __construct(
@@ -48,7 +48,7 @@ final class SyncOrderCustomersCommand extends Command
             $isNewUser = null === $user->getId();
 
             if ($isNewUser) {
-                // Fred note: Je cree un compte client minimal pour que l'admin puisse suivre la personne meme si elle n'a pas encore finalise sa vraie inscription.
+                // Fred note: Je cree un compte fan minimal pour que l'admin puisse suivre la personne meme si elle n'a pas encore finalise sa vraie inscription.
                 $user
                     ->setEmail($email)
                     ->setRoles([])

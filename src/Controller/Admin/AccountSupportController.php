@@ -23,7 +23,7 @@ final class AccountSupportController extends AbstractController
         string $mailerDsn,
     ): RedirectResponse {
         if ($user->isAdmin()) {
-            $this->addFlash('warning', 'La réinitialisation depuis le back-office est réservée aux comptes clients.');
+            $this->addFlash('warning', 'La réinitialisation depuis le back-office est réservée aux comptes fans.');
 
             $referer = $request->headers->get('referer');
 

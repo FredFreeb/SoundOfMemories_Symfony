@@ -15,10 +15,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[AdminDashboard(routePath: '/backstage', routeName: 'admin_dashboard')]
 final class DashboardController extends AbstractDashboardController
@@ -65,6 +67,17 @@ final class DashboardController extends AbstractDashboardController
             ->addCssFile('styles/admin-easyadmin.css');
     }
 
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        return UserMenu::new()
+            ->setName(method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : null)
+            ->displayUserAvatar(false)
+            ->setMenuItems([
+                MenuItem::linkToRoute('Voir le site', 'fas fa-globe', 'store_home'),
+                MenuItem::linkToRoute('Déconnexion', 'fas fa-right-from-bracket', 'app_logout'),
+            ]);
+    }
+
     public function configureCrud(): Crud
     {
         return Crud::new()
@@ -83,6 +96,12 @@ final class DashboardController extends AbstractDashboardController
 
         yield MenuItem::subMenu('Concerts', 'fas fa-music')->setSubItems([
             MenuItem::linkTo(ConcertCrudController::class, 'Dates de concert', 'fas fa-calendar-days'),
+        ]);
+
+        yield MenuItem::subMenu('Fans', 'fas fa-users')->setSubItems([
+            MenuItem::linkTo(CustomerCrudController::class, 'Fans', 'fas fa-user-group'),
+            MenuItem::linkTo(CustomerConversationCrudController::class, 'Messages fans', 'fas fa-comments'),
+            MenuItem::linkTo(OrderConversationCrudController::class, 'Support commandes', 'fas fa-headset'),
         ]);
 
         yield MenuItem::subMenu('Identité', 'fas fa-bolt')->setSubItems([

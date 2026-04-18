@@ -41,6 +41,18 @@ class SiteSettings
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $homeHeroVisual = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $homeHeroSlideOne = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $homeHeroSlideTwo = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $homeHeroSlideThree = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $homeHeroSlideFour = null;
+
     #[ORM\Column(length: 40)]
     private string $homeIntroStylePreset = self::SECTION_STYLE_TYPE_TWO;
 
@@ -64,6 +76,27 @@ class SiteSettings
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $shopHeroBackground = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $sectionBackgroundPrimary = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $sectionBackgroundSecondary = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $sectionBackgroundTertiary = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $soundcloudUrl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $spotifyUrl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $appleMusicUrl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $youtubeMusicUrl = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $homeHeroTitle = 'Votre cold case à élucider, à vivre chez vous.';
@@ -212,6 +245,58 @@ class SiteSettings
         return $this;
     }
 
+    public function getHomeHeroSlideOne(): ?string
+    {
+        return $this->homeHeroSlideOne;
+    }
+
+    public function setHomeHeroSlideOne(?string $homeHeroSlideOne): static
+    {
+        $this->homeHeroSlideOne = $homeHeroSlideOne;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getHomeHeroSlideTwo(): ?string
+    {
+        return $this->homeHeroSlideTwo;
+    }
+
+    public function setHomeHeroSlideTwo(?string $homeHeroSlideTwo): static
+    {
+        $this->homeHeroSlideTwo = $homeHeroSlideTwo;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getHomeHeroSlideThree(): ?string
+    {
+        return $this->homeHeroSlideThree;
+    }
+
+    public function setHomeHeroSlideThree(?string $homeHeroSlideThree): static
+    {
+        $this->homeHeroSlideThree = $homeHeroSlideThree;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getHomeHeroSlideFour(): ?string
+    {
+        return $this->homeHeroSlideFour;
+    }
+
+    public function setHomeHeroSlideFour(?string $homeHeroSlideFour): static
+    {
+        $this->homeHeroSlideFour = $homeHeroSlideFour;
+        $this->touch();
+
+        return $this;
+    }
+
     public function getHomeIntroStylePreset(): string
     {
         return $this->homeIntroStylePreset;
@@ -311,6 +396,97 @@ class SiteSettings
     public function setShopHeroBackground(?string $shopHeroBackground): static
     {
         $this->shopHeroBackground = $shopHeroBackground;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getSectionBackgroundPrimary(): ?string
+    {
+        return $this->sectionBackgroundPrimary;
+    }
+
+    public function setSectionBackgroundPrimary(?string $sectionBackgroundPrimary): static
+    {
+        $this->sectionBackgroundPrimary = $sectionBackgroundPrimary;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getSectionBackgroundSecondary(): ?string
+    {
+        return $this->sectionBackgroundSecondary;
+    }
+
+    public function setSectionBackgroundSecondary(?string $sectionBackgroundSecondary): static
+    {
+        $this->sectionBackgroundSecondary = $sectionBackgroundSecondary;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getSectionBackgroundTertiary(): ?string
+    {
+        return $this->sectionBackgroundTertiary;
+    }
+
+    public function setSectionBackgroundTertiary(?string $sectionBackgroundTertiary): static
+    {
+        $this->sectionBackgroundTertiary = $sectionBackgroundTertiary;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getSoundcloudUrl(): ?string
+    {
+        return $this->soundcloudUrl;
+    }
+
+    public function setSoundcloudUrl(?string $soundcloudUrl): static
+    {
+        $this->soundcloudUrl = $soundcloudUrl;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getSpotifyUrl(): ?string
+    {
+        return $this->spotifyUrl;
+    }
+
+    public function setSpotifyUrl(?string $spotifyUrl): static
+    {
+        $this->spotifyUrl = $spotifyUrl;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getAppleMusicUrl(): ?string
+    {
+        return $this->appleMusicUrl;
+    }
+
+    public function setAppleMusicUrl(?string $appleMusicUrl): static
+    {
+        $this->appleMusicUrl = $appleMusicUrl;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getYoutubeMusicUrl(): ?string
+    {
+        return $this->youtubeMusicUrl;
+    }
+
+    public function setYoutubeMusicUrl(?string $youtubeMusicUrl): static
+    {
+        $this->youtubeMusicUrl = $youtubeMusicUrl;
         $this->touch();
 
         return $this;

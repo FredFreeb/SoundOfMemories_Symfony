@@ -38,6 +38,7 @@ final class OrderConversationCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Chat commande')
             ->setEntityLabelInPlural('Commandes chat')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['subject', 'customerName', 'customerEmail', 'status'])
             ->setDefaultSort(['lastMessageAt' => 'DESC']);
     }
@@ -45,7 +46,9 @@ final class OrderConversationCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-headset'))
             ->disable(Action::DELETE, Action::BATCH_DELETE);
     }
 
@@ -60,7 +63,7 @@ final class OrderConversationCrudController extends AbstractCrudController
     {
         yield IdField::new('id')->hideOnForm()->hideOnIndex();
         yield TextField::new('subject', 'Sujet');
-        yield TextField::new('customerName', 'Client');
+        yield TextField::new('customerName', 'Fan');
         yield EmailField::new('customerEmail', 'Email');
         if (Crud::PAGE_EDIT === $pageName || Crud::PAGE_NEW === $pageName) {
             yield ChoiceField::new('status', 'Statut')
@@ -85,11 +88,11 @@ final class OrderConversationCrudController extends AbstractCrudController
             ->hideOnForm();
         yield AssociationField::new('orderRef', 'Commande')
             ->setQueryBuilder(fn (QueryBuilder $queryBuilder) => $this->restrictOrdersToConversationCustomer($queryBuilder))
-            ->setHelp('Seules les commandes liées au compte client ou au même email sont proposées ici.')
+            ->setHelp('Seules les commandes liées au compte fan ou au même email sont proposées ici.')
             ->onlyOnForms();
         yield DateTimeField::new('lastMessageAt', 'Dernier message')
             ->hideOnForm();
-        yield AssociationField::new('customerAccount', 'Compte client')
+        yield AssociationField::new('customerAccount', 'Compte fan')
             ->hideOnIndex();
         yield CollectionField::new('messages', 'Conversation')
             ->useEntryCrudForm(CustomerConversationMessageCrudController::class)

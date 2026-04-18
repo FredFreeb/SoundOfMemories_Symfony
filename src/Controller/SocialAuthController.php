@@ -242,7 +242,7 @@ final class SocialAuthController extends AbstractController
             $currentName = trim((string) $user->getFullName());
             $socialName = $this->buildFullName($firstName, $lastName, $email);
 
-            if ('' === $currentName || 'Client Expédition Mystère' === $currentName) {
+            if ('' === $currentName || 'Fan Sound Of Memories' === $currentName || 'Client Expédition Mystère' === $currentName) {
                 $user->setFullName($socialName);
             }
         }
@@ -311,7 +311,7 @@ final class SocialAuthController extends AbstractController
 
         $currentName = trim((string) $currentUser->getFullName());
 
-        if ('' === $currentName || 'Client Expédition Mystère' === $currentName) {
+        if ('' === $currentName || 'Fan Sound Of Memories' === $currentName || 'Client Expédition Mystère' === $currentName) {
             $currentUser->setFullName($this->buildFullName($firstName, $lastName, $email));
         }
 
@@ -330,7 +330,7 @@ final class SocialAuthController extends AbstractController
             return ucfirst((string) preg_replace('/[._-]+/', ' ', strstr($email, '@', true) ?: $email));
         }
 
-        return 'Client Expédition Mystère';
+        return 'Fan Sound Of Memories';
     }
 
     private function normalizeEmail(?string $email): ?string

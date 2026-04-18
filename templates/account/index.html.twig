@@ -1,11 +1,11 @@
 {% extends 'layouts/store.html.twig' %}
 
 {% block title %}Mon compte{% endblock %}
-{% block meta_description %}Espace client Expéditions Mystérieuses avec profil, historique des commandes et conversations avec le service client.{% endblock %}
+{% block meta_description %}Espace fan Sound Of Memories avec profil, historique des commandes et conversations avec le support.{% endblock %}
 {% block meta_robots %}noindex,nofollow{% endblock %}
 
 {% block page %}
-    <section class="section account-page-section">
+    <section class="section section-bg-1 account-page-section">
         {% set latestConversation = conversations|first %}
         <div class="container account-page-container account-dashboard">
             <div class="account-main-column">
@@ -16,7 +16,7 @@
                                 <label class="account-avatar-trigger" for="{{ profileForm.avatarFile.vars.id }}" data-avatar-picker="true">
                                     <span class="account-avatar account-avatar-editable" data-avatar-preview="">
                                         {% if account.avatarPath %}
-                                            <img src="{{ asset('uploads/avatars/' ~ account.avatarPath) }}" alt="Avatar de {{ account.fullName }}">
+                                            <img src="{{ asset('uploads/fans/avatars/' ~ account.avatarPath) }}" alt="Avatar de {{ account.fullName }}">
                                         {% elseif account.googleAvatarUrl %}
                                             <img src="{{ account.googleAvatarUrl }}" alt="Avatar Google de {{ account.fullName }}" loading="lazy" referrerpolicy="no-referrer">
                                         {% else %}
@@ -62,6 +62,7 @@
                                 {{ form_start(profileForm, {attr: {
                                     id: 'account-profile-form',
                                     class: 'account-profile-form',
+                                    autocomplete: 'off',
                                     'data-address-autocomplete-form': 'true',
                                     'data-address-autocomplete-endpoint': address_autocomplete_endpoint
                                 }}) }}
@@ -94,19 +95,20 @@
                                         </div>
                                     </div>
 
-                                    <div class="account-form-section">
-                                        <div class="account-form-section-header">
-                                            <p class="eyebrow">Livraison</p>
-                                            <h3>Coordonnées pratiques</h3>
+                                        <div class="account-form-section">
+                                            <div class="account-form-section-header">
+                                                <p class="eyebrow">Livraison</p>
+                                                <h3>Coordonnées pratiques</h3>
+                                            </div>
+                                            <div class="form-grid form-grid-double">
+                                                {{ form_row(profileForm.countryCode) }}
+                                                {{ form_row(profileForm.postalCode) }}
+                                                {{ form_row(profileForm.city) }}
+                                                {{ form_row(profileForm.defaultAddress) }}
+                                                {{ form_row(profileForm.addressBuilding) }}
+                                                {{ form_row(profileForm.addressExtra) }}
+                                            </div>
                                         </div>
-                                        <div class="form-grid form-grid-double">
-                                            {{ form_row(profileForm.city) }}
-                                            {{ form_row(profileForm.postalCode) }}
-                                            {{ form_row(profileForm.defaultAddress) }}
-                                            {{ form_row(profileForm.addressBuilding) }}
-                                            {{ form_row(profileForm.addressExtra) }}
-                                        </div>
-                                    </div>
 
                                     <div class="account-avatar-native-field">
                                         {{ form_widget(profileForm.avatarFile) }}
@@ -188,7 +190,7 @@
                             {% else %}
                                 <article class="empty-state">
                                     <h3>Aucune commande rattachée pour l’instant</h3>
-                                    <p>Dès qu’une commande utilise le même email ou votre compte client, elle apparaîtra ici.</p>
+                                    <p>Dès qu’une commande utilise le même email ou votre compte fan, elle apparaîtra ici.</p>
                                 </article>
                             {% endfor %}
                         </div>
@@ -244,7 +246,7 @@
                         {% if account.isAdmin %}
                             <a class="button-secondary" href="{{ path('admin_dashboard') }}">Retour au back-office</a>
                         {% endif %}
-                        <form method="post" action="{{ path('app_logout') }}">
+                        <form method="post" action="{{ path('app_logout_action') }}">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
                             <button class="button-secondary" type="submit">Se déconnecter</button>
                         </form>

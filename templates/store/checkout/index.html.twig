@@ -1,198 +1,196 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Commande | Expéditions Mystérieuses{% endblock %}
-{% block meta_description %}Validation de commande Expédition Mystère avec informations d'envoi et redirection sécurisée vers Stripe.{% endblock %}
+{% block title %}Commande | Sound Of Memories Fan Base{% endblock %}
+{% block meta_description %}Validation de commande Sound Of Memories avec livraison, résumé sécurisé et redirection Stripe.{% endblock %}
 {% block meta_robots %}noindex,nofollow{% endblock %}
 
 {% block page %}
     {% set checkoutEmail = form.customerEmail.vars.value ?: 'Email de suivi à renseigner' %}
     {% set checkoutPhone = form.customerPhone.vars.value ?: 'Téléphone à renseigner' %}
 
-    <section class="section account-page-section checkout-page-section">
-        <div class="container checkout-page-container checkout-dashboard">
-            <div class="checkout-main-column">
-                <article class="detail-panel checkout-identity-card">
-                    <div class="checkout-identity-shell">
-                        <div class="checkout-hero-copy">
-                            <p class="eyebrow">Commande</p>
-                            <h1>Finaliser l’expédition</h1>
-                            <p>Vos coordonnées, la livraison et le paiement sont regroupés ici dans une seule page plus claire. Le produit conserve son prix, puis l’expédition s’ajoute séparément avant la redirection sécurisée.</p>
+    <section class="section section-bg-none account-page-section checkout-page-section">
+        <div class="container checkout-page-container">
+            <div class="checkout-page-intro">
+                <div class="checkout-page-intro-grid">
+                    <div class="checkout-page-copy">
+                        <p class="eyebrow">Commande</p>
+                        <h1>Finaliser votre commande</h1>
+                        <p class="checkout-page-lead">Renseignez votre adresse, choisissez la livraison, puis validez le paiement.</p>
+                    </div>
+                    <div class="checkout-stage-list" aria-label="Etapes de commande">
+                        <span><strong>1</strong> Adresse</span>
+                        <span><strong>2</strong> Livraison</span>
+                        <span><strong>3</strong> Paiement</span>
+                    </div>
+                </div>
+                <div class="checkout-status-line" aria-label="Statut du checkout">
+                    <span>{{ app.user ? 'Compte fan reconnu' : 'Commande invité possible' }}</span>
+                    <span>{{ boxtalConfigured ? 'Livraison calculée en direct' : 'Livraison provisoire' }}</span>
+                    <span>Paiement sécurisé par Stripe</span>
+                </div>
+            </div>
+
+            <div class="checkout-dashboard">
+                <div class="checkout-main-column">
+                    <article class="detail-panel checkout-form-panel">
+                        <div class="section-heading section-heading-compact checkout-heading">
+                            <div>
+                                <h2>Informations de livraison</h2>
+                                <p class="account-section-subtitle">Le total se met à jour selon le mode de livraison sélectionné.</p>
+                            </div>
                             <div class="checkout-contact-line" aria-label="Repères de commande">
                                 <span>{{ checkoutEmail }}</span>
                                 <span>{{ checkoutPhone }}</span>
-                                <span>{{ app.user ? 'Commande liée à votre compte' : 'Commande liée à cet email' }}</span>
                             </div>
                         </div>
 
-                        <div class="checkout-provider-grid" aria-label="État des services">
-                            <article class="checkout-provider-card">
-                                <span class="checkout-provider-badge">Stripe</span>
-                                <strong>{{ stripeConfigured ? 'Paiement prêt' : 'Paiement à configurer' }}</strong>
-                                <p>Les coordonnées bancaires restent traitées hors boutique sur la page sécurisée de Stripe.</p>
-                            </article>
-                            <article class="checkout-provider-card">
-                                <span class="checkout-provider-badge">{{ boxtalConfigured ? 'Boxtal live' : 'Boxtal estimé' }}</span>
-                                <strong>{{ boxtalConfigured ? 'Tarifs récupérés en direct' : 'Tarifs provisoires' }}</strong>
-                                <p>{{ boxtalConfigured ? 'Les frais d’expédition sont calculés via Boxtal pour cette destination.' : 'Les frais affichés sont estimatifs tant que l’intégration Boxtal finale n’est pas encore activée.' }}</p>
-                            </article>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="detail-panel checkout-form-panel">
-                    <div class="section-heading section-heading-compact checkout-heading">
-                        <div>
-                            <p class="eyebrow">Coordonnées et livraison</p>
-                            <h2>Préparer l’envoi</h2>
-                            <p class="account-section-subtitle">Renseignez les informations utiles une seule fois. Le résumé se met à jour avec la livraison choisie et l’éventuelle réduction de bienvenue.</p>
-                        </div>
-                    </div>
-
-                    <div class="checkout-notice-stack">
-                        {% if not stripeConfigured %}
-                            <div class="checkout-notice is-warning">Le paiement ne pourra pas démarrer tant que Stripe n’aura pas été configuré dans l’environnement local.</div>
-                        {% endif %}
-
-                        {% if not boxtalConfigured %}
-                            <div class="checkout-notice">Boxtal n’est pas encore branché ici : les modes et tarifs de livraison restent affichés à titre estimatif.</div>
-                        {% endif %}
-                    </div>
-
-                    {{ form_start(form, {attr: {
-                        class: 'account-profile-form checkout-form',
-                        'data-address-autocomplete-form': 'true',
-                        'data-address-autocomplete-endpoint': address_autocomplete_endpoint
-                    }}) }}
-                        {{ form_errors(form) }}
-
-                        <section class="account-form-section checkout-form-section">
-                            <div class="account-form-section-header">
-                                <p class="eyebrow">Destinataire</p>
-                                <h3>Coordonnées principales</h3>
-                                <p>Ces informations servent au suivi et au contact si la livraison en a besoin.</p>
-                            </div>
-                            <div class="form-grid form-grid-double">
-                                {{ form_row(form.customerName) }}
-                                {{ form_row(form.customerEmail) }}
-                                {{ form_row(form.customerPhone) }}
-                            </div>
-                        </section>
-
-                        <section class="account-form-section checkout-form-section">
-                            <div class="account-form-section-header">
-                                <p class="eyebrow">Expédition</p>
-                                <h3>Adresse de livraison</h3>
-                                <p>Commencez par le pays puis la ville. Les suggestions d’adresse aident à limiter les erreurs de saisie.</p>
-                            </div>
-                            <div class="form-grid form-grid-double">
-                                {{ form_row(form.shippingCountryCode) }}
-                                {{ form_row(form.city) }}
-                                {{ form_row(form.postalCode) }}
-                                {{ form_row(form.shippingAddress) }}
-                                <div class="form-grid-full checkout-shipping-method-row">
-                                    {{ form_row(form.shippingMethodCode) }}
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="account-form-section checkout-form-section">
-                            <div class="account-form-section-header">
-                                <p class="eyebrow">Finalisation</p>
-                                <h3>Derniers détails</h3>
-                                <p>Ajoutez une précision utile pour la préparation ou la remise du colis si nécessaire.</p>
-                            </div>
-                            <div class="form-grid">
-                                <div class="form-grid-full">
-                                    {{ form_row(form.note) }}
-                                </div>
-                            </div>
-
-                            {% if form.joinSecretSociety is defined %}
-                                <div class="checkout-consent-card">
-                                    <p class="eyebrow">Société secrète</p>
-                                    <label class="checkout-consent-toggle" for="{{ form.joinSecretSociety.vars.id }}">
-                                        {{ form_widget(form.joinSecretSociety, {attr: {'data-consent-toggle': 'true'}}) }}
-                                        <div class="checkout-consent-copy">
-                                            <span class="checkout-consent-label">{{ form.joinSecretSociety.vars.label }}</span>
-                                            {% if form.joinSecretSociety.vars.help %}
-                                                <p class="help-text">{{ form.joinSecretSociety.vars.help }}</p>
-                                            {% endif %}
-                                            <p class="checkout-consent-note{% if welcomeOfferEligible %} is-eligible{% endif %}">{{ welcomeOfferMessage }}</p>
-                                            {{ form_errors(form.joinSecretSociety) }}
-                                        </div>
-                                    </label>
-                                </div>
-                            {% else %}
-                                <div class="checkout-welcome-note{% if welcomeOfferEligible %} is-eligible{% endif %}">
-                                    {{ welcomeOfferMessage }}
-                                </div>
+                        <div class="checkout-notice-stack">
+                            {% if not stripeConfigured %}
+                                <div class="checkout-notice is-warning">Le paiement ne pourra pas démarrer tant que Stripe n’aura pas été configuré dans l’environnement local.</div>
                             {% endif %}
-                        </section>
 
-                        {{ form_widget(form._token) }}
-
-                        <div class="checkout-submit-row">
-                            <button class="button-primary checkout-submit" type="submit">Continuer vers Stripe</button>
-                            <p class="checkout-submit-note">Après validation, vous serez redirigé vers Stripe. Le site ne collecte ni ne stocke aucune donnée bancaire.</p>
+                            {% if not boxtalConfigured %}
+                                <div class="checkout-notice">Les frais de livraison affichés ici sont provisoires.</div>
+                            {% endif %}
                         </div>
-                    {{ form_end(form, { render_rest: false }) }}
-                </article>
-            </div>
 
-            <aside class="checkout-side-column">
-                <article class="detail-panel checkout-summary-panel">
-                    <p class="eyebrow">Résumé</p>
-                    <h2>Votre commande</h2>
-                    <p class="checkout-summary-intro">Le total se recalcule avec la livraison choisie et la remise éventuelle, sans mélanger produit et frais d’expédition.</p>
+                        {{ form_start(form, {attr: {
+                            class: 'account-profile-form checkout-form',
+                            autocomplete: 'off',
+                            'data-address-autocomplete-form': 'true',
+                            'data-address-autocomplete-endpoint': address_autocomplete_endpoint
+                        }}) }}
+                            {{ form_errors(form) }}
+                            <section class="account-form-section checkout-form-section">
+                                <div class="account-form-section-header checkout-step-header">
+                                    <span class="checkout-step-index">1</span>
+                                    <div>
+                                        <p class="eyebrow">Destinataire</p>
+                                        <h3>Coordonnées</h3>
+                                        <p>Nom, email et téléphone pour le suivi.</p>
+                                    </div>
+                                </div>
+                                <div class="form-grid form-grid-double">
+                                    {{ form_row(form.customerName) }}
+                                    {{ form_row(form.customerEmail) }}
+                                    {{ form_row(form.customerPhone) }}
+                                </div>
+                            </section>
 
-                    <div class="checkout-summary-list">
-                        {% for item in items %}
-                            <div class="summary-line">
-                                <span>{{ item.product.name }} x{{ item.quantity }}</span>
-                                <strong>{{ (item.totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                            <section class="account-form-section checkout-form-section">
+                                <div class="account-form-section-header checkout-step-header">
+                                    <span class="checkout-step-index">2</span>
+                                    <div>
+                                        <p class="eyebrow">Expédition</p>
+                                        <h3>Adresse de livraison</h3>
+                                        <p>Choisissez d’abord le pays, puis laissez-vous guider.</p>
+                                    </div>
+                                </div>
+                                <div class="form-grid form-grid-double">
+                                    {{ form_row(form.shippingCountryCode) }}
+                                    {{ form_row(form.postalCode) }}
+                                    {{ form_row(form.city) }}
+                                    <div class="form-grid-full">
+                                        {{ form_row(form.shippingAddress) }}
+                                    </div>
+                                    {{ form_row(form.shippingStreetNumber) }}
+                                    <div class="form-grid-full">
+                                        {{ form_row(form.note) }}
+                                    </div>
+                                    <div class="form-grid-full checkout-shipping-method-row">
+                                        {{ form_row(form.shippingMethodCode) }}
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="account-form-section checkout-form-section">
+                                <div class="account-form-section-header checkout-step-header">
+                                    <span class="checkout-step-index">3</span>
+                                    <div>
+                                        <p class="eyebrow">Validation</p>
+                                        <h3>Accords obligatoires</h3>
+                                        <p>Confirmation des conditions avant paiement.</p>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-grid-full">
+                                        {{ form_row(form.acceptCgv) }}
+                                    </div>
+                                    <div class="form-grid-full">
+                                        {{ form_row(form.acceptPrivacy) }}
+                                    </div>
+                                </div>
+                            </section>
+
+                            {{ form_widget(form._token) }}
+
+                            <div class="checkout-submit-row">
+                                <button class="button-primary checkout-submit" type="submit">Continuer vers Stripe</button>
+                                <p class="checkout-submit-note">Redirection sécurisée vers Stripe. Aucune donnée bancaire n’est stockée ici.</p>
                             </div>
-                        {% endfor %}
+                        {{ form_end(form, { render_rest: false }) }}
+                    </article>
+                </div>
 
-                        <div class="summary-line total">
-                            <span>Sous-total produits</span>
-                            <strong>{{ (totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
-                        </div>
+                <aside class="checkout-side-column">
+                    <article class="detail-panel checkout-summary-panel">
+                        <p class="eyebrow">Résumé</p>
+                        <h2>Votre commande</h2>
+                        <p class="checkout-summary-intro">{{ items|length }} article{{ items|length > 1 ? 's' : '' }} avant paiement.</p>
 
-                        {% if previewDiscountCents > 0 %}
-                            <div class="summary-line">
-                                <span>Bienvenue Société secrète -{{ welcomeOfferPercent }} %</span>
-                                <strong>-{{ (previewDiscountCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
-                            </div>
-                        {% endif %}
-
-                        <div class="summary-line">
-                            <span>
-                                Livraison
-                                {% if previewShippingEstimated %}estimée{% endif %}
-                                {% if previewShippingLabel %}· {{ previewShippingLabel }}{% else %}· à choisir{% endif %}
-                            </span>
-                            <strong>
-                                {% if previewShippingLabel %}
-                                    {{ (previewShippingCents / 100)|number_format(2, ',', ' ') }} EUR
-                                {% else %}
-                                    --
-                                {% endif %}
-                            </strong>
-                        </div>
-
-                        <div class="summary-line total">
-                            <span>Total à régler</span>
+                        <div class="checkout-summary-total-card">
+                            <span>Total estimé</span>
                             <strong>{{ (previewTotalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
                         </div>
-                    </div>
 
-                    <div class="checkout-trust-list">
-                        <span>Paiement Stripe sécurisé</span>
-                        <span>Livraison ajoutée séparément</span>
-                        <span>Suivi rattaché à votre compte ou email</span>
-                    </div>
-                </article>
-            </aside>
+                        <div class="checkout-summary-list">
+                            {% for item in items %}
+                                <div class="summary-line">
+                                    <span>{{ item.displayName }} x{{ item.quantity }}</span>
+                                    <strong>{{ (item.totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                                </div>
+                            {% endfor %}
+
+                            <div class="summary-line total">
+                                <span>Sous-total produits</span>
+                                <strong>{{ (totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                            </div>
+
+                            {% if previewDiscountCents > 0 %}
+                                <div class="summary-line">
+                                    <span>Réduction bienvenue</span>
+                                    <strong>-{{ (previewDiscountCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                                </div>
+                            {% endif %}
+
+                            <div class="summary-line">
+                                <span>
+                                    Livraison
+                                    {% if previewShippingEstimated %}estimée{% endif %}
+                                    {% if previewShippingLabel %}· {{ previewShippingLabel }}{% else %}· à choisir{% endif %}
+                                </span>
+                                <strong>
+                                    {% if previewShippingLabel %}
+                                        {{ (previewShippingCents / 100)|number_format(2, ',', ' ') }} EUR
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </strong>
+                            </div>
+
+                            <div class="summary-line total">
+                                <span>Total à régler</span>
+                                <strong>{{ (previewTotalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                            </div>
+                        </div>
+
+                        <div class="checkout-trust-list">
+                            <span>Paiement Stripe sécurisé</span>
+                            <span>Suivi par compte ou email</span>
+                        </div>
+                    </article>
+                </aside>
+            </div>
         </div>
     </section>
 {% endblock %}

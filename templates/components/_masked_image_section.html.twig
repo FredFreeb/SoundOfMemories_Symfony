@@ -1,0 +1,44 @@
+{% set masked_section_classes = ['masked-image-section'] %}
+{% if reverse|default(false) %}
+    {% set masked_section_classes = masked_section_classes|merge(['is-reverse']) %}
+{% endif %}
+{% if class_name|default('') %}
+    {% set masked_section_classes = masked_section_classes|merge([class_name]) %}
+{% endif %}
+
+<section class="{{ masked_section_classes|join(' ') }}">
+    <div class="container masked-image-section__grid">
+        <div class="masked-image-section__copy">
+            {% if eyebrow|default('') %}
+                <p class="eyebrow">{{ eyebrow }}</p>
+            {% endif %}
+
+            <h2>{{ title }}</h2>
+            <p class="masked-image-section__lead">{{ text }}</p>
+
+            {% if meta_primary|default('') or meta_secondary|default('') %}
+                <div class="masked-image-section__meta">
+                    {% if meta_primary|default('') %}
+                        <span class="masked-image-section__chip">{{ meta_primary }}</span>
+                    {% endif %}
+                    {% if meta_secondary|default('') %}
+                        <span class="masked-image-section__chip">{{ meta_secondary }}</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if button_label|default('') and button_url|default('') %}
+                <a class="button-primary masked-image-section__action" href="{{ button_url }}">{{ button_label }}</a>
+            {% endif %}
+        </div>
+
+        <div class="masked-image-section__media">
+            <div
+                class="masked-image-section__art"
+                role="img"
+                aria-label="{{ image_alt|default(title) }}"
+                style="--masked-image-url: url('{{ image_url }}');"
+            ></div>
+        </div>
+    </div>
+</section>

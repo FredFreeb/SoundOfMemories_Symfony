@@ -62,8 +62,9 @@ final class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $draftUser
                 ->setEmail((string) $draftUser->getEmail())
-                ->setFullName($draftUser->getFullName() ?: 'Client Expédition Mystère')
+                ->setFullName($draftUser->getFullName() ?: 'Fan Sound Of Memories')
                 ->setPhone($draftUser->getPhone())
+                ->setCountryCode($draftUser->getCountryCode())
                 ->setDefaultAddress($draftUser->getDefaultAddress())
                 ->setAddressBuilding($draftUser->getAddressBuilding())
                 ->setAddressExtra($draftUser->getAddressExtra())
@@ -92,11 +93,11 @@ final class RegistrationController extends AbstractController
             );
 
             if (str_starts_with($mailerDsn, 'null://')) {
-                $this->addFlash('warning', 'Le compte client a été créé. L’email de vérification sera disponible dès que la messagerie du site sera activée.');
+                $this->addFlash('warning', 'Le compte fan a été créé. L’email de vérification sera disponible dès que la messagerie du site sera activée.');
             } elseif (str_contains($mailerDsn, 'dev-sendmail.php')) {
-                $this->addFlash('success', 'Le compte client a été créé. L’email de vérification est maintenant disponible dans la boîte mail locale.');
+                $this->addFlash('success', 'Le compte fan a été créé. L’email de vérification est maintenant disponible dans la boîte mail locale.');
             } else {
-                $this->addFlash('success', 'Le compte client a été créé. Un email de vérification vient d’être envoyé.');
+                $this->addFlash('success', 'Le compte fan a été créé. Un email de vérification vient d’être envoyé.');
             }
 
             return $this->redirectToRoute('app_login', [

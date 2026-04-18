@@ -31,7 +31,19 @@ final class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/deconnexion', name: 'app_logout', methods: ['POST'])]
+    #[Route('/deconnexion', name: 'app_logout', methods: ['GET'])]
+    public function logoutConfirm(): Response
+    {
+        return $this->render('security/logout.html.twig');
+    }
+
+    #[Route('/deconnexion/post', name: 'app_logout_redirect', methods: ['GET'])]
+    public function logoutRedirect(): Response
+    {
+        return $this->redirectToRoute('app_logout');
+    }
+
+    #[Route('/deconnexion/valider', name: 'app_logout_action', methods: ['POST'])]
     public function logout(): never
     {
         // Fred note: Symfony intercepte cette route lui-meme; cette methode ne doit jamais vraiment s'executer.

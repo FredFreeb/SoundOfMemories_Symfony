@@ -3,6 +3,7 @@
 namespace App\Controller\Store;
 
 use App\Entity\Product;
+use App\Entity\ProductVariant;
 use App\Service\CartService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,42 +30,80 @@ final class CartController extends AbstractController
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
-        if (!$product->isPublished() || $product->getStock() <= 0) {
+        $variant = $this->resolveRequestedVariant($product, $request);
+
+        if (!$product->isPublished() || ($variant instanceof ProductVariant ? $variant->getStock() <= 0 : $product->getDisplayStock() <= 0)) {
             $this->addFlash('warning', 'Ce produit n’est pas disponible a la vente.');
 
             return $this->redirectToRoute('store_shop_index');
         }
 
+        if ($product->hasVariants() && !($variant instanceof ProductVariant)) {
+            $this->addFlash('warning', sprintf('Choisis une option de %s avant d’ajouter ce produit.', mb_strtolower($product->getVariantChoiceLabel())));
+
+            return $this->redirectToRoute('store_shop_show', ['slug' => $product->getSlug()]);
+        }
+
         $quantity = max(1, (int) $request->request->get('quantity', 1));
-        $cart->add($product, $quantity);
+        $cart->add($product, $variant, $quantity);
 
-        $this->addFlash('success', sprintf('%s a ete ajoute au panier.', $product->getName()));
+        $flashName = $product->getName();
+        if ($variant instanceof ProductVariant) {
+            $flashName .= sprintf(' (%s)', $variant->getLabel());
+        }
+
+        $this->addFlash('success', sprintf('%s a ete ajoute au panier.', $flashName));
 
         return $this->redirectToRoute('store_cart');
     }
 
-    #[Route('/modifier/{id}', name: 'store_cart_update', methods: ['POST'])]
-    public function update(Product $product, Request $request, CartService $cart): RedirectResponse
+    #[Route('/modifier', name: 'store_cart_update', methods: ['POST'])]
+    public function update(Request $request, CartService $cart): RedirectResponse
     {
-        if (!$this->isCsrfTokenValid('cart_update_' . $product->getId(), (string) $request->request->get('_token'))) {
+        $itemKey = trim((string) $request->request->get('itemKey'));
+
+        if (!$this->isCsrfTokenValid('cart_update_' . $itemKey, (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
-        $cart->update($product, (int) $request->request->get('quantity', 1));
+        $cart->update($itemKey, (int) $request->request->get('quantity', 1));
 
         return $this->redirectToRoute('store_cart');
     }
 
-    #[Route('/supprimer/{id}', name: 'store_cart_remove', methods: ['POST'])]
-    public function remove(Product $product, Request $request, CartService $cart): RedirectResponse
+    #[Route('/supprimer', name: 'store_cart_remove', methods: ['POST'])]
+    public function remove(Request $request, CartService $cart): RedirectResponse
     {
-        if (!$this->isCsrfTokenValid('cart_remove_' . $product->getId(), (string) $request->request->get('_token'))) {
+        $itemKey = trim((string) $request->request->get('itemKey'));
+
+        if (!$this->isCsrfTokenValid('cart_remove_' . $itemKey, (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
-        $cart->remove($product);
-        $this->addFlash('success', sprintf('%s a ete retire du panier.', $product->getName()));
+        $cart->remove($itemKey);
+        $this->addFlash('success', 'Le produit a ete retire du panier.');
 
         return $this->redirectToRoute('store_cart');
+    }
+
+    private function resolveRequestedVariant(Product $product, Request $request): ?ProductVariant
+    {
+        $variantId = (int) $request->request->get('variantId');
+
+        if ($variantId <= 0) {
+            return $product->hasVariants() ? null : $product->getDefaultVariant();
+        }
+
+        foreach ($product->getVariants() as $variant) {
+            if (
+                $variant instanceof ProductVariant
+                && $variant->getId() === $variantId
+                && $variant->isPublished()
+            ) {
+                return $variant;
+            }
+        }
+
+        return null;
     }
 }

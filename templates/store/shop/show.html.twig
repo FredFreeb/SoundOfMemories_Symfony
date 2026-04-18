@@ -1,69 +1,206 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}{{ product.name }} | Sound Of Memories Fan Base{% endblock %}
+{% block title %}{{ product.name }} | Sound Of Memories{% endblock %}
 {% block meta_description %}{{ product.shortDescription ?: product.description ?: 'Produit merchandising Sound Of Memories.' }}{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/product-effects.css') }}">
+{% endblock %}
 
 {% block page %}
-    <section class="section">
-        <div class="container product-detail-grid">
-            <div>
-                {% include 'store/components/_product_media.html.twig' with {
-                    product: product,
-                    media_classes: 'product-media product-media-detail'
-                } only %}
-            </div>
+    {% set mediaGallery = [] %}
+    {% if product.coverImage %}
+        {% set coverUrl = product.coverImage starts with 'http' or product.coverImage starts with '/' ? product.coverImage : asset('uploads/products/' ~ product.coverImage) %}
+        {% set mediaGallery = mediaGallery|merge([{ url: coverUrl, alt: product.name }]) %}
+    {% endif %}
+    {% for image in product.galleryImages %}
+        {% set galleryUrl = image.imagePath starts with 'http' or image.imagePath starts with '/' ? image.imagePath : asset('uploads/product-gallery/' ~ image.imagePath) %}
+        {% set mediaGallery = mediaGallery|merge([{ url: galleryUrl, alt: image.altText ?: product.name }]) %}
+    {% endfor %}
+    {% set mainMedia = mediaGallery|first %}
+    {% set selectedVariant = defaultVariant %}
 
-            <div class="product-detail-copy">
-                <p class="eyebrow">{{ product.category ? product.category.name : 'Merchandising' }}</p>
-                <h1>{{ product.name }}</h1>
-                <p class="product-lead">{{ product.shortDescription }}</p>
-
-                <div class="meta-row">
-                    <span class="chip">{{ product.formattedPrice }}</span>
-                    <span class="chip">{{ product.stock }} en stock</span>
+    <section class="section section-bg-1 merch-product-section">
+        <div class="container merch-product-shell">
+            <div class="merch-product-gallery" data-product-gallery>
+                <div class="merch-product-gallery__main">
+                    {% if mainMedia %}
+                        <img
+                            src="{{ mainMedia.url }}"
+                            alt="{{ mainMedia.alt }}"
+                            class="merch-product-gallery__image"
+                            data-main-product-image
+                            width="1200"
+                            height="1200"
+                            loading="eager"
+                            decoding="async"
+                        >
+                    {% else %}
+                        <div class="merch-product-gallery__fallback">Visuel à venir</div>
+                    {% endif %}
                 </div>
 
-                <form method="post" action="{{ path('store_cart_add', {id: product.id}) }}" class="buy-box">
+                {% if mediaGallery|length > 1 %}
+                    <div class="merch-product-gallery__thumbs">
+                        {% for media in mediaGallery %}
+                            <button
+                                type="button"
+                                class="merch-product-gallery__thumb{% if loop.first %} is-active{% endif %}"
+                                data-product-thumb
+                                data-image-url="{{ media.url }}"
+                                data-image-alt="{{ media.alt }}"
+                                aria-label="Voir l’image {{ loop.index }} du produit"
+                            >
+                                <img src="{{ media.url }}" alt="" width="180" height="180" loading="lazy" decoding="async">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="merch-product-buybox" data-product-options>
+                <p class="eyebrow">{{ product.category ? product.category.name : 'Merchandising' }}</p>
+                <h1>{{ product.name }}</h1>
+                <p class="merch-product-lead">{{ product.shortDescription ?: product.catalogExcerpt }}</p>
+
+                <div class="merch-product-pricing">
+                    {% if selectedVariant and selectedVariant.formattedCompareAtPrice %}
+                        <span class="merch-product-pricing__compare js-variant-compare">{{ selectedVariant.formattedCompareAtPrice }}</span>
+                    {% elseif product.formattedDisplayCompareAtPrice %}
+                        <span class="merch-product-pricing__compare js-variant-compare">{{ product.formattedDisplayCompareAtPrice }}</span>
+                    {% else %}
+                        <span class="merch-product-pricing__compare js-variant-compare is-hidden"></span>
+                    {% endif %}
+
+                    <strong class="merch-product-pricing__main js-variant-price">{{ selectedVariant ? selectedVariant.formattedPrice : product.formattedStartingPrice }}</strong>
+                    <span class="merch-product-pricing__stock js-variant-stock">
+                        {% if selectedVariant %}
+                            {{ selectedVariant.stock }} disponible{{ selectedVariant.stock > 1 ? 's' : '' }}
+                        {% else %}
+                            {{ product.displayStock }} disponible{{ product.displayStock > 1 ? 's' : '' }}
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="merch-product-trust">
+                    <span>Paiement Stripe sécurisé</span>
+                    <span>Expédition gérée avec Boxtal</span>
+                    <span>Stocks suivis par variante</span>
+                </div>
+
+                <form method="post" action="{{ path('store_cart_add', {id: product.id}) }}" class="merch-product-form">
                     <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
-                    <label class="field-label" for="quantity">Quantité</label>
-                    <div class="buy-box-row">
-                        <input id="quantity" type="number" name="quantity" min="1" max="{{ product.stock }}" value="1">
-                        <button class="button-primary" type="submit">Ajouter au panier</button>
+
+                    {% if variants is not empty %}
+                        <fieldset class="merch-product-options">
+                            <legend>{{ product.variantChoiceLabel }}</legend>
+                            <div class="merch-product-options__grid">
+                                {% for variant in variants %}
+                                    <label class="merch-product-option{% if not variant.isAvailable %} is-disabled{% endif %}">
+                                        <input
+                                            type="radio"
+                                            name="variantId"
+                                            value="{{ variant.id }}"
+                                            data-option-input
+                                            data-price="{{ variant.formattedPrice }}"
+                                            data-price-cents="{{ variant.priceCents }}"
+                                            data-compare-price="{{ variant.formattedCompareAtPrice ?: '' }}"
+                                            data-stock="{{ variant.stock }}"
+                                            data-label="{{ variant.label }}"
+                                            {% if selectedVariant and variant.id == selectedVariant.id %}checked{% endif %}
+                                            {% if not variant.isAvailable %}disabled{% endif %}
+                                        >
+                                        <span class="merch-product-option__label">{{ variant.label }}</span>
+                                        <span class="merch-product-option__meta">
+                                            {{ variant.formattedPrice }}
+                                            {% if variant.stock <= 0 %}· Rupture{% endif %}
+                                        </span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </fieldset>
+                    {% endif %}
+
+                    <div class="merch-product-form__row">
+                        <div class="field-shell">
+                            <label class="field-label" for="quantity">Quantité</label>
+                            <input
+                                id="quantity"
+                                type="number"
+                                name="quantity"
+                                min="1"
+                                max="{{ selectedVariant ? selectedVariant.stock : product.displayStock }}"
+                                value="1"
+                                class="js-variant-quantity"
+                            >
+                        </div>
+                        <button
+                            class="button-primary merch-product-form__submit js-variant-submit"
+                            type="submit"
+                            {% if (selectedVariant and selectedVariant.stock <= 0) or (not selectedVariant and product.displayStock <= 0) %}disabled{% endif %}
+                        >
+                            Ajouter au panier
+                        </button>
                     </div>
                 </form>
 
-                {% if product.description %}
-                    <div class="prose-block">
-                        <h2>Détails</h2>
-                        <p>{{ product.description|nl2br }}</p>
-                    </div>
-                {% endif %}
+                <div class="merch-product-panels">
+                    {% if product.description %}
+                        <article class="merch-product-panel">
+                            <h2>Détails</h2>
+                            <p>{{ product.description|nl2br }}</p>
+                        </article>
+                    {% endif %}
 
-                <div class="detail-aside">
-                    <div>
-                        <strong>Animation</strong>
-                        <p>{{ product.animationKey ?: 'Aucune animation sélectionnée' }}</p>
-                    </div>
-                    <div>
-                        <strong>Back-office</strong>
-                        <p>Ce produit est entièrement modifiable dans EasyAdmin: nom, prix, stock, visuel et publication.</p>
-                    </div>
+                    <article class="merch-product-panel">
+                        <h2>Pourquoi ça convertit mieux</h2>
+                        <p>Chaque produit garde une fiche claire, des options visibles, un panier simple et un checkout sécurisé. L’admin peut ensuite ajuster tailles, prix, stock et promotion sans toucher au code.</p>
+                    </article>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section section-contrast">
-        <div class="container cta-panel">
-            <div>
-                <p class="eyebrow">Prochaine étape</p>
-                <h2>Compléter le merchandising avec les dates live.</h2>
-                <p>Le même back-office permet maintenant de gérer les concerts et d’orienter les fans du produit vers la scène.</p>
+    {% if relatedProducts is not empty %}
+        <section class="section section-bg-2 merch-related-section">
+            <div class="container">
+                <header class="section-head merch-related-head">
+                    <div>
+                        <p class="eyebrow">À associer</p>
+                        <h2>Compléter le drop avec d’autres pièces Sound Of Memories.</h2>
+                    </div>
+                    <a class="text-link" href="{{ path('store_shop_index') }}">Retour à la boutique</a>
+                </header>
+
+                <div class="merch-related-grid">
+                    {% for relatedProduct in relatedProducts %}
+                        <article class="merch-card merch-card--compact">
+                            <a class="merch-card__media" href="{{ path('store_shop_show', {slug: relatedProduct.slug}) }}" aria-label="{{ relatedProduct.name }}">
+                                {% include 'store/components/_product_media.html.twig' with {
+                                    product: relatedProduct,
+                                    media_classes: 'product-media merch-card__frame'
+                                } only %}
+                            </a>
+                            <div class="merch-card__copy">
+                                <p class="card-kicker">{{ relatedProduct.category ? relatedProduct.category.name : 'Merch' }}</p>
+                                <h3><a href="{{ path('store_shop_show', {slug: relatedProduct.slug}) }}">{{ relatedProduct.name }}</a></h3>
+                                <div class="merch-card__footer">
+                                    <div class="merch-card__pricing">
+                                        <strong>{{ relatedProduct.formattedStartingPrice }}</strong>
+                                        <span>{{ relatedProduct.displayStock }} dispo</span>
+                                    </div>
+                                    <a class="button-secondary merch-card__button" href="{{ path('store_shop_show', {slug: relatedProduct.slug}) }}">Voir</a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="button-column">
-                <a class="button-secondary" href="{{ path('store_concerts') }}">Voir les concerts</a>
-                <a class="button-secondary" href="{{ path('store_shop_index') }}">Retour boutique</a>
-            </div>
-        </div>
-    </section>
+        </section>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('scripts/shop-product.js') }}" defer></script>
 {% endblock %}

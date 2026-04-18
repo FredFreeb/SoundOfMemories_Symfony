@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Connexion{% endblock %}
-{% block meta_description %}Connexion à l'espace client ou à l'administration Sound Of Memories.{% endblock %}
+{% block meta_description %}Connexion à l'espace fan ou à l'administration Sound Of Memories.{% endblock %}
 {% block meta_robots %}noindex,nofollow{% endblock %}
 {% block body_class %}theme-admin{% endblock %}
 
@@ -59,7 +59,7 @@
                 {% include 'security/_social_auth.html.twig' %}
 
                 <div class="login-footer-links">
-                    <a class="button-secondary" href="{{ path('app_register') }}">Créer un compte client</a>
+                    <a class="button-secondary" href="{{ path('app_register') }}">Créer un compte fan</a>
                     <a class="text-link" href="{{ path('store_home') }}">Retour au site</a>
                 </div>
             </form>

@@ -3,9 +3,11 @@
     <head>
         {% set settings = site_settings() %}
         {% set request = app.request %}
-        {% set canonical = request ? request.uri : '' %}
+        {% set canonical = request ? (request.schemeAndHttpHost ~ request.pathInfo) : '' %}
         {% set meta_description_block %}{% block meta_description %}{% endblock %}{% endset %}
         {% set description = meta_description_block|trim ?: (settings.tagline ?: 'Fan base Sound Of Memories, merchandising et dates de concert.') %}
+        {% set meta_robots_block %}{% block meta_robots %}index,follow{% endblock %}{% endset %}
+        {% set robots = meta_robots_block|trim ?: 'index,follow' %}
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#111111">
@@ -13,6 +15,7 @@
         <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
         <title>{% block title %}{{ settings.siteName ?: 'Sound Of Memories Fan Base' }}{% endblock %}</title>
         <meta name="description" content="{{ description }}">
+        <meta name="robots" content="{{ robots }}">
         {% if canonical %}
             <link rel="canonical" href="{{ canonical }}">
         {% endif %}
@@ -23,29 +26,17 @@
             <meta property="og:url" content="{{ canonical }}">
         {% endif %}
         {% block stylesheets %}
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Eagle+Lake&family=Metal+Mania&display=swap" rel="stylesheet">
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
-            {% include 'layouts/animations/_product_effects.html.twig' %}
         {% endblock %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
         {% block body %}{% endblock %}
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const navToggle = document.querySelector('[data-nav-toggle]');
-                const mainNav = document.querySelector('[data-main-nav]');
-
-                if (navToggle && mainNav) {
-                    navToggle.addEventListener('click', () => {
-                        const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
-                        navToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-                        mainNav.classList.toggle('is-open', !isOpen);
-                        document.body.classList.toggle('nav-open', !isOpen);
-                    });
-                }
-            });
-        </script>
-
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            <script src="{{ asset('scripts/site.js') }}" defer></script>
+        {% endblock %}
     </body>
 </html>

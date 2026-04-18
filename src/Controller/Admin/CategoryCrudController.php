@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Category;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -25,8 +27,17 @@ final class CategoryCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Catégorie')
             ->setEntityLabelInPlural('Catégories')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['name', 'slug', 'description'])
             ->setDefaultSort(['name' => 'ASC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-folder-tree'));
     }
 
     public function configureFields(string $pageName): iterable

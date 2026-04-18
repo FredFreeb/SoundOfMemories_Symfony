@@ -35,6 +35,7 @@ class MollieCheckoutService
             'description' => sprintf('Commande #%d - Expedition Mystere', $order->getId()),
             'redirectUrl' => $this->urlGenerator->generate('store_checkout_success', [
                 'order' => $order->getId(),
+                'token' => $order->getCheckoutAccessToken(),
             ], UrlGeneratorInterface::ABSOLUTE_URL),
             'webhookUrl' => $this->urlGenerator->generate('store_checkout_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'metadata' => [

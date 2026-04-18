@@ -23,7 +23,7 @@ final class CustomerConversationMessageCrudController extends AbstractCrudContro
         yield IdField::new('id')->hideOnForm()->hideOnIndex();
         yield ChoiceField::new('authorType', 'Auteur')
             ->setChoices([
-                'Client' => 'client',
+                'Fan' => 'client',
                 'Admin' => 'admin',
             ]);
         yield TextField::new('authorName', 'Nom');

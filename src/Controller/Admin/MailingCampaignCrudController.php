@@ -29,13 +29,17 @@ final class MailingCampaignCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Campagne mail')
             ->setEntityLabelInPlural('Mailings')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['title', 'subject', 'audienceLabel', 'status'])
             ->setDefaultSort(['createdAt' => 'DESC']);
     }
 
     public function configureActions(Actions $actions): Actions
     {
-        return $actions->add(Crud::PAGE_INDEX, Action::DETAIL);
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-envelope-open-text'));
     }
 
     public function configureFilters(Filters $filters): Filters

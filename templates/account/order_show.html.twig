@@ -48,11 +48,11 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section section-bg-1">
         <div class="container feature-columns">
             {% for item in order.items %}
                 <article class="dossier-card">
-                    <h2>{{ item.productName }}</h2>
+                    <h2>{{ item.displayName }}</h2>
                     <p>Quantité : {{ item.quantity }}</p>
                     <p>Prix unitaire : {{ (item.unitPriceCents / 100)|number_format(2, ',', ' ') }} EUR</p>
                 </article>

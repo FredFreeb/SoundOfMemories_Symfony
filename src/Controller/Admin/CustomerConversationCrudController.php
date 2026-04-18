@@ -36,8 +36,9 @@ final class CustomerConversationCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Question client')
-            ->setEntityLabelInPlural('Q&A clients')
+            ->setEntityLabelInSingular('Question fan')
+            ->setEntityLabelInPlural('Q&A fans')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['subject', 'customerName', 'customerEmail', 'status'])
             ->setDefaultSort(['lastMessageAt' => 'DESC']);
     }
@@ -45,7 +46,9 @@ final class CustomerConversationCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-comments'))
             ->disable(Action::DELETE, Action::BATCH_DELETE);
     }
 
@@ -60,7 +63,7 @@ final class CustomerConversationCrudController extends AbstractCrudController
     {
         yield IdField::new('id')->hideOnForm()->hideOnIndex();
         yield TextField::new('subject', 'Sujet');
-        yield TextField::new('customerName', 'Client');
+        yield TextField::new('customerName', 'Fan');
         yield EmailField::new('customerEmail', 'Email');
         if (Crud::PAGE_EDIT === $pageName || Crud::PAGE_NEW === $pageName) {
             yield ChoiceField::new('status', 'Statut')
@@ -82,7 +85,7 @@ final class CustomerConversationCrudController extends AbstractCrudController
             ->renderAsHtml();
         yield DateTimeField::new('lastMessageAt', 'Dernier message')
             ->hideOnForm();
-        yield AssociationField::new('customerAccount', 'Compte client')
+        yield AssociationField::new('customerAccount', 'Compte fan')
             ->hideOnIndex();
         yield CollectionField::new('messages', 'Conversation')
             ->useEntryCrudForm(CustomerConversationMessageCrudController::class)

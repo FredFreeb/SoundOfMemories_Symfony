@@ -12,6 +12,177 @@ const EUROPEAN_COUNTRY_CODES = new Set([
     'sm', 'ua', 'uk', 'va', 'xk',
 ]);
 
+const COUNTRY_QUERY_LANGUAGE_BY_CODE = {
+    at: 'de',
+    be: 'fr',
+    bg: 'bg',
+    ca: 'en',
+    ch: 'de',
+    cz: 'cs',
+    de: 'de',
+    dk: 'da',
+    ee: 'et',
+    es: 'es',
+    fi: 'fi',
+    fr: 'fr',
+    gb: 'en',
+    gr: 'el',
+    hr: 'hr',
+    hu: 'hu',
+    ie: 'en',
+    it: 'it',
+    lt: 'lt',
+    lu: 'fr',
+    lv: 'lv',
+    nl: 'nl',
+    no: 'nb',
+    pl: 'pl',
+    pt: 'pt',
+    ro: 'ro',
+    se: 'sv',
+    si: 'sl',
+    sk: 'sk',
+    us: 'en',
+};
+
+const FRENCH_DEPARTMENTS_BY_PREFIX = {
+    '01': 'Ain',
+    '02': 'Aisne',
+    '03': 'Allier',
+    '04': 'Alpes-de-Haute-Provence',
+    '05': 'Hautes-Alpes',
+    '06': 'Alpes-Maritimes',
+    '07': 'Ardeche',
+    '08': 'Ardennes',
+    '09': 'Ariege',
+    '10': 'Aube',
+    '11': 'Aude',
+    '12': 'Aveyron',
+    '13': 'Bouches-du-Rhone',
+    '14': 'Calvados',
+    '15': 'Cantal',
+    '16': 'Charente',
+    '17': 'Charente-Maritime',
+    '18': 'Cher',
+    '19': 'Correze',
+    '20': 'Corse',
+    '21': "Cote-d'Or",
+    '22': "Cotes-d'Armor",
+    '23': 'Creuse',
+    '24': 'Dordogne',
+    '25': 'Doubs',
+    '26': 'Drome',
+    '27': 'Eure',
+    '28': 'Eure-et-Loir',
+    '29': 'Finistere',
+    '30': 'Gard',
+    '31': 'Haute-Garonne',
+    '32': 'Gers',
+    '33': 'Gironde',
+    '34': 'Herault',
+    '35': 'Ille-et-Vilaine',
+    '36': 'Indre',
+    '37': 'Indre-et-Loire',
+    '38': 'Isere',
+    '39': 'Jura',
+    '40': 'Landes',
+    '41': 'Loir-et-Cher',
+    '42': 'Loire',
+    '43': 'Haute-Loire',
+    '44': 'Loire-Atlantique',
+    '45': 'Loiret',
+    '46': 'Lot',
+    '47': 'Lot-et-Garonne',
+    '48': 'Lozere',
+    '49': 'Maine-et-Loire',
+    '50': 'Manche',
+    '51': 'Marne',
+    '52': 'Haute-Marne',
+    '53': 'Mayenne',
+    '54': 'Meurthe-et-Moselle',
+    '55': 'Meuse',
+    '56': 'Morbihan',
+    '57': 'Moselle',
+    '58': 'Nievre',
+    '59': 'Nord',
+    '60': 'Oise',
+    '61': 'Orne',
+    '62': 'Pas-de-Calais',
+    '63': 'Puy-de-Dome',
+    '64': 'Pyrenees-Atlantiques',
+    '65': 'Hautes-Pyrenees',
+    '66': 'Pyrenees-Orientales',
+    '67': 'Bas-Rhin',
+    '68': 'Haut-Rhin',
+    '69': 'Rhone',
+    '70': 'Haute-Saone',
+    '71': 'Saone-et-Loire',
+    '72': 'Sarthe',
+    '73': 'Savoie',
+    '74': 'Haute-Savoie',
+    '75': 'Paris',
+    '76': 'Seine-Maritime',
+    '77': 'Seine-et-Marne',
+    '78': 'Yvelines',
+    '79': 'Deux-Sevres',
+    '80': 'Somme',
+    '81': 'Tarn',
+    '82': 'Tarn-et-Garonne',
+    '83': 'Var',
+    '84': 'Vaucluse',
+    '85': 'Vendee',
+    '86': 'Vienne',
+    '87': 'Haute-Vienne',
+    '88': 'Vosges',
+    '89': 'Yonne',
+    '90': 'Territoire de Belfort',
+    '91': 'Essonne',
+    '92': 'Hauts-de-Seine',
+    '93': 'Seine-Saint-Denis',
+    '94': 'Val-de-Marne',
+    '95': "Val-d'Oise",
+    '97': 'Outre-mer',
+    '98': 'Collectivites d Outre-mer',
+};
+
+function getCountryQueryLanguage(countryCode) {
+    const normalizedCode = String(countryCode || '').trim().toLowerCase();
+
+    if (COUNTRY_QUERY_LANGUAGE_BY_CODE[normalizedCode]) {
+        return COUNTRY_QUERY_LANGUAGE_BY_CODE[normalizedCode];
+    }
+
+    const browserLanguage = String(navigator.language || 'en').trim().toLowerCase();
+    return browserLanguage.slice(0, 2) || 'en';
+}
+
+function getCountryDisplayName(countryCode, locale) {
+    const normalizedCode = String(countryCode || '').trim().toUpperCase();
+
+    if (normalizedCode === '') {
+        return '';
+    }
+
+    try {
+        const displayNames = new Intl.DisplayNames([locale], { type: 'region' });
+        return displayNames.of(normalizedCode) || '';
+    } catch (error) {
+        return '';
+    }
+}
+
+function getCountrySearchTerms(countryCode, fallbackLabel) {
+    const normalizedCode = String(countryCode || '').trim().toLowerCase();
+    const locale = getCountryQueryLanguage(normalizedCode);
+
+    return Array.from(new Set([
+        fallbackLabel,
+        getCountryDisplayName(normalizedCode, locale),
+        getCountryDisplayName(normalizedCode, 'en'),
+        normalizedCode ? normalizedCode.toUpperCase() : '',
+    ].map((value) => String(value || '').trim()).filter(Boolean)));
+}
+
 function initAvatarPickers() {
     document.querySelectorAll('[data-avatar-picker]').forEach((trigger) => {
         const inputId = trigger.getAttribute('for');
@@ -79,6 +250,7 @@ function initAvatarPickers() {
 function initAddressAutocomplete() {
     document.querySelectorAll('[data-address-autocomplete-form]').forEach((form) => {
         const endpoint = form.getAttribute('data-address-autocomplete-endpoint');
+        const countryInput = form.querySelector('[data-address-role="country"]');
         const cityInput = form.querySelector('[data-address-role="city"]');
         const streetInput = form.querySelector('[data-address-role="street"]');
         const postalInput = form.querySelector('[data-address-role="postal-code"]');
@@ -92,18 +264,92 @@ function initAddressAutocomplete() {
         const streetPanel = createAutocompletePanel(streetInput);
         const postalWrapper = postalInput.parentElement;
         const postalHint = createAddressHint(postalInput);
+        let postalHintActivated = false;
         let cityAbortController = null;
         let postalAbortController = null;
         let streetAbortController = null;
 
-        const updateStreetAvailability = () => {
-            const hasCity = cityInput.value.trim().length >= 2;
-            streetInput.disabled = !hasCity;
-            streetInput.setAttribute('aria-disabled', hasCity ? 'false' : 'true');
+        const getSelectedCountryLabel = () => {
+            if (!(countryInput instanceof HTMLSelectElement)) {
+                return '';
+            }
 
-            if (!hasCity) {
+            const option = countryInput.options[countryInput.selectedIndex];
+
+            return option ? option.textContent?.trim() || '' : '';
+        };
+
+        const getSelectedCountryCode = () => {
+            if (!(countryInput instanceof HTMLSelectElement)) {
+                return '';
+            }
+
+            return String(countryInput.value || '').trim().toLowerCase();
+        };
+
+        const hasCountrySelection = () => !(countryInput instanceof HTMLSelectElement) || countryInput.value.trim() !== '';
+
+        const getSelectedCountryQueryLanguage = () => getCountryQueryLanguage(getSelectedCountryCode());
+
+        const getSelectedCountrySearchTerms = () => getCountrySearchTerms(
+            getSelectedCountryCode(),
+            getSelectedCountryLabel()
+        );
+
+        const buildAddressQuery = (...segments) => segments
+            .flatMap((segment) => Array.isArray(segment) ? segment : [segment])
+            .map((segment) => String(segment || '').trim())
+            .filter(Boolean)
+            .join(' ');
+
+        const getFrenchDepartmentSuggestion = (postalQuery) => {
+            const normalizedPostal = String(postalQuery || '').replace(/\D/g, '');
+            const prefix = normalizedPostal.slice(0, 2);
+            const name = FRENCH_DEPARTMENTS_BY_PREFIX[prefix];
+
+            if (getSelectedCountryCode() !== 'fr' || prefix.length !== 2 || !name) {
+                return null;
+            }
+
+            return {
+                kind: 'department',
+                label: `${prefix} - ${name}`,
+                postcode: prefix,
+                city: '',
+                countryCode: 'fr',
+                secondary: 'Departement detecte. Affinez ensuite avec la ville ou les chiffres suivants.',
+            };
+        };
+
+        const resetAddressFields = () => {
+            cityInput.value = '';
+            cityInput.dataset.selectedLat = '';
+            cityInput.dataset.selectedLon = '';
+            cityInput.dataset.selectedCountry = '';
+            postalInput.value = '';
+            streetInput.value = '';
+            closeAutocompletePanel(cityPanel);
+            closeAutocompletePanel(postalPanel);
+            closeAutocompletePanel(streetPanel);
+        };
+
+        const updateAddressAvailability = () => {
+            const hasCountry = hasCountrySelection();
+            const hasCity = cityInput.value.trim().length >= 2;
+            const hasPostal = postalInput.value.trim().length >= 2;
+
+            cityInput.disabled = !hasCountry;
+            cityInput.setAttribute('aria-disabled', hasCountry ? 'false' : 'true');
+            cityInput.placeholder = hasCountry ? 'Ville correspondante' : 'Choisissez d abord votre pays';
+
+            postalInput.disabled = !hasCountry;
+            postalInput.setAttribute('aria-disabled', hasCountry ? 'false' : 'true');
+            streetInput.disabled = !(hasCity || hasPostal);
+            streetInput.setAttribute('aria-disabled', hasCity || hasPostal ? 'false' : 'true');
+
+            if (!(hasCity || hasPostal)) {
                 streetInput.value = '';
-                streetInput.placeholder = 'Choisissez d abord une ville';
+                streetInput.placeholder = hasCountry ? 'Choisissez d abord le code postal ou la ville' : 'Choisissez d abord votre pays';
                 streetInput.dataset.selectedLat = '';
                 streetInput.dataset.selectedLon = '';
                 closeAutocompletePanel(streetPanel);
@@ -113,29 +359,133 @@ function initAddressAutocomplete() {
         };
 
         const updatePostalHint = () => {
+            const hasCountry = hasCountrySelection();
             const hasCity = cityInput.value.trim().length >= 2;
-            postalInput.placeholder = hasCity ? 'Code postal de cette ville' : 'Code postal';
+            const hasPostal = postalInput.value.trim().length >= 2;
+            const departmentSuggestion = getFrenchDepartmentSuggestion(postalInput.value.trim());
+            postalInput.placeholder = hasCountry
+                ? getSelectedCountryCode() === 'fr'
+                    ? 'Commencez par votre code postal'
+                    : 'Code postal ou ZIP'
+                : 'Code postal ou ZIP';
 
             if (postalWrapper) {
-                postalWrapper.classList.toggle('is-address-guided-waiting', !hasCity);
-                postalWrapper.classList.toggle('is-address-guided-ready', hasCity);
+                postalWrapper.classList.toggle('is-address-guided-waiting', !hasCountry);
+                postalWrapper.classList.toggle('is-address-guided-ready', hasCountry && (hasCity || hasPostal));
             }
 
             if (postalHint) {
-                postalHint.textContent = hasCity
-                    ? `Suggestions liées à ${cityInput.value.trim()}. Vous pouvez aussi saisir le code postal manuellement.`
-                    : 'Choisissez d abord la ville pour obtenir des suggestions de code postal plus précises.';
+                postalHint.hidden = !postalHintActivated;
+
+                if (!postalHintActivated) {
+                    return;
+                }
+
+                postalHint.textContent = !hasCountry
+                    ? 'Choisissez d abord votre pays.'
+                    : departmentSuggestion
+                        ? `Departement ${departmentSuggestion.postcode} detecte : ${departmentSuggestion.label.split(' - ')[1]}. Vous pouvez maintenant preciser la ville ou les chiffres suivants.`
+                    : hasCity
+                        ? `Le code postal peut remplir automatiquement la ville, ou être affiné avec ${cityInput.value.trim()}.`
+                        : 'Commencez par le code postal pour voir les villes correspondantes.';
             }
         };
 
-        updateStreetAvailability();
+        const fetchPostalSuggestions = async (postalQuery = '', cityQuery = cityInput.value.trim()) => {
+            const normalizedPostal = postalQuery.trim();
+            const normalizedCity = cityQuery.trim();
+            const departmentSuggestion = getFrenchDepartmentSuggestion(normalizedPostal);
+
+            if (normalizedPostal.length < 2 && normalizedCity.length < 2) {
+                closeAutocompletePanel(postalPanel);
+                return;
+            }
+
+            if (postalAbortController) {
+                postalAbortController.abort();
+            }
+
+            postalAbortController = new AbortController();
+
+            try {
+                const url = new URL(endpoint);
+                url.searchParams.set(
+                    'q',
+                    departmentSuggestion && normalizedCity === ''
+                        ? buildAddressQuery(normalizedPostal, departmentSuggestion.label, getSelectedCountrySearchTerms())
+                        : buildAddressQuery(normalizedPostal, normalizedCity, getSelectedCountrySearchTerms())
+                );
+                url.searchParams.set('limit', '7');
+                url.searchParams.set('lang', getSelectedCountryQueryLanguage());
+
+                const response = await fetch(url, {
+                    signal: postalAbortController.signal,
+                    headers: { Accept: 'application/json' },
+                });
+
+                if (!response.ok) {
+                    closeAutocompletePanel(postalPanel);
+                    return;
+                }
+
+                const payload = await response.json();
+                const suggestions = dedupeSuggestions([
+                    ...(departmentSuggestion ? [departmentSuggestion] : []),
+                    ...(payload.features || [])
+                        .map((feature) => normalizePostalFeature(feature))
+                        .filter(Boolean)
+                        .filter((item) => matchesSelectedCountry(item, getSelectedCountryCode()))
+                        .filter((item) => matchesPostalSuggestion(item, normalizedPostal, normalizedCity))
+                        .sort((left, right) => scorePostalSuggestion(right, normalizedPostal, normalizedCity) - scorePostalSuggestion(left, normalizedPostal, normalizedCity))
+                        .slice(0, 6),
+                ]).slice(0, 6);
+
+                renderAutocompletePanel(postalPanel, suggestions, (item) => {
+                    postalInput.value = item.postcode;
+
+                    if (item.kind === 'department') {
+                        cityInput.value = '';
+                        cityInput.dataset.selectedLat = '';
+                        cityInput.dataset.selectedLon = '';
+                        cityInput.dataset.selectedCountry = '';
+                        cityInput.dataset.selectedPostcode = '';
+                        streetInput.value = '';
+                        updateAddressAvailability();
+                        updatePostalHint();
+                        cityInput.focus();
+                        return;
+                    }
+
+                    if (item.city) {
+                        cityInput.value = item.city;
+                    }
+
+                    cityInput.dataset.selectedPostcode = item.postcode ?? '';
+
+                    if (item.lat && item.lon) {
+                        cityInput.dataset.selectedLat = item.lat;
+                        cityInput.dataset.selectedLon = item.lon;
+                    }
+
+                    updateAddressAvailability();
+                    updatePostalHint();
+                    streetInput.focus();
+                });
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    closeAutocompletePanel(postalPanel);
+                }
+            }
+        };
+
+        updateAddressAvailability();
         updatePostalHint();
 
         const requestCities = debounce(async () => {
             const query = cityInput.value.trim();
-            if (query.length < 2) {
+            if (query.length < 2 || !hasCountrySelection()) {
                 closeAutocompletePanel(cityPanel);
-                updateStreetAvailability();
+                updateAddressAvailability();
                 return;
             }
 
@@ -147,9 +497,9 @@ function initAddressAutocomplete() {
 
             try {
                 const url = new URL(endpoint);
-                url.searchParams.set('q', query);
+                url.searchParams.set('q', buildAddressQuery(query, getSelectedCountrySearchTerms()));
                 url.searchParams.set('limit', '7');
-                url.searchParams.set('lang', 'fr');
+                url.searchParams.set('lang', getSelectedCountryQueryLanguage());
 
                 const response = await fetch(url, {
                     signal: cityAbortController.signal,
@@ -166,6 +516,8 @@ function initAddressAutocomplete() {
                     (payload.features || [])
                         .map((feature) => normalizeCityFeature(feature))
                         .filter(Boolean)
+                        .filter((item) => matchesSelectedCountry(item, getSelectedCountryCode()))
+                        .filter((item) => matchesCitySuggestion(item, query))
                         .sort((left, right) => scoreCitySuggestion(right, query) - scoreCitySuggestion(left, query))
                         .slice(0, 6)
                 );
@@ -175,12 +527,25 @@ function initAddressAutocomplete() {
                     cityInput.dataset.selectedLat = item.lat ?? '';
                     cityInput.dataset.selectedLon = item.lon ?? '';
                     cityInput.dataset.selectedCountry = item.countryCode ?? '';
+                    cityInput.dataset.selectedPostcode = item.postcode ?? '';
+
+                     if (countryInput instanceof HTMLSelectElement && item.countryCode) {
+                        countryInput.value = String(item.countryCode).toUpperCase();
+                    }
+
                     if (item.postcode) {
                         postalInput.value = item.postcode;
                     }
-                    updateStreetAvailability();
+                    updateAddressAvailability();
                     updatePostalHint();
-                    streetInput.focus();
+
+                    if (item.postcode) {
+                        streetInput.focus();
+                        return;
+                    }
+
+                    postalInput.focus();
+                    void fetchPostalSuggestions('', item.label);
                 });
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -190,72 +555,21 @@ function initAddressAutocomplete() {
         }, 220);
 
         const requestPostalCodes = debounce(async () => {
-            const postalQuery = postalInput.value.trim();
-            const cityQuery = cityInput.value.trim();
-
-            if (postalQuery.length < 2) {
+            if (!hasCountrySelection() || postalInput.value.trim().length < 2) {
                 closeAutocompletePanel(postalPanel);
                 return;
             }
 
-            if (postalAbortController) {
-                postalAbortController.abort();
-            }
-
-            postalAbortController = new AbortController();
-
-            try {
-                const url = new URL(endpoint);
-                url.searchParams.set('q', cityQuery !== '' ? `${postalQuery} ${cityQuery}` : postalQuery);
-                url.searchParams.set('limit', '7');
-                url.searchParams.set('lang', 'fr');
-
-                const response = await fetch(url, {
-                    signal: postalAbortController.signal,
-                    headers: { Accept: 'application/json' },
-                });
-
-                if (!response.ok) {
-                    closeAutocompletePanel(postalPanel);
-                    return;
-                }
-
-                const payload = await response.json();
-                const suggestions = dedupeSuggestions(
-                    (payload.features || [])
-                        .map((feature) => normalizePostalFeature(feature))
-                        .filter(Boolean)
-                        .slice(0, 6)
-                );
-
-                renderAutocompletePanel(postalPanel, suggestions, (item) => {
-                    postalInput.value = item.postcode;
-
-                    if (item.city) {
-                        cityInput.value = item.city;
-                    }
-
-                    if (item.lat && item.lon) {
-                        cityInput.dataset.selectedLat = item.lat;
-                        cityInput.dataset.selectedLon = item.lon;
-                    }
-
-                    updateStreetAvailability();
-                    updatePostalHint();
-                    streetInput.focus();
-                });
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    closeAutocompletePanel(postalPanel);
-                }
-            }
+            await fetchPostalSuggestions(postalInput.value, '');
         }, 220);
 
         const requestStreets = debounce(async () => {
             const streetQuery = streetInput.value.trim();
             const cityQuery = cityInput.value.trim();
+            const postalQuery = postalInput.value.trim();
+            const locationQuery = cityQuery !== '' ? cityQuery : postalQuery;
 
-            if (streetQuery.length < 2 || cityQuery.length < 2) {
+            if (streetQuery.length < 2 || locationQuery.length < 2 || !hasCountrySelection()) {
                 closeAutocompletePanel(streetPanel);
                 return;
             }
@@ -268,9 +582,9 @@ function initAddressAutocomplete() {
 
             try {
                 const url = new URL(endpoint);
-                url.searchParams.set('q', `${streetQuery} ${cityQuery}`.trim());
+                url.searchParams.set('q', buildAddressQuery(streetQuery, locationQuery, getSelectedCountrySearchTerms()));
                 url.searchParams.set('limit', '8');
-                url.searchParams.set('lang', 'fr');
+                url.searchParams.set('lang', getSelectedCountryQueryLanguage());
 
                 const lat = cityInput.dataset.selectedLat;
                 const lon = cityInput.dataset.selectedLon;
@@ -293,8 +607,11 @@ function initAddressAutocomplete() {
                 const payload = await response.json();
                 const suggestions = dedupeSuggestions(
                     (payload.features || [])
-                        .map((feature) => normalizeStreetFeature(feature, cityQuery))
+                        .map((feature) => normalizeStreetFeature(feature, cityQuery || postalQuery))
                         .filter(Boolean)
+                        .filter((item) => matchesSelectedCountry(item, getSelectedCountryCode()))
+                        .filter((item) => matchesStreetSuggestion(item, streetQuery, postalQuery))
+                        .sort((left, right) => scoreStreetSuggestion(right, streetQuery, postalQuery) - scoreStreetSuggestion(left, streetQuery, postalQuery))
                         .slice(0, 6)
                 );
 
@@ -315,12 +632,51 @@ function initAddressAutocomplete() {
             cityInput.dataset.selectedLat = '';
             cityInput.dataset.selectedLon = '';
             cityInput.dataset.selectedCountry = '';
-            updateStreetAvailability();
+            cityInput.dataset.selectedPostcode = '';
+            postalInput.value = '';
+            streetInput.value = '';
+            updateAddressAvailability();
             updatePostalHint();
             requestCities();
         });
 
-        postalInput.addEventListener('input', requestPostalCodes);
+        if (countryInput instanceof HTMLSelectElement) {
+            countryInput.addEventListener('change', () => {
+                resetAddressFields();
+                updateAddressAvailability();
+                updatePostalHint();
+            });
+        }
+
+        postalInput.addEventListener('focus', () => {
+            postalHintActivated = true;
+            updatePostalHint();
+        });
+
+        postalInput.addEventListener('input', () => {
+            const normalizedPostal = postalInput.value.trim().replace(/\s+/g, '');
+            const selectedPostcode = String(cityInput.dataset.selectedPostcode || '').trim().replace(/\s+/g, '');
+
+            if (
+                selectedPostcode !== ''
+                && normalizedPostal !== ''
+                && !selectedPostcode.startsWith(normalizedPostal)
+                && !normalizedPostal.startsWith(selectedPostcode)
+            ) {
+                cityInput.value = '';
+                cityInput.dataset.selectedLat = '';
+                cityInput.dataset.selectedLon = '';
+                cityInput.dataset.selectedCountry = '';
+                cityInput.dataset.selectedPostcode = '';
+                streetInput.value = '';
+                closeAutocompletePanel(cityPanel);
+                closeAutocompletePanel(streetPanel);
+            }
+
+            updateAddressAvailability();
+            updatePostalHint();
+            requestPostalCodes();
+        });
         streetInput.addEventListener('input', requestStreets);
 
         [cityInput, postalInput, streetInput].forEach((input) => {
@@ -490,6 +846,8 @@ function createAutocompletePanel(input) {
     const panel = document.createElement('div');
     panel.className = 'address-autocomplete-panel';
     panel.hidden = true;
+    panel.setAttribute('role', 'listbox');
+    panel.setAttribute('aria-hidden', 'true');
     wrapper.appendChild(panel);
 
     return panel;
@@ -511,6 +869,7 @@ function createAddressHint(input) {
     const hint = document.createElement('p');
     hint.className = 'address-field-hint';
     hint.setAttribute('data-address-hint', 'true');
+    hint.hidden = true;
     wrapper.appendChild(hint);
 
     return hint;
@@ -536,13 +895,15 @@ function renderAutocompletePanel(panel, suggestions, onSelect) {
 
     if (!suggestions.length) {
         panel.hidden = true;
+        panel.setAttribute('aria-hidden', 'true');
         return;
     }
 
     suggestions.forEach((item) => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'address-autocomplete-option';
+        button.className = `address-autocomplete-option${item.kind ? ` is-${item.kind}` : ''}`;
+        button.setAttribute('role', 'option');
         button.innerHTML = `
             <strong>${escapeHtml(item.label)}</strong>
             ${item.secondary ? `<span>${escapeHtml(item.secondary)}</span>` : ''}
@@ -555,10 +916,12 @@ function renderAutocompletePanel(panel, suggestions, onSelect) {
     });
 
     panel.hidden = false;
+    panel.setAttribute('aria-hidden', 'false');
 }
 
 function closeAutocompletePanel(panel) {
     panel.hidden = true;
+    panel.setAttribute('aria-hidden', 'true');
     panel.innerHTML = '';
 }
 
@@ -593,7 +956,8 @@ function normalizeStreetFeature(feature, fallbackCity) {
     const city = properties.city || properties.town || properties.village || fallbackCity || '';
     const postcode = properties.postcode || '';
     const country = properties.country || '';
-    const label = [street, houseNumber].filter(Boolean).join(' ').trim();
+    const countryCode = String(properties.countrycode || '').toLowerCase();
+    const label = String(street).trim();
 
     if (!label) {
         return null;
@@ -602,7 +966,8 @@ function normalizeStreetFeature(feature, fallbackCity) {
     return {
         label,
         postcode,
-        secondary: [postcode, city, country].filter(Boolean).join(' · '),
+        countryCode,
+        secondary: [houseNumber ? `N° ${houseNumber}` : '', postcode, city, country].filter(Boolean).join(' · '),
     };
 }
 
@@ -612,6 +977,7 @@ function normalizePostalFeature(feature) {
     const postcode = properties.postcode || '';
     const city = properties.city || properties.town || properties.village || properties.name || '';
     const country = properties.country || '';
+    const countryCode = String(properties.countrycode || '').toLowerCase();
 
     if (!postcode) {
         return null;
@@ -621,10 +987,40 @@ function normalizePostalFeature(feature) {
         label: postcode,
         postcode,
         city,
+        countryCode,
         lat: coordinates[1] ?? '',
         lon: coordinates[0] ?? '',
         secondary: [city, country].filter(Boolean).join(' · '),
     };
+}
+
+function matchesSelectedCountry(item, selectedCountryCode) {
+    if (!selectedCountryCode) {
+        return true;
+    }
+
+    return !item.countryCode || item.countryCode === selectedCountryCode;
+}
+
+function matchesPostalSuggestion(item, postalQuery, cityQuery) {
+    const normalizedPostalQuery = postalQuery.replace(/\s+/g, '').toLowerCase();
+    const normalizedItemPostcode = String(item.postcode || '').replace(/\s+/g, '').toLowerCase();
+    const normalizedCityQuery = cityQuery.trim().toLowerCase();
+    const normalizedCity = String(item.city || '').trim().toLowerCase();
+
+    if (item.kind === 'department') {
+        return normalizedPostalQuery.length >= 2 && normalizedItemPostcode === normalizedPostalQuery.slice(0, 2);
+    }
+
+    if (normalizedPostalQuery !== '' && !normalizedItemPostcode.startsWith(normalizedPostalQuery)) {
+        return false;
+    }
+
+    if (normalizedCityQuery !== '' && normalizedCity !== '' && !normalizedCity.includes(normalizedCityQuery)) {
+        return false;
+    }
+
+    return true;
 }
 
 function scoreCitySuggestion(item, query) {
@@ -649,6 +1045,102 @@ function scoreCitySuggestion(item, query) {
     }
 
     return score;
+}
+
+function matchesCitySuggestion(item, query) {
+    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedLabel = item.label.toLowerCase();
+
+    if (normalizedQuery === '') {
+        return true;
+    }
+
+    return normalizedLabel.startsWith(normalizedQuery);
+}
+
+function scorePostalSuggestion(item, postalQuery, cityQuery) {
+    const normalizedPostalQuery = postalQuery.replace(/\s+/g, '').toLowerCase();
+    const normalizedPostcode = String(item.postcode || '').replace(/\s+/g, '').toLowerCase();
+    const normalizedCityQuery = cityQuery.trim().toLowerCase();
+    const normalizedCity = String(item.city || '').trim().toLowerCase();
+    let score = 0;
+
+    if (item.kind === 'department') {
+        if (normalizedPostalQuery.length >= 2 && normalizedPostcode === normalizedPostalQuery.slice(0, 2)) {
+            score += 40;
+        }
+
+        return score;
+    }
+
+    if (normalizedPostalQuery !== '') {
+        if (normalizedPostcode === normalizedPostalQuery) {
+            score += 12;
+        } else if (normalizedPostcode.startsWith(normalizedPostalQuery)) {
+            score += 9;
+        } else if (normalizedPostcode.includes(normalizedPostalQuery)) {
+            score += 2;
+        }
+    }
+
+    if (normalizedCityQuery !== '') {
+        if (normalizedCity === normalizedCityQuery) {
+            score += 6;
+        } else if (normalizedCity.startsWith(normalizedCityQuery)) {
+            score += 4;
+        } else if (normalizedCity.includes(normalizedCityQuery)) {
+            score += 1;
+        }
+    }
+
+    if (EUROPEAN_COUNTRY_CODES.has(item.countryCode)) {
+        score += 2;
+    }
+
+    return score;
+}
+
+function scoreStreetSuggestion(item, streetQuery, postalQuery) {
+    const normalizedStreetQuery = streetQuery.trim().toLowerCase();
+    const normalizedLabel = item.label.toLowerCase();
+    const normalizedPostcode = String(item.postcode || '').replace(/\s+/g, '').toLowerCase();
+    const normalizedPostalQuery = postalQuery.replace(/\s+/g, '').toLowerCase();
+    let score = 0;
+
+    if (normalizedLabel === normalizedStreetQuery) {
+        score += 8;
+    } else if (normalizedLabel.startsWith(normalizedStreetQuery)) {
+        score += 5;
+    } else if (normalizedLabel.includes(normalizedStreetQuery)) {
+        score += 2;
+    }
+
+    if (normalizedPostalQuery !== '' && normalizedPostcode.startsWith(normalizedPostalQuery)) {
+        score += 4;
+    }
+
+    if (EUROPEAN_COUNTRY_CODES.has(item.countryCode)) {
+        score += 1;
+    }
+
+    return score;
+}
+
+function matchesStreetSuggestion(item, streetQuery, postalQuery) {
+    const normalizedStreetQuery = streetQuery.trim().toLowerCase();
+    const normalizedLabel = item.label.toLowerCase();
+    const normalizedPostalQuery = postalQuery.replace(/\s+/g, '').toLowerCase();
+    const normalizedPostcode = String(item.postcode || '').replace(/\s+/g, '').toLowerCase();
+
+    if (normalizedStreetQuery !== '' && !normalizedLabel.startsWith(normalizedStreetQuery)) {
+        return false;
+    }
+
+    if (normalizedPostalQuery !== '' && normalizedPostcode !== '' && !normalizedPostcode.startsWith(normalizedPostalQuery)) {
+        return false;
+    }
+
+    return true;
 }
 
 function dedupeSuggestions(items) {

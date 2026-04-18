@@ -142,7 +142,7 @@ final class AccountController extends AbstractController
         $request->getSession()->remove('_security_main');
 
         if ('deleted' === $result) {
-            $this->addFlash('success', 'Votre compte client a été supprimé. Les données marketing et les échanges sans commande ont été effacés.');
+            $this->addFlash('success', 'Votre compte fan a été supprimé. Les données marketing et les échanges sans commande ont été effacés.');
         } else {
             $this->addFlash('success', 'Votre compte a été clôturé. Les données marketing ont été retirées, tandis que les données de commande restent conservées pendant les durées légales applicables.');
         }

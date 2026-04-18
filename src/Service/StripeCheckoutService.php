@@ -26,6 +26,7 @@ class StripeCheckoutService
             'mode' => 'payment',
             'success_url' => $this->urlGenerator->generate('store_checkout_success', [
                 'order' => $order->getId(),
+                'token' => $order->getCheckoutAccessToken(),
             ], UrlGeneratorInterface::ABSOLUTE_URL) . '&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => $this->urlGenerator->generate('store_checkout_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'customer_email' => $order->getCustomerEmail(),
@@ -54,7 +55,7 @@ class StripeCheckoutService
         foreach ($order->getItems() as $item) {
             for ($index = 0; $index < $item->getQuantity(); ++$index) {
                 $unitLines[] = [
-                    'name' => $item->getProductName(),
+                    'name' => $item->getDisplayName(),
                     'base' => $item->getUnitPriceCents(),
                     'discount' => 0,
                 ];

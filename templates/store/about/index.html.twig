@@ -1,62 +1,116 @@
 {% extends 'layouts/store.html.twig' %}
 
 {% block title %}Le groupe | Sound Of Memories Fan Base{% endblock %}
-{% block meta_description %}Présentation du groupe Sound Of Memories, de son héritage mélodique death metal et de la nouvelle base fan merch/concerts.{% endblock %}
+{% block meta_description %}Sound Of Memories, groupe de death mélodique né en 2010 entre Paris et l’Essonne, avec une histoire de scène, de composition et de discographie.{% endblock %}
+{% block stylesheets %}
+    <link rel="preload" as="image" href="{{ asset('uploads/legacy/about.JPG') }}">
+    {{ parent() }}
+{% endblock %}
 
 {% block page %}
-    <section class="page-banner" style="background-image: linear-gradient(180deg, rgba(9, 9, 9, 0.48), rgba(9, 9, 9, 0.88)), url('{{ asset('uploads/legacy/Sof.jpg') }}');">
-        <div class="container narrow-copy">
-            <p class="eyebrow">Le groupe</p>
-            <h1>Une identité mélodique, sombre et directe.</h1>
-            <p>Sound Of Memories s’est construit autour d’un death metal mélodique énergique, avec une vraie place donnée aux textures, aux refrains et à l’impact live.</p>
+    <section class="page-banner page-banner--band" style="--banner-image: url('{{ asset('uploads/legacy/about.JPG') }}');">
+        <div class="container narrow-copy about-hero-copy">
+            <p class="eyebrow">som-band</p>
+            <h1>Death mélodique, énergie live et mémoire sonore.</h1>
+            <p>Depuis 2010, Sound Of Memories développe une identité forgée entre riffs heavy / thrash, base death melodic old school et vraie ambition de scène.</p>
+            <div class="band-hero-meta">
+                <span class="band-meta-chip">Région Essonne</span>
+                <span class="band-meta-chip">Style Death Mélodique</span>
+                <span class="band-meta-chip">Actif depuis 2010</span>
+            </div>
         </div>
     </section>
 
-    <section class="section">
-        <div class="container split-panel">
-            <div>
+    <section class="section section-bg-1 band-story-section">
+        <div class="container band-story-layout">
+            <div class="band-story-copy">
                 <p class="eyebrow">Notre histoire</p>
-                <h2>Reprendre la matière existante, sans perdre l’âme du projet.</h2>
-                <p>Cette refonte reprend l’univers visuel du site historique, ses bannières, ses couleurs et certaines idées d’animation, mais les replace dans une architecture Symfony plus durable.</p>
-                <p>Le but n’est pas seulement d’avoir une belle vitrine. Le site doit aussi devenir simple à maintenir, administrer et déployer, avec une vraie gestion du merchandising et des dates de concert.</p>
+                <h2>Un groupe construit entre studio, réseau et scènes métal.</h2>
+                <div class="band-bio">
+                    <p>Créé en 2010 à Paris par Alain à la guitare, Lucho à la guitare et Fabien à la basse, Sound Of Memories se définit par un mélange de riffs heavy / thrash metal sur une base death melodic old school.</p>
+                    <p>C’est en 2012, avec l’arrivée de Nacim à la batterie puis de Flo au chant l’année suivante, que le combo se fixe des objectifs plus sérieux et concrétise ses efforts en enregistrant son premier E.P. <strong>Living Circles</strong> au studio Zoe-H en septembre 2013.</p>
+                    <p>Suite à des retours plus que favorables, Sound Of Memories intègre Army Of One pour la promotion et le touring, développe son réseau via Thanatos Production et défend ainsi ses compositions sur de nombreuses scènes comme le PYHC Fest, le Covent Garden d’Eragny ou encore La Boule Noire.</p>
+                    <p>En parallèle, le groupe poursuit son travail de composition et rentre en studio en février 2015 afin d’enregistrer son premier album. Julien Delsol prend en charge la production d’un opus plus sombre, plus complexe et plus ambitieux, pendant que la signature sur le label Finisterian Dead End confirme la volonté du groupe de franchir un cap sur la scène métal nationale.</p>
+                    <p><strong>To Deliverance</strong> est disponible dans tous les bacs de France et d’Angleterre depuis le 2 novembre 2015. Le groupe donne alors rendez-vous aux amateurs de headbang sur les routes de France et de Navarre pour défendre une musique énergique, brutale et mélodique.</p>
+                </div>
             </div>
-            <div class="image-stack">
-                <img src="{{ asset('uploads/legacy/bannerSand.png') }}" alt="The Sand Within">
-                <img src="{{ asset('uploads/legacy/bannerLiving.png') }}" alt="Living Circle">
+
+            <div class="band-story-visual">
+                <figure class="band-story-photo">
+                    <img src="{{ asset('uploads/legacy/about.JPG') }}" alt="Photo du groupe Sound Of Memories" width="1409" height="939" fetchpriority="high" decoding="async">
+                </figure>
+                <div class="band-story-note">
+                    <strong>Essonne / Paris</strong>
+                    <span>Heavy, thrash et death melodic old school dans une même poussée.</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="section section-contrast">
-        <div class="container section-head">
+    <section class="section section-bg-2 band-lineup-section">
+        <div class="container section-head band-section-head">
             <div>
                 <p class="eyebrow">Line-up</p>
-                <h2>Des cartes simples, prêtes à être enrichies plus tard dans l’admin.</h2>
+                <h2>Un line-up resserré, pensé pour la scène.</h2>
             </div>
         </div>
-        <div class="member-grid">
+
+        <div class="container band-lineup-grid">
             {% for member in [
-                { name: 'Alain', role: 'Guitare' },
-                { name: 'Lucho', role: 'Guitare' },
-                { name: 'Fabien', role: 'Basse' },
-                { name: 'Nacim', role: 'Batterie' },
-                { name: 'Flo', role: 'Chant' }
+                { index: '01', name: 'Alain', role: 'Guitare', note: 'Co-fondateur et colonne vertébrale du son.' },
+                { index: '02', name: 'Lucho', role: 'Guitare', note: 'Contrepoint mélodique et tension rythmique.' },
+                { index: '03', name: 'Fabien', role: 'Basse', note: 'Fondation grave et co-fondateur du projet.' },
+                { index: '04', name: 'Nacim', role: 'Batterie', note: 'Impulsion live et impact old school.' },
+                { index: '05', name: 'Flo', role: 'Chant', note: 'Présence frontale et brutalité maîtrisée.' }
             ] %}
-                <article class="member-card">
-                    <div class="member-avatar">{{ member.name|slice(0, 1) }}</div>
+                <article class="band-member-card">
+                    <span class="band-member-index">{{ member.index }}</span>
+                    <p class="card-kicker">{{ member.role }}</p>
                     <h3>{{ member.name }}</h3>
-                    <p>{{ member.role }}</p>
+                    <p>{{ member.note }}</p>
                 </article>
             {% endfor %}
         </div>
     </section>
 
-    <section class="section">
-        <div class="container gallery-wall">
-            <img src="{{ asset('uploads/legacy/gal1.JPG') }}" alt="Live">
-            <img src="{{ asset('uploads/legacy/gal4.JPG') }}" alt="Live">
-            <img src="{{ asset('uploads/legacy/gal7.JPG') }}" alt="Live">
-            <img src="{{ asset('uploads/legacy/gal16.JPG') }}" alt="Live">
+    <section class="section section-bg-3 band-discography-section">
+        <div class="container section-head band-section-head">
+            <div>
+                <p class="eyebrow">Discographie</p>
+                <h2>Deux sorties pour fixer l’identité du groupe.</h2>
+            </div>
+        </div>
+
+        <div class="container band-discography-grid">
+            <article class="band-release-card">
+                <figure class="band-release-cover">
+                    <img src="{{ asset('uploads/legacy/Living.jpg') }}" alt="Pochette Living Circles" width="720" height="687" loading="lazy" decoding="async">
+                </figure>
+                <div class="band-release-copy">
+                    <p class="card-kicker">EP · 2013</p>
+                    <h3>Living Circles</h3>
+                    <p>Premier E.P. enregistré au studio Zoe-H, point de bascule entre le projet de départ et une ambition de groupe plus affirmée.</p>
+                    <div class="band-release-meta">
+                        <span>Studio Zoe-H</span>
+                        <span>Septembre 2013</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="band-release-card">
+                <figure class="band-release-cover">
+                    <img src="{{ asset('uploads/legacy/Deliv.jpg') }}" alt="Pochette To Deliverance" width="492" height="492" loading="lazy" decoding="async">
+                </figure>
+                <div class="band-release-copy">
+                    <p class="card-kicker">Album · 2015</p>
+                    <h3>To Deliverance</h3>
+                    <p>Premier album du groupe, produit par Julien Delsol et porté par une écriture plus sombre, plus dense et plus ambitieuse.</p>
+                    <div class="band-release-meta">
+                        <span>Finisterian Dead End</span>
+                        <span>2 novembre 2015</span>
+                    </div>
+                </div>
+            </article>
         </div>
     </section>
 {% endblock %}

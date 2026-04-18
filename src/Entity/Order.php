@@ -118,6 +118,9 @@ class Order
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $stripeCheckoutSessionId = null;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $checkoutAccessToken = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -139,6 +142,7 @@ class Order
         // Fred note: Je pars toujours d'une date de creation et d'une collection vide pour garder un etat propre.
         $this->createdAt = new \DateTimeImmutable();
         $this->items = new ArrayCollection();
+        $this->checkoutAccessToken = bin2hex(random_bytes(16));
     }
 
     public function getId(): ?int
@@ -468,6 +472,20 @@ class Order
     public function setStripeCheckoutSessionId(?string $stripeCheckoutSessionId): static
     {
         $this->stripeCheckoutSessionId = $stripeCheckoutSessionId;
+
+        return $this;
+    }
+
+    public function getCheckoutAccessToken(): ?string
+    {
+        return $this->checkoutAccessToken;
+    }
+
+    public function setCheckoutAccessToken(?string $checkoutAccessToken): static
+    {
+        $this->checkoutAccessToken = null !== $checkoutAccessToken && '' !== trim($checkoutAccessToken)
+            ? trim($checkoutAccessToken)
+            : bin2hex(random_bytes(16));
 
         return $this;
     }

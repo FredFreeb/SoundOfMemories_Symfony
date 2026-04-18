@@ -31,6 +31,9 @@ class Product
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(length: 120, nullable: true)]
+    private ?string $variantChoiceLabel = null;
+
     #[ORM\Column]
     private int $priceCents = 0;
 
@@ -92,6 +95,10 @@ class Product
     #[ORM\OrderBy(['position' => 'ASC', 'id' => 'ASC'])]
     private Collection $galleryImages;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC', 'id' => 'ASC'])]
+    private Collection $variants;
+
     public function __construct()
     {
         $now = new \DateTimeImmutable();
@@ -99,6 +106,7 @@ class Product
         $this->createdAt = $now;
         $this->updatedAt = $now;
         $this->galleryImages = new ArrayCollection();
+        $this->variants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,6 +167,21 @@ class Product
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getVariantChoiceLabel(): string
+    {
+        $label = trim((string) $this->variantChoiceLabel);
+
+        return '' !== $label ? $label : 'Taille';
+    }
+
+    public function setVariantChoiceLabel(?string $variantChoiceLabel): static
+    {
+        $this->variantChoiceLabel = $variantChoiceLabel;
         $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
@@ -434,6 +457,120 @@ class Product
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductVariant>
+     */
+    public function getVariants(): Collection
+    {
+        return $this->variants;
+    }
+
+    public function addVariant(ProductVariant $variant): static
+    {
+        if (!$this->variants->contains($variant)) {
+            $this->variants->add($variant);
+            $variant->setProduct($this);
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+
+        return $this;
+    }
+
+    public function removeVariant(ProductVariant $variant): static
+    {
+        if ($this->variants->removeElement($variant)) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return list<ProductVariant>
+     */
+    public function getPublishedVariants(): array
+    {
+        return array_values(array_filter(
+            $this->variants->toArray(),
+            static fn (ProductVariant $variant): bool => $variant->isPublished(),
+        ));
+    }
+
+    public function hasVariants(): bool
+    {
+        return [] !== $this->getPublishedVariants();
+    }
+
+    public function getDefaultVariant(): ?ProductVariant
+    {
+        $variants = $this->getPublishedVariants();
+
+        foreach ($variants as $variant) {
+            if ($variant->isDefault()) {
+                return $variant;
+            }
+        }
+
+        return $variants[0] ?? null;
+    }
+
+    public function getStartingPriceCents(): int
+    {
+        $variants = $this->getPublishedVariants();
+
+        if ([] === $variants) {
+            return $this->priceCents;
+        }
+
+        return min(array_map(
+            static fn (ProductVariant $variant): int => $variant->getPriceCents(),
+            $variants,
+        ));
+    }
+
+    public function getFormattedStartingPrice(): string
+    {
+        return number_format($this->getStartingPriceCents() / 100, 2, ',', ' ') . ' EUR';
+    }
+
+    public function getDisplayCompareAtPriceCents(): ?int
+    {
+        $defaultVariant = $this->getDefaultVariant();
+
+        return $defaultVariant?->getCompareAtPriceCents();
+    }
+
+    public function getFormattedDisplayCompareAtPrice(): ?string
+    {
+        $compareAtPriceCents = $this->getDisplayCompareAtPriceCents();
+
+        if (null === $compareAtPriceCents || $compareAtPriceCents <= 0) {
+            return null;
+        }
+
+        return number_format($compareAtPriceCents / 100, 2, ',', ' ') . ' EUR';
+    }
+
+    public function getDisplayStock(): int
+    {
+        $variants = $this->getPublishedVariants();
+
+        if ([] === $variants) {
+            return $this->stock;
+        }
+
+        return array_reduce(
+            $variants,
+            static fn (int $carry, ProductVariant $variant): int => $carry + max(0, $variant->getStock()),
+            0,
+        );
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->isPublished && $this->getDisplayStock() > 0;
     }
 
     public function getFormattedPrice(): string

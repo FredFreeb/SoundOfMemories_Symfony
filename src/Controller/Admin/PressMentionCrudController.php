@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\PressMention;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -28,8 +30,17 @@ final class PressMentionCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Avis / Presse')
             ->setEntityLabelInPlural('Avis / Presse')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['authorName', 'sourceLabel', 'quotePrimary', 'quoteSecondary', 'linkLabel'])
             ->setDefaultSort(['position' => 'ASC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-newspaper'));
     }
 
     public function configureFilters(Filters $filters): Filters

@@ -70,6 +70,9 @@ final class UserCrudController extends AbstractCrudController
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-user-shield'))
             ->disable(Action::NEW, Action::EDIT, Action::DELETE, Action::BATCH_DELETE);
     }
 

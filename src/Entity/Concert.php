@@ -38,6 +38,9 @@ class Concert
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ticketUrl = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $posterImage = null;
+
     #[ORM\Column(length: 30)]
     private string $status = self::STATUS_ANNOUNCED;
 
@@ -173,6 +176,19 @@ class Concert
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getPosterImage(): ?string
+    {
+        return $this->posterImage;
+    }
+
+    public function setPosterImage(?string $posterImage): static
+    {
+        $this->posterImage = $posterImage;
+        $this->touch();
+
+        return $this;
     }
 
     public function setStatus(string $status): static

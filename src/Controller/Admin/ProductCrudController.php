@@ -3,8 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
+use App\Entity\ProductVariant;
+use App\Form\ProductVariantType;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -57,8 +61,17 @@ final class ProductCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Produit')
             ->setEntityLabelInPlural('Produits')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['name', 'slug', 'shortDescription', 'catalogExcerpt', 'description'])
             ->setDefaultSort(['createdAt' => 'DESC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-shirt'));
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -78,10 +91,15 @@ final class ProductCrudController extends AbstractCrudController
             ->setTargetFieldName('name');
         yield AssociationField::new('category', 'Catégorie')
             ->autocomplete();
+        yield TextField::new('variantChoiceLabel', 'Nom du selecteur')
+            ->hideOnIndex()
+            ->setHelp('Exemples: Taille, Format, Edition. Si vide, la boutique affichera "Taille".');
         yield MoneyField::new('priceCents', 'Prix')
             ->setCurrency('EUR')
-            ->setStoredAsCents();
-        yield IntegerField::new('stock', 'Stock');
+            ->setStoredAsCents()
+            ->setHelp('Prix de base utilise si le produit n’a pas de variantes.');
+        yield IntegerField::new('stock', 'Stock')
+            ->setHelp('Stock de base utilise si le produit n’a pas de variantes.');
         yield BooleanField::new('isMonthlyOffer', 'Offre du mois')
             ->renderAsSwitch(false)
             ->onlyOnIndex();
@@ -97,6 +115,15 @@ final class ProductCrudController extends AbstractCrudController
         yield CollectionField::new('galleryImages', 'Galerie du produit')
             ->setHelp('Fred note: J ajoute ici les images secondaires directement dans le produit pour eviter un deuxieme ecran "galerie produits".')
             ->useEntryCrudForm(ProductGalleryImageCrudController::class)
+            ->allowAdd()
+            ->allowDelete()
+            ->renderExpanded()
+            ->setEntryIsComplex()
+            ->hideOnIndex();
+        yield CollectionField::new('variants', 'Variantes vendues')
+            ->setHelp('Ajoutez ici les tailles, formats ou éditions. Dès qu’une variante existe, la boutique utilise ses prix et stocks.')
+            ->setEntryType(ProductVariantType::class)
+            ->setFormTypeOption('by_reference', false)
             ->allowAdd()
             ->allowDelete()
             ->renderExpanded()
@@ -179,8 +206,18 @@ final class ProductCrudController extends AbstractCrudController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
+    public function createEntity(string $entityFqcn): Product
+    {
+        $product = new Product();
+        $product->setVariantChoiceLabel('Taille');
+
+        return $product;
+    }
+
     private function synchronizeMonthlyOffer(Product $current): void
     {
+        $this->synchronizeVariants($current);
+
         if (!$current->isMonthlyOffer()) {
             return;
         }
@@ -189,6 +226,38 @@ final class ProductCrudController extends AbstractCrudController
             if ($product instanceof Product && $product !== $current) {
                 $product->setIsMonthlyOffer(false);
             }
+        }
+    }
+
+    private function synchronizeVariants(Product $product): void
+    {
+        $defaultVariant = null;
+
+        foreach ($product->getVariants() as $variant) {
+            \assert($variant instanceof ProductVariant);
+            $variant->setProduct($product);
+
+            if ($variant->isDefault() && $variant->isPublished()) {
+                if (null === $defaultVariant) {
+                    $defaultVariant = $variant;
+                } else {
+                    $variant->setIsDefault(false);
+                }
+            }
+        }
+
+        if (null === $defaultVariant && $product->hasVariants()) {
+            $defaultVariant = $product->getDefaultVariant();
+
+            if ($defaultVariant instanceof ProductVariant) {
+                $defaultVariant->setIsDefault(true);
+            }
+        }
+
+        if ($defaultVariant instanceof ProductVariant) {
+            $product
+                ->setPriceCents($defaultVariant->getPriceCents())
+                ->setStock($product->getDisplayStock());
         }
     }
 }

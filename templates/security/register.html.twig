@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Créer mon compte{% endblock %}
-{% block meta_description %}Création d'un compte client Sound Of Memories pour suivre ses commandes et son historique d'achats.{% endblock %}
+{% block meta_description %}Création d'un compte fan Sound Of Memories pour suivre ses commandes et son historique.{% endblock %}
 {% block meta_robots %}noindex,nofollow{% endblock %}
 {% block body_class %}theme-admin{% endblock %}
 
 {% block body %}
     <section class="login-shell">
         <div class="login-card login-card-wide register-card">
-            <p class="eyebrow">Espace client</p>
+            <p class="eyebrow">Espace fan</p>
             <h1>Créer mon compte</h1>
 
             {% for label, messages in app.flashes %}
@@ -18,6 +18,7 @@
             {% endfor %}
 
             {{ form_start(form, {attr: {
+                autocomplete: 'off',
                 'data-address-autocomplete-form': 'true',
                 'data-address-autocomplete-endpoint': address_autocomplete_endpoint
             }}) }}
@@ -26,15 +27,24 @@
                     {{ form_row(form.lastName) }}
                     {{ form_row(form.email) }}
                     {{ form_row(form.phone) }}
-                    {{ form_row(form.city) }}
+                    {{ form_row(form.countryCode) }}
                     {{ form_row(form.postalCode) }}
+                    {{ form_row(form.city) }}
                     {{ form_row(form.defaultAddress) }}
-                    <div class="form-grid-full">
-                        {{ form_row(form.marketingOptIn) }}
-                    </div>
+                    {{ form_row(form.addressBuilding) }}
+                    {{ form_row(form.addressExtra) }}
                     {{ form_row(form.website) }}
                     {{ form_row(form.plainPassword.first) }}
                     {{ form_row(form.plainPassword.second) }}
+                    <div class="form-grid-full">
+                        {{ form_row(form.marketingOptIn) }}
+                    </div>
+                    <div class="form-grid-full">
+                        {{ form_row(form.acceptCgv) }}
+                    </div>
+                    <div class="form-grid-full">
+                        {{ form_row(form.acceptPrivacy) }}
+                    </div>
                 </div>
 
                 <div class="login-actions">

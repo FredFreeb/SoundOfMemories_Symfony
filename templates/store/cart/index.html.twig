@@ -1,36 +1,72 @@
 {% extends 'layouts/store.html.twig' %}
 
-{% block title %}Panier | Sound Of Memories Fan Base{% endblock %}
+{% block title %}Panier | Sound Of Memories{% endblock %}
 
 {% block page %}
-    <section class="section">
-        <div class="container narrow-copy">
-            <p class="eyebrow">Panier</p>
-            <h1>Votre sélection merch.</h1>
+    <section class="section section-bg-1 merch-cart-section">
+        <div class="container merch-cart-header">
+            <div>
+                <p class="eyebrow">Panier</p>
+                <h1>Votre drop Sound Of Memories est presque prêt.</h1>
+                <p>Vérifiez les variantes, ajustez les quantités et passez au paiement sécurisé sans détour.</p>
+            </div>
+            <div class="merch-cart-header__meta">
+                <span>{{ items|length }} ligne{{ items|length > 1 ? 's' : '' }}</span>
+                <span>Stripe sécurisé</span>
+                <span>Expédition Boxtal</span>
+            </div>
         </div>
     </section>
 
-    <section class="section">
-        <div class="container cart-layout">
-            <div class="cart-items">
+    <section class="section section-bg-2 merch-cart-body">
+        <div class="container merch-cart-layout">
+            <div class="merch-cart-items">
                 {% for item in items %}
-                    <article class="cart-item">
-                        <div class="cart-item-copy">
-                            <h2>{{ item.product.name }}</h2>
-                            <p>{{ item.product.shortDescription }}</p>
-                            <strong>{{ item.product.formattedPrice }}</strong>
+                    {% set mediaUrl = item.product.coverImage
+                        ? (item.product.coverImage starts with 'http' or item.product.coverImage starts with '/'
+                            ? item.product.coverImage
+                            : asset('uploads/products/' ~ item.product.coverImage))
+                        : null
+                    %}
+                    <article class="merch-cart-item">
+                        <a class="merch-cart-item__media" href="{{ path('store_shop_show', {slug: item.product.slug}) }}" aria-label="{{ item.product.name }}">
+                            {% if mediaUrl %}
+                                <img src="{{ mediaUrl }}" alt="{{ item.product.name }}" width="320" height="320" loading="lazy" decoding="async">
+                            {% else %}
+                                <span>Visuel à venir</span>
+                            {% endif %}
+                        </a>
+
+                        <div class="merch-cart-item__copy">
+                            <p class="card-kicker">{{ item.product.category ? item.product.category.name : 'Merch' }}</p>
+                            <h2><a href="{{ path('store_shop_show', {slug: item.product.slug}) }}">{{ item.product.name }}</a></h2>
+                            {% if item.variant %}
+                                <p class="merch-cart-item__variant">{{ item.product.variantChoiceLabel }} : {{ item.variant.label }}</p>
+                            {% endif %}
+                            <p>{{ item.product.shortDescription ?: item.product.catalogExcerpt }}</p>
+                            <div class="merch-cart-item__pricing">
+                                <strong>{{ (item.unitPriceCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                                <span>{{ item.availableStock }} dispo</span>
+                            </div>
                         </div>
 
-                        <div class="cart-actions">
-                            <form method="post" action="{{ path('store_cart_update', {id: item.product.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('cart_update_' ~ item.product.id) }}">
-                                <label class="field-label" for="qty-{{ item.product.id }}">Qté</label>
-                                <input id="qty-{{ item.product.id }}" type="number" name="quantity" min="0" max="{{ item.product.stock }}" value="{{ item.quantity }}">
+                        <div class="merch-cart-item__actions">
+                            <form method="post" action="{{ path('store_cart_update') }}" class="merch-cart-item__qty-form">
+                                <input type="hidden" name="itemKey" value="{{ item.cartKey }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cart_update_' ~ item.cartKey) }}">
+                                <label class="field-label" for="qty-{{ loop.index }}">Quantité</label>
+                                <input id="qty-{{ loop.index }}" type="number" name="quantity" min="0" max="{{ item.availableStock }}" value="{{ item.quantity }}">
                                 <button class="button-secondary" type="submit">Mettre à jour</button>
                             </form>
 
-                            <form method="post" action="{{ path('store_cart_remove', {id: item.product.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('cart_remove_' ~ item.product.id) }}">
+                            <div class="merch-cart-item__total">
+                                <span>Total ligne</span>
+                                <strong>{{ (item.totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                            </div>
+
+                            <form method="post" action="{{ path('store_cart_remove') }}">
+                                <input type="hidden" name="itemKey" value="{{ item.cartKey }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cart_remove_' ~ item.cartKey) }}">
                                 <button class="button-ghost" type="submit">Retirer</button>
                             </form>
                         </div>
@@ -38,18 +74,30 @@
                 {% else %}
                     <article class="empty-card">
                         <h2>Le panier est vide</h2>
-                        <p>Ajoutez quelques pièces de merch pour tester tout le tunnel de navigation.</p>
+                        <p>Ajoutez quelques pièces de merch pour lancer un vrai parcours d’achat.</p>
+                        <a class="button-primary" href="{{ path('store_shop_index') }}">Découvrir la boutique</a>
                     </article>
                 {% endfor %}
             </div>
 
-            <aside class="cart-summary">
+            <aside class="merch-cart-summary">
                 <p class="eyebrow">Résumé</p>
-                <h2>Total</h2>
-                <strong class="cart-total">{{ (totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                <h2>Total estimé</h2>
+                <strong class="merch-cart-summary__total">{{ (totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                <p class="merch-cart-summary__note">La livraison et les réductions éventuelles seront confirmées au checkout selon la destination.</p>
+
+                <div class="merch-cart-summary__list">
+                    {% for item in items %}
+                        <div class="summary-line">
+                            <span>{{ item.displayName }} x{{ item.quantity }}</span>
+                            <strong>{{ (item.totalCents / 100)|number_format(2, ',', ' ') }} EUR</strong>
+                        </div>
+                    {% endfor %}
+                </div>
+
                 <div class="button-column">
                     <a class="button-primary" href="{{ path('store_checkout') }}">Continuer la commande</a>
-                    <a class="button-secondary" href="{{ path('store_shop_index') }}">Retour à la boutique</a>
+                    <a class="button-secondary" href="{{ path('store_shop_index') }}">Revenir au catalogue</a>
                 </div>
             </aside>
         </div>

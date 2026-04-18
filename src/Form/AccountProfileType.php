@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Service\BoxtalShippingService;
 use App\Service\PhoneNumberService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -22,6 +23,7 @@ class AccountProfileType extends AbstractType
 {
     public function __construct(
         private readonly PhoneNumberService $phoneNumberService,
+        private readonly BoxtalShippingService $boxtalShipping,
     ) {
     }
 
@@ -70,44 +72,61 @@ class AccountProfileType extends AbstractType
                 'label' => 'Ville',
                 'required' => false,
                 'attr' => [
-                    'autocomplete' => 'address-level2',
-                    'placeholder' => 'Commencez par votre ville',
+                    'autocomplete' => 'new-password',
+                    'placeholder' => 'Ville',
                     'data-address-role' => 'city',
+                    'spellcheck' => 'false',
+                    'autocapitalize' => 'off',
+                ],
+            ])
+            ->add('countryCode', ChoiceType::class, [
+                'label' => 'Pays',
+                'required' => false,
+                'choices' => $this->boxtalShipping->getDestinationCountryChoices(),
+                'placeholder' => 'Choisir le pays',
+                'attr' => [
+                    'data-address-role' => 'country',
                 ],
             ])
             ->add('defaultAddress', TextType::class, [
-                'label' => 'Rue et numéro',
+                'label' => 'Rue',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
                     new Length(max: 255),
                 ],
                 'attr' => [
-                    'autocomplete' => 'street-address',
-                    'placeholder' => 'Puis choisissez votre rue',
+                    'autocomplete' => 'new-password',
+                    'placeholder' => 'Nom de rue',
                     'data-address-role' => 'street',
+                    'spellcheck' => 'false',
+                    'autocapitalize' => 'off',
                 ],
             ])
             ->add('addressBuilding', TextType::class, [
-                'label' => 'Bâtiment / escalier',
+                'label' => 'Numéro',
                 'required' => false,
                 'constraints' => [
                     new Length(max: 120),
                 ],
                 'attr' => [
-                    'autocomplete' => 'address-line2',
-                    'placeholder' => 'Bâtiment, escalier, entrée…',
+                    'autocomplete' => 'new-password',
+                    'placeholder' => '12 bis, 4A…',
+                    'spellcheck' => 'false',
+                    'autocapitalize' => 'off',
                 ],
             ])
             ->add('addressExtra', TextType::class, [
-                'label' => 'Complément utile',
+                'label' => 'Complément',
                 'required' => false,
                 'constraints' => [
                     new Length(max: 160),
                 ],
                 'attr' => [
-                    'autocomplete' => 'address-line2',
-                    'placeholder' => 'Appartement, étage, indication…',
+                    'autocomplete' => 'new-password',
+                    'placeholder' => 'Bâtiment, étage, digicode…',
+                    'spellcheck' => 'false',
+                    'autocapitalize' => 'off',
                 ],
             ])
             ->add('postalCode', TextType::class, [
@@ -118,10 +137,12 @@ class AccountProfileType extends AbstractType
                     new Length(max: 20),
                 ],
                 'attr' => [
-                    'autocomplete' => 'postal-code',
-                    'inputmode' => 'numeric',
-                    'placeholder' => 'Code postal',
+                    'autocomplete' => 'new-password',
+                    'inputmode' => 'text',
+                    'placeholder' => 'Code postal ou ZIP',
                     'data-address-role' => 'postal-code',
+                    'spellcheck' => 'false',
+                    'autocapitalize' => 'characters',
                 ],
             ])
             ->add('marketingOptIn', CheckboxType::class, [

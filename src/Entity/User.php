@@ -55,6 +55,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $defaultAddress = null;
 
+    #[ORM\Column(length: 2, nullable: true)]
+    private ?string $countryCode = null;
+
     #[ORM\Column(length: 120, nullable: true)]
     private ?string $addressBuilding = null;
 
@@ -93,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        // Fred note: Je prepare déjà la collection des commandes pour l'espace client.
+        // Fred note: Je prepare deja la collection des commandes pour l'espace fan.
         $this->orders = new ArrayCollection();
     }
 
@@ -269,6 +272,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(?string $countryCode): static
+    {
+        $this->countryCode = null !== $countryCode && '' !== trim($countryCode)
+            ? mb_strtoupper(trim($countryCode))
+            : null;
+
+        return $this;
+    }
+
     public function getAddressBuilding(): ?string
     {
         return $this->addressBuilding;
@@ -411,7 +428,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoleSummary(): string
     {
         // Fred note: Ce resume est pratique pour lister le niveau d'acces dans EasyAdmin.
-        return \in_array('ROLE_ADMIN', $this->getRoles(), true) ? 'Administrateur' : 'Client';
+        return \in_array('ROLE_ADMIN', $this->getRoles(), true) ? 'Administrateur' : 'Fan';
     }
 
     public function isAdmin(): bool
@@ -424,7 +441,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // Fred note: Ce resume m'aide a voir vite si le client a complete son profil.
         $parts = array_filter([$this->city, $this->phone]);
 
-        return $parts !== [] ? implode(' • ', $parts) : 'Profil client simple';
+        return $parts !== [] ? implode(' • ', $parts) : 'Profil fan simple';
     }
 
     public function getLoginMethodsSummary(): string

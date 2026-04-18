@@ -40,6 +40,7 @@ final class OrderCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Commande')
             ->setEntityLabelInPlural('Commandes')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['customerName', 'customerEmail', 'customerPhone', 'city', 'status', 'paymentStatus', 'deliveryStatus', 'paymentReference', 'shippingCarrier', 'shippingMethodLabel', 'trackingNumber'])
             ->setDefaultSort(['createdAt' => 'DESC']);
     }
@@ -56,7 +57,9 @@ final class OrderCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-box-open'))
             ->disable(Action::NEW, Action::DELETE, Action::BATCH_DELETE);
     }
 
@@ -82,9 +85,9 @@ final class OrderCrudController extends AbstractCrudController
                 ->renderAsHtml();
         }
 
-        yield TextField::new('customerName', 'Client');
+        yield TextField::new('customerName', 'Fan');
         yield TextField::new('customerEmail', 'Email');
-        yield TextField::new('customerAccount.fullName', 'Compte client')
+        yield TextField::new('customerAccount.fullName', 'Compte fan')
             ->hideOnIndex();
         yield TextField::new('customerPhone', 'Telephone')
             ->hideOnIndex();

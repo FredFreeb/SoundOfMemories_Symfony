@@ -36,8 +36,9 @@ final class CustomerCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Client')
-            ->setEntityLabelInPlural('Clients')
+            ->setEntityLabelInSingular('Fan')
+            ->setEntityLabelInPlural('Fans')
+            ->setDefaultRowAction(Action::EDIT)
             ->setSearchFields(['fullName', 'email', 'phone', 'city', 'postalCode'])
             ->setDefaultSort(['fullName' => 'ASC']);
     }
@@ -50,7 +51,9 @@ final class CustomerCrudController extends AbstractCrudController
             ->linkToRoute('admin_customer_apply_data_lifecycle', static fn (User $user): array => ['id' => $user->getId()]);
 
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::EDIT, static fn (Action $action): Action => $action
+                ->setLabel('Gérer')
+                ->setIcon('fas fa-user-gear'))
             ->add(Crud::PAGE_INDEX, $sendResetLink)
             ->add(Crud::PAGE_INDEX, $applyDataLifecycle)
             ->add(Crud::PAGE_DETAIL, $sendResetLink)
@@ -96,7 +99,7 @@ final class CustomerCrudController extends AbstractCrudController
             ->onlyOnDetail();
         yield DateTimeField::new('verifiedAt', 'Vérifié le')
             ->hideOnIndex();
-        yield TextField::new('customerSummary', 'Resume')
+        yield TextField::new('customerSummary', 'Résumé')
             ->onlyOnIndex();
         yield AssociationField::new('orders', 'Commandes')
             ->onlyOnDetail();
@@ -114,11 +117,11 @@ final class CustomerCrudController extends AbstractCrudController
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        throw $this->createAccessDeniedException('Les comptes clients se creent depuis le front ou le checkout.');
+        throw $this->createAccessDeniedException('Les comptes fans se créent depuis le front ou le checkout.');
     }
 
     public function batchDelete(\EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext $context, BatchActionDto $batchActionDto): Response
     {
-        throw $this->createAccessDeniedException('La suppression multiple des clients est desactivee.');
+        throw $this->createAccessDeniedException('La suppression multiple des fans est désactivée.');
     }
 }

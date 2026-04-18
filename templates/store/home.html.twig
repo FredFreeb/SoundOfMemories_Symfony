@@ -2,20 +2,53 @@
 
 {% block title %}Accueil | Sound Of Memories Fan Base{% endblock %}
 {% block meta_description %}Merchandising, dates de concert et univers visuel Sound Of Memories dans une vitrine mobile-first inspirée du site historique du groupe.{% endblock %}
+{% block stylesheets %}
+    {% set siteSettings = site_settings() %}
+    {% set heroBackgroundPreload = siteSettings.homeHeroBackground ? site_asset(siteSettings.homeHeroBackground, 'site') : asset('uploads/legacy/htmlwallpaper.jpg') %}
+    {% set heroVisualPreload = siteSettings.homeHeroVisual ? site_asset(siteSettings.homeHeroVisual, 'site') : asset('uploads/optimized/legacy/SofM-cover.jpg') %}
+    <link rel="preload" as="image" href="{{ heroBackgroundPreload }}">
+    <link rel="preload" as="image" href="{{ heroVisualPreload }}">
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/product-effects.css') }}">
+{% endblock %}
 
 {% block page %}
     {% set heroBackground = siteSettings.homeHeroBackground ? site_asset(siteSettings.homeHeroBackground, 'site') : asset('uploads/legacy/htmlwallpaper.jpg') %}
-    {% set heroVisual = siteSettings.homeHeroVisual ? site_asset(siteSettings.homeHeroVisual, 'site') : asset('uploads/legacy/SofM-cover.png') %}
+    {% set heroSlides = [] %}
+    {% if siteSettings.homeHeroSlideOne %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideOne, 'site')]) %}{% endif %}
+    {% if siteSettings.homeHeroSlideTwo %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideTwo, 'site')]) %}{% endif %}
+    {% if siteSettings.homeHeroSlideThree %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideThree, 'site')]) %}{% endif %}
+    {% if siteSettings.homeHeroSlideFour %}{% set heroSlides = heroSlides|merge([site_asset(siteSettings.homeHeroSlideFour, 'site')]) %}{% endif %}
+    {% set heroVisual = siteSettings.homeHeroVisual ? site_asset(siteSettings.homeHeroVisual, 'site') : asset('uploads/optimized/legacy/SofM-cover.jpg') %}
     {% set spotlight = monthlyOfferProduct ?: products|first %}
     {% set liveBackgrounds = [
-        asset('uploads/legacy/gal13.jpg'),
-        asset('uploads/legacy/gal14.JPG'),
-        asset('uploads/legacy/gal15.jpg'),
-        asset('uploads/legacy/gal16.JPG'),
-        asset('uploads/legacy/gal18.JPG')
+        asset('uploads/optimized/legacy/gal13.jpg'),
+        asset('uploads/optimized/legacy/gal14.jpg'),
+        asset('uploads/optimized/legacy/gal15.jpg'),
+        asset('uploads/optimized/legacy/gal16.jpg'),
+        asset('uploads/optimized/legacy/gal18.jpg')
     ] %}
+    {% set spotlightImage = spotlight and spotlight.offerBannerImage
+        ? (spotlight.offerBannerImage starts with 'http' or spotlight.offerBannerImage starts with '/'
+            ? spotlight.offerBannerImage
+            : asset('uploads/products/' ~ spotlight.offerBannerImage))
+        : (spotlight and spotlight.coverImage
+            ? (spotlight.coverImage starts with 'http' or spotlight.coverImage starts with '/'
+                ? spotlight.coverImage
+                : asset('uploads/products/' ~ spotlight.coverImage))
+            : random(liveBackgrounds))
+    %}
 
-    <section class="hero-section" style="background-image: linear-gradient(180deg, rgba(8, 8, 8, 0.42), rgba(8, 8, 8, 0.88)), url('{{ heroBackground }}');">
+    {% set heroBackgrounds = (heroSlides is not empty ? heroSlides : [heroBackground])|merge(liveBackgrounds) %}
+
+    <section
+        class="hero-section hero-animated"
+        data-hero-rotator
+        data-hero-images='{{ heroBackgrounds|json_encode|e('html_attr') }}'
+        style="--hero-image-initial: url('{{ heroBackground }}');"
+    >
+        <div class="hero-bg hero-bg--current" data-hero-bg-current></div>
+        <div class="hero-bg hero-bg--next" data-hero-bg-next></div>
         <div class="container hero-grid">
             <div class="hero-copy">
                 <p class="eyebrow">Fan base relancée</p>
@@ -28,45 +61,38 @@
             </div>
             <div class="hero-visual-shell">
                 <div class="hero-glow"></div>
-                <img class="hero-visual" src="{{ heroVisual }}" alt="Visuel Sound Of Memories">
+                <img class="hero-visual" src="{{ heroVisual }}" alt="Visuel Sound Of Memories" width="1414" height="1414" fetchpriority="high" decoding="async">
             </div>
         </div>
+        <button class="scroll-indicator" type="button" data-scroll-indicator aria-label="Faire défiler vers le contenu">
+            {% if siteSettings.headerLogo %}
+                <img class="scroll-indicator__logo" src="{{ site_asset(siteSettings.headerLogo, 'site') }}" alt="Sound Of Memories" width="484" height="92" loading="lazy" decoding="async">
+            {% else %}
+                <span class="scroll-indicator__monogram">SOF</span>
+            {% endif %}
+            <svg class="scroll-indicator__chevron" width="18" height="22" viewBox="0 0 18 22" aria-hidden="true" focusable="false">
+                <path d="M2 7l7 8 7-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
     </section>
 
     {% if spotlight %}
-        <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
-            <div class="som-hero__bg" aria-hidden="true"></div>
-            {% include 'components/_divider_top.html.twig' %}
-            <div class="som-hero__content">
-                <div class="container split-panel">
-                    <div>
-                        <p class="eyebrow">{{ spotlight.offerBannerEyebrow ?: 'À la une' }}</p>
-                        <h2>{{ spotlight.offerBannerTitle ?: spotlight.name }}</h2>
-                        <p>{{ spotlight.offerBannerText ?: spotlight.shortDescription }}</p>
-                        <div class="meta-row">
-                            <span class="chip">{{ spotlight.formattedPrice }}</span>
-                            <span class="chip">{{ spotlight.stock }} en stock</span>
-                        </div>
-                        <a class="button-primary" href="{{ path('store_shop_show', {slug: spotlight.slug}) }}">Découvrir le produit</a>
-                    </div>
-                    <div class="vinyl-panel">
-                        <div class="vinyl-disc"></div>
-                        <div class="vinyl-cover">
-                            {% include 'store/components/_product_media.html.twig' with {
-                                product: spotlight,
-                                media_classes: 'product-media product-media-spotlight'
-                            } only %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% include 'components/_divider_bottom.html.twig' %}
-        </section>
+        {% include 'components/_masked_image_section.html.twig' with {
+            eyebrow: spotlight.offerBannerEyebrow ?: 'A la une',
+            title: spotlight.offerBannerTitle ?: spotlight.name,
+            text: spotlight.offerBannerText ?: spotlight.shortDescription,
+            meta_primary: spotlight.formattedPrice,
+            meta_secondary: spotlight.stock ~ ' en stock',
+            button_label: 'Découvrir le produit',
+            button_url: path('store_shop_show', {slug: spotlight.slug}),
+            image_url: spotlightImage,
+            image_alt: spotlight.name,
+            class_name: 'masked-image-section--featured'
+        } only %}
     {% endif %}
 
-    <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+    <section class="section section-bg-1 som-hero som-hero--section">
         <div class="som-hero__bg" aria-hidden="true"></div>
-        {% include 'components/_divider_top.html.twig' %}
         <div class="som-hero__content">
             <div class="container section-head">
                 <div>
@@ -78,7 +104,7 @@
             <div class="container card-grid">
                 {% for product in products %}
                     <article class="product-card">
-                        <a href="{{ path('store_shop_show', {slug: product.slug}) }}">
+                        <a href="{{ path('store_shop_show', {slug: product.slug}) }}" aria-label="{{ product.name }}">
                             {% include 'store/components/_product_media.html.twig' with {
                                 product: product,
                                 media_classes: 'product-media'
@@ -86,11 +112,11 @@
                         </a>
                         <div class="product-card-copy">
                             <p class="card-kicker">{{ product.category ? product.category.name : 'Merch' }}</p>
-                            <h3><a href="{{ path('store_shop_show', {slug: product.slug}) }}">{{ product.name }}</a></h3>
+                            <h3><a href="{{ path('store_shop_show', {slug: product.slug}) }}" aria-label="{{ product.name }}">{{ product.name }}</a></h3>
                             <p>{{ product.catalogExcerpt ?: product.shortDescription }}</p>
                             <div class="product-card-footer">
                                 <strong>{{ product.formattedPrice }}</strong>
-                                <a class="text-link" href="{{ path('store_shop_show', {slug: product.slug}) }}">Voir</a>
+                                <a class="text-link" href="{{ path('store_shop_show', {slug: product.slug}) }}" aria-label="{{ product.name }}">Voir</a>
                             </div>
                         </div>
                     </article>
@@ -102,12 +128,10 @@
                 {% endfor %}
             </div>
         </div>
-        {% include 'components/_divider_bottom.html.twig' %}
     </section>
 
-    <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+    <section class="section section-bg-2 som-hero som-hero--section">
         <div class="som-hero__bg" aria-hidden="true"></div>
-        {% include 'components/_divider_top.html.twig' %}
         <div class="som-hero__content">
             <div class="container section-head">
                 <div>
@@ -146,12 +170,10 @@
                 {% endfor %}
             </div>
         </div>
-        {% include 'components/_divider_bottom.html.twig' %}
     </section>
 
-    <section class="section section-gallery som-hero som-hero--section" id="legacy-gallery" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+    <section class="section section-bg-3 section-gallery som-hero som-hero--section" id="legacy-gallery">
         <div class="som-hero__bg" aria-hidden="true"></div>
-        {% include 'components/_divider_top.html.twig' %}
         <div class="som-hero__content">
             <div class="container section-head">
                 <div>
@@ -160,20 +182,18 @@
                 </div>
             </div>
             <div class="container gallery-strip" data-scroll-target>
-                <img src="{{ asset('uploads/legacy/bannerSand.png') }}" alt="The Sand Within">
-                <img src="{{ asset('uploads/legacy/bannerLiving.png') }}" alt="Living Circle">
-                <img src="{{ asset('uploads/legacy/bannerToDel.png') }}" alt="To Deliverance">
-                <img src="{{ asset('uploads/legacy/gal13.jpg') }}" alt="Photo de groupe">
-                <img src="{{ asset('uploads/legacy/gal15.jpg') }}" alt="Photo de scène">
-                <img src="{{ asset('uploads/legacy/gal18.JPG') }}" alt="Univers du groupe">
+                <img src="{{ asset('uploads/optimized/legacy/bannerSand.jpg') }}" alt="The Sand Within" width="1920" height="816" loading="lazy" decoding="async">
+                <img src="{{ asset('uploads/optimized/legacy/bannerLiving.jpg') }}" alt="Living Circle" width="1920" height="816" loading="lazy" decoding="async">
+                <img src="{{ asset('uploads/optimized/legacy/bannerToDel.jpg') }}" alt="To Deliverance" width="1920" height="1000" loading="lazy" decoding="async">
+                <img src="{{ asset('uploads/optimized/legacy/gal13.jpg') }}" alt="Photo de groupe" width="3265" height="4898" loading="lazy" decoding="async">
+                <img src="{{ asset('uploads/optimized/legacy/gal15.jpg') }}" alt="Photo de scène" width="3265" height="4898" loading="lazy" decoding="async">
+                <img src="{{ asset('uploads/optimized/legacy/gal18.jpg') }}" alt="Univers du groupe" width="4898" height="3265" loading="lazy" decoding="async">
             </div>
         </div>
-        {% include 'components/_divider_bottom.html.twig' %}
     </section>
 
-    <section class="section som-hero som-hero--section" style="--som-bg-image: url('{{ random(liveBackgrounds) }}');">
+    <section class="section section-bg-1 som-hero som-hero--section">
         <div class="som-hero__bg" aria-hidden="true"></div>
-        {% include 'components/_divider_top.html.twig' %}
         <div class="som-hero__content">
             <div class="container cta-panel">
                 <div>
@@ -187,10 +207,10 @@
                 </div>
             </div>
         </div>
-        {% include 'components/_divider_bottom.html.twig' %}
     </section>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('scripts/home.js') }}"></script>
+    {{ parent() }}
+    <script src="{{ asset('scripts/home.js') }}" defer></script>
 {% endblock %}
