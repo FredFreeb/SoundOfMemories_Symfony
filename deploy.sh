@@ -20,6 +20,7 @@ if ! docker network inspect web >/dev/null 2>&1; then
     run docker network create web
 fi
 
+run mkdir -p public/uploads var
 run chmod -R a+rwX public/uploads var
 run docker compose --env-file .env.prod.local -f compose.prod.yaml build --pull
 run docker compose --env-file .env.prod.local -f compose.prod.yaml up -d database php nginx
