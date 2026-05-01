@@ -1,0 +1,73 @@
+services:
+  php:
+    init: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app_runtime
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file:
+      - path: ./.env
+        required: true
+      - path: ./.env.prod.local
+        required: true
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: 0
+    volumes:
+      - app_var:/var/www/html/var
+      - ./public/uploads:/var/www/html/public/uploads
+    networks:
+      - internal
+
+  nginx:
+    init: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app_nginx
+    restart: unless-stopped
+    depends_on:
+      - php
+    volumes:
+      - ./public/uploads:/var/www/html/public/uploads:ro
+    networks:
+      internal:
+      web:
+        aliases:
+          - soundofmemories-nginx
+
+  database:
+    image: mariadb:${MARIADB_VERSION:-10.11}
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max-connections=60
+    environment:
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-soundofmemories}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-password}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root-password}
+      MARIADB_USER: ${MARIADB_USER:-soundofmemories}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/mysql
+    networks:
+      - internal
+
+volumes:
+  app_var:
+  database_data:
+
+networks:
+  internal:
+    internal: true
+  web:
+    external: true
